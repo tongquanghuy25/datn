@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { Form, Input, Button, Card } from "antd";
-import { LoginOutlined } from "@ant-design/icons";
+import { LoginOutlined, HomeOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
-import { error, success } from '../../components/Message';
+import { error, success, loading, destroy } from '../../components/Message';
 import { useMutation } from '@tanstack/react-query';
 import { signupUser } from '../../services/UserService';
 
@@ -33,12 +33,8 @@ const SignUpPage = () => {
         }
     }, [isSuccess, isError])
 
-
-
-
     const onFinish = (values) => {
-        // success();
-        console.log('huy1', values.email);
+        loading()
         mutation.mutate({ email: values.email, phone: values.phone, password: values.password, confirmPassword: values.confirmPassword });
     }
     return (
@@ -57,8 +53,6 @@ const SignUpPage = () => {
                     <Title level={2} className="text-center">
                         Đăng ký
                     </Title>
-                    {/* <SocialNetworks /> */}
-
                     <Form.Item
                         name="email"
                         hasFeedback
@@ -68,7 +62,7 @@ const SignUpPage = () => {
                         rules={[
                             {
                                 required: true,
-                                message: "Mật khẩu không được bỏ trống !",
+                                message: "Email không được bỏ trống !",
                             },
                             {
                                 type: "email",
@@ -138,16 +132,26 @@ const SignUpPage = () => {
                         <Input.Password placeholder="Nhập lại mật khẩu" size="large" />
                     </Form.Item>
 
+                    <Form.Item>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <a onClick={() => navigate('/sign-in')}>
+                                Đăng nhập
+                            </a>
 
+                            <a onClick={() => navigate('/')}>
+                                Về trang chủ
+                                <HomeOutlined style={{ marginLeft: '10px' }} />
+                            </a>
+                        </div>
+                    </Form.Item>
 
                     <Button
-                        // loading={auth.loading}
                         type="primary"
                         htmlType="submit"
                         shape="round"
                         icon={<LoginOutlined />}
                         size="large"
-                        style={{ marginTop: '30px' }}
+                        style={{ marginTop: '10px' }}
                     >
                         Đăng ký
                     </Button>
