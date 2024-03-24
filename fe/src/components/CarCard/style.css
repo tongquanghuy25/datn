@@ -1,0 +1,62 @@
+/* styles.css */
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 80%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-content {
+    display: flex;
+    padding: 20px;
+}
+
+.card-avatar {
+    flex: 1;
+    padding-right: 20px;
+}
+
+.card-avatar img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.card-info {
+    flex: 3;
+}
+
+.card-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.card-info p {
+    margin-bottom: 5px;
+}
+
+.card-info .price {
+    font-weight: bold;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.card-actions button {
+    margin-left: 10px;
+}

@@ -1,3 +1,4 @@
+import CarOwnerRegistration from "../pages/CarOwnerRegistration/CarOwnerRegistration";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import HomePage from "../pages/HomePage/HomePage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
@@ -28,6 +29,11 @@ export const routes = [
     {
         path: '/profile',
         page: ProfilePage,
+        isShowHeader: false
+    },
+    {
+        path: '/car-owner-registration',
+        page: CarOwnerRegistration,
         isShowHeader: false
     },
 

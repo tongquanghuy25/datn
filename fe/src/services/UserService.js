@@ -69,6 +69,7 @@ export const updateUser = async (id, data, access_token) => {
             token: `Bearer ${access_token}`,
         }
     })
+    console.log('hh1', res.data);
     return res.data
 }
 

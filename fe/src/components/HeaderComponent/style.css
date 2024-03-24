@@ -22,3 +22,14 @@
     cursor: pointer;
     margin-left: 30px;
 }
+
+.popover-item {
+    padding: 5px 3px;
+}
+
+.popover-item:hover {
+    background-color: #e6f2bf;
+    cursor: pointer;
+    padding: 5px 3px;
+    border-radius: 5px;
+}

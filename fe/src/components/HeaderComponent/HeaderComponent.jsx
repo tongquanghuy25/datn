@@ -5,7 +5,8 @@ import {
     CaretDownOutlined,
     PhoneOutlined,
     QuestionCircleOutlined,
-    ContainerOutlined
+    ContainerOutlined,
+    UsergroupAddOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,12 +37,13 @@ const HeaderComponent = () => {
 
     const content = (
         <div>
-            <p style={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>Thông tin người dùng</p>
+            <p className='popover-item' style={{}} onClick={() => navigate('/profile')}>Thông tin người dùng</p>
+            <div style={{ borderTop: '1px solid black' }}></div>
             {/* {user?.isAdmin && (
 
                 <p onClick={() => { }}>Quản lí hệ thống</p>
             )} */}
-            <p style={{ cursor: 'pointer' }} onClick={() => handleLogout()}>Đăng xuất</p>
+            <p className='popover-item' onClick={() => handleLogout()}>Đăng xuất</p>
         </div>
     );
 
@@ -49,7 +51,7 @@ const HeaderComponent = () => {
         <div style={{ heiht: '100%', width: '100%', display: 'flex', background: '#9255FD', justifyContent: 'center', height: '80px' }}>
             <Row style={{ heiht: '100%', width: '100%', display: 'flex', background: '#9255FD', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Col span={8} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
-                    <div onClick={() => navigate('/sign-in')}>
+                    <div onClick={() => navigate('/')}>
                         {/* <a href="https://vexere.com"> */}
                         <img className='logo-header' src={logo} alt="logo" />
                         {/* </a> */}
@@ -65,6 +67,10 @@ const HeaderComponent = () => {
                         <ContainerOutlined style={{ marginRight: '10px' }} />
                         Xem vé đã mua
                     </div>
+                    <div onClick={() => navigate('/car-owner-registration')} className='header-items'>
+                        <UsergroupAddOutlined style={{ marginRight: '10px', fontSize: '20px' }} />
+                        Trở thành đối tác
+                    </div>
                     <div onClick={() => { console.log('huyhuy'); }} className='header-items'>
                         <QuestionCircleOutlined style={{ marginRight: '10px' }} />
                         Giới thiệu
@@ -77,13 +83,15 @@ const HeaderComponent = () => {
                 <Col span={4} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     {userAvatar ? (
                         <img src={userAvatar} alt="avatar" style={{
-                            height: '30px',
-                            width: '30px',
+                            height: '50px',
+                            width: '50px',
                             borderRadius: '50%',
-                            objectFit: 'cover'
+                            objectFit: 'cover',
+                            marginRight: '10px',
+                            border: '1px solid yellow'
                         }} />
                     ) : (
-                        <UserOutlined style={{ fontSize: '30px', color: 'white' }} />
+                        <UserOutlined style={{ fontSize: '30px', color: 'white', marginLeft: '10px' }} />
                     )}
                     {user?.access_token ? (
                         <>
