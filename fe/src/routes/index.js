@@ -1,3 +1,5 @@
+import TabSeatSelection from "../components/CarCard/TabContent/TabSeat/TabSeatSelection";
+import AdminPage from "../pages/AdminPage/AdminPage";
 import CarOwnerRegistration from "../pages/CarOwnerRegistration/CarOwnerRegistration";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import HomePage from "../pages/HomePage/HomePage";
@@ -37,4 +39,21 @@ export const routes = [
         isShowHeader: false
     },
 
+
+
+
+    //Admin
+
+    {
+        path: '/admin',
+        page: AdminPage,
+        isShowHeader: false
+    },
+
+    //Test
+    {
+        path: '/test',
+        page: TabSeatSelection,
+        isShowHeader: false
+    }
 ]

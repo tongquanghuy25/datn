@@ -3,6 +3,7 @@ import { Card, Button, Tabs } from 'antd';
 // import 'antd/dist/antd.css';
 import './style.css'; // Liên kết file CSS của bạn
 import TabPane from 'antd/es/tabs/TabPane';
+import TabSeatSelection from './TabContent/TabSeat/TabSeatSelection';
 
 const CarCard = ({ car }) => {
 
@@ -47,7 +48,7 @@ const CarCard = ({ car }) => {
                             Nội dung đánh giá
                         </TabPane>
                         <TabPane tab="Chọn vé" key="2">
-                            Nội dung chọn vé
+                            <TabSeatSelection></TabSeatSelection>
                         </TabPane>
                         <TabPane tab="Hành trình" key="3">
                             Nội dung hành trình
