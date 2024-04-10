@@ -1,9 +1,10 @@
 import './style.css'
-import { Menu, Popover, Space, Typography } from 'antd'
+import { Menu, Space, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import logo from '../../acess/logo.png'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+
 import {
     UserOutlined,
     CaretDownOutlined,
@@ -12,45 +13,69 @@ import {
     ShoppingCartOutlined,
 } from '@ant-design/icons';
 import AdminComponent from '../../components/Admin/AdminComponent'
-import AdminCarComponent from '../../components/Admin/AdminCarComponent'
+import AdminBusComponent from '../../components/Admin/AdminBusComponent'
 import AdminUserComponent from '../../components/Admin/AdminUserComponent'
-import AdminCarOwnerComponent from '../../components/Admin/AdminCarOwnerComponent'
+import AdminBusOwnerComponent from '../../components/Admin/AdminBusOwnerComponent'
 import AdminTicketComponent from '../../components/Admin/AdminTicketComponent'
 import AdminDriverComponent from '../../components/Admin/AdminDriverComponent'
+import AcceptBusOwner from '../../components/Admin/AcceptBusOwner'
 
 const AdminPage = () => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const [userName, setUserName] = useState('')
     const [userAvatar, setUserAvatar] = useState('')
-
     const [selectedKeys, setSelectedKeys] = useState("admin");
 
+    ///
+
+
+    // const mutation = useMutation(
+    //     { mutationFn: (data) => getAllUser(data) }
+    // )
+    // useEffect(() => {
+    //     mutation.mutate(user?.access_token);
+    // }, [])
+    // const getAllUsers = 
+
+
+
+
+    // useEffect(()=>{
+    //     setUsers(data?.data)
+    //     log
+    // },[data])
+
+    ///
     useEffect(() => {
         setUserName(user?.name)
         setUserAvatar(user?.avatar)
     }, [user?.name, user?.avatar])
-    console.log('user', user);
 
-
+    var content
     switch (selectedKeys) {
         case 'admin':
-            var content = <AdminComponent></AdminComponent>
+            content = <AdminComponent></AdminComponent>
             break;
-        case 'car':
-            var content = <AdminCarComponent></AdminCarComponent>
+        case 'bus':
+            content = <AdminBusComponent></AdminBusComponent>
             break;
         case 'user':
-            var content = <AdminUserComponent></AdminUserComponent>
+            content = <AdminUserComponent></AdminUserComponent>
             break;
-        case 'carowner':
-            var content = <AdminCarOwnerComponent></AdminCarOwnerComponent>
+        case 'busowner':
+            content = <AdminBusOwnerComponent></AdminBusOwnerComponent>
+            break;
+        case 'acceptbusowner':
+            content = <AcceptBusOwner></AcceptBusOwner>
             break;
         case 'ticket':
-            var content = <AdminTicketComponent></AdminTicketComponent>
+            content = <AdminTicketComponent></AdminTicketComponent>
             break;
         case 'driver':
-            var content = <AdminDriverComponent></AdminDriverComponent>
+            content = <AdminDriverComponent></AdminDriverComponent>
+            break;
+        default:
             break;
     }
     return (
@@ -121,12 +146,17 @@ const AdminPage = () => {
                             },
                             {
                                 label: "Quản lý nhà xe",
-                                key: "carowner",
+                                key: "busowner",
+                                icon: <UserOutlined />,
+                            },
+                            {
+                                label: "Phê duyệt nhà xe",
+                                key: "acceptbusowner",
                                 icon: <UserOutlined />,
                             },
                             {
                                 label: "Quản lý xe",
-                                key: "car",
+                                key: "bus",
                                 icon: <UserOutlined />,
                             },
                             {

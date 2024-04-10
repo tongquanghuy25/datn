@@ -5,7 +5,7 @@ import './style.css'; // Liên kết file CSS của bạn
 import TabPane from 'antd/es/tabs/TabPane';
 import TabSeatSelection from './TabContent/TabSeat/TabSeatSelection';
 
-const CarCard = ({ car }) => {
+const BusCard = ({ bus }) => {
 
     const [showDetails, setShowDetails] = useState(false);
     const [activeTab, setActiveTab] = useState('1');
@@ -23,19 +23,19 @@ const CarCard = ({ car }) => {
             <Card className="card">
                 <div className="card-content">
                     <div className="card-avatar">
-                        <img src={car.avatar} alt="Car Avatar" />
+                        <img src={bus.avatar} alt="Bus Avatar" />
                     </div>
                     <div className="card-info">
-                        <h2>{car.name}</h2>
-                        <p>Số sao đánh giá: {car.rating}</p>
-                        <p className="price">Giá vé: {car.price}</p>
-                        <p>Số chỗ còn trống: {car.availableSeats}</p>
+                        <h2>{bus.name}</h2>
+                        <p>Số sao đánh giá: {bus.rating}</p>
+                        <p className="price">Giá vé: {bus.price}</p>
+                        <p>Số chỗ còn trống: {bus.availableSeats}</p>
                     </div>
                     <div>
-                        <p>Giờ xuất phát: {car.departureTime}</p>
-                        <p>Địa điểm xuất phát: {car.departureLocation}</p>
-                        <p>Giờ đến: {car.arrivalTime}</p>
-                        <p>Địa điểm đến: {car.arrivalLocation}</p></div>
+                        <p>Giờ xuất phát: {bus.departureTime}</p>
+                        <p>Địa điểm xuất phát: {bus.departureLocation}</p>
+                        <p>Giờ đến: {bus.arrivalTime}</p>
+                        <p>Địa điểm đến: {bus.arrivalLocation}</p></div>
                 </div>
                 <div className="card-actions">
                     <Button type="primary" onClick={handleShowDetails}>Xem chi tiết</Button>
@@ -60,4 +60,4 @@ const CarCard = ({ car }) => {
     );
 };
 
-export default CarCard;
+export default BusCard;

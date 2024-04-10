@@ -33,8 +33,9 @@ const ProfilePage = () => {
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            success();
-            dispatch(updateUser({ email: data.email, name: data.name, address: data.address, phone: data.phone, avatar: avatar }))
+            success("Cập nhật người dùng thành công !");
+            console.log('ss', data);
+            dispatch(updateUser({ email: data?.data?.email, name: data?.data?.name, phone: data?.data?.phone, avatar: data?.data?.avatar }))
         } else if (isError || data?.status === "ERR") {
             error(data?.message);
         }
@@ -44,7 +45,6 @@ const ProfilePage = () => {
         form.setFieldsValue({
             email: user?.email,
             name: user?.name,
-            address: user?.address,
             phone: user?.phone,
         });
         setAvatar(user?.avatar)
@@ -52,11 +52,11 @@ const ProfilePage = () => {
 
     const onFinish = (values) => {
         loading()
+        console.log('value', values);
         mutation.mutate({
             id: user?.id,
             email: values?.email,
             name: values?.name,
-            address: values?.address,
             phone: values?.phone,
             avatar: avatar,
             access_token: user?.access_token
@@ -160,12 +160,6 @@ const ProfilePage = () => {
                         label="Họ và tên"
                     >
                         <Input placeholder="Họ và tên" />
-                    </Form.Item>
-                    <Form.Item
-                        name="address"
-                        label="Địa chỉ"
-                    >
-                        <Input placeholder="Địa chỉ" />
                     </Form.Item>
                     <Form.Item
                         name="phone"

@@ -5,7 +5,7 @@ import FooterComponent from '../../components/FooterComponent/FooterComponent'
 import background from '../../acess/background.jpg'
 import { Col, Radio, Row, Space, InputNumber, Slider, Checkbox, Rate, Select, DatePicker, Button } from 'antd'
 import { Option } from 'antd/es/mentions'
-import CarCard from '../../components/CarCard/CarCard'
+import BusCard from '../../components/BusCard/BusCard'
 const HomePage = () => {
 
     const [pickupProvince, setPickupProvince] = useState('');
@@ -90,7 +90,7 @@ const HomePage = () => {
         setselectedRatings(e.target.value);
     };
 
-    const cars = [
+    const buss = [
         {
             id: 1,
             name: 'Xe A',
@@ -150,6 +150,20 @@ const HomePage = () => {
         },
         // Thêm các đối tượng xe khác nếu cần
     ];
+
+
+    // const selectedDates = '2024-04-05';
+    // const selectedTimes = '15:30';
+    // const dateTimeString = `${selectedDates}T${selectedTimes}`;
+    // const endTime = new Date(dateTimeString);
+    // const startTime = new Date('2024-04-04T12:00:00');
+
+    // // Tính toán khoảng cách giờ giữa startTime và endTime
+    // const diffMilliseconds = Math.abs(endTime - startTime); // Khoảng cách thời gian tính bằng mili giây
+    // const diffHours = diffMilliseconds / (1000 * 60 * 60); // Khoảng cách thời gian tính bằng giờ
+
+    // console.log('Khoảng cách giờ giữa hai thời điểm:', diffHours);
+
     return (
         <div>
             <HeaderComponent></HeaderComponent>
@@ -274,8 +288,8 @@ const HomePage = () => {
                         </Col>
                         <Col span={18} style={{ height: '100vh' }}>
                             <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh)' }}>
-                                {cars.map(car => (
-                                    <CarCard key={car.id} car={car} />
+                                {buss.map(bus => (
+                                    <BusCard key={bus.id} bus={bus} />
                                 ))}
                             </div>
                         </Col>

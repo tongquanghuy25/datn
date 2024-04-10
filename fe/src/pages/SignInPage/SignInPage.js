@@ -20,7 +20,6 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user)
-  console.log('us', user);
 
   const mutation = useMutation(
     { mutationFn: (data) => loginUser(data) }
@@ -90,7 +89,7 @@ const SignInPage = () => {
             rules={[
               {
                 required: true,
-                message: "Mật khẩu không được bỏ trống.",
+                message: "Email không được bỏ trống.",
               },
               {
                 type: "email",

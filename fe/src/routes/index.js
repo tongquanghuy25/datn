@@ -1,6 +1,6 @@
-import TabSeatSelection from "../components/CarCard/TabContent/TabSeat/TabSeatSelection";
+import TabSeatSelection from "../components/BusCard/TabContent/TabSeat/TabSeatSelection";
 import AdminPage from "../pages/AdminPage/AdminPage";
-import CarOwnerRegistration from "../pages/CarOwnerRegistration/CarOwnerRegistration";
+import BusOwnerRegistration from "../pages/BusOwnerRegistration/BusOwnerRegistration";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import HomePage from "../pages/HomePage/HomePage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
@@ -34,8 +34,8 @@ export const routes = [
         isShowHeader: false
     },
     {
-        path: '/car-owner-registration',
-        page: CarOwnerRegistration,
+        path: '/bus-owner-registration',
+        page: BusOwnerRegistration,
         isShowHeader: false
     },
 

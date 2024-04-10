@@ -14,8 +14,10 @@ import { useEffect, useState } from 'react';
 import { logoutUser } from '../../services/UserService';
 import { resetUser } from '../../redux/slides/userSlide';
 import logo from '../../acess/logo.png';
+import { QueryCache } from '@tanstack/react-query'
 
 const HeaderComponent = () => {
+    const queryCache = new QueryCache();
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const [userName, setUserName] = useState('')
@@ -27,6 +29,9 @@ const HeaderComponent = () => {
         await logoutUser()
         dispatch(resetUser());
         localStorage.clear();
+        // const qr = queryCache.find(['users'])
+        // console.log('hhhhh', qr);
+        // invalidateQueries('users')
     }
 
     useEffect(() => {
@@ -70,7 +75,7 @@ const HeaderComponent = () => {
                         <ContainerOutlined style={{ marginRight: '10px' }} />
                         Xem vé đã mua
                     </div>
-                    <div onClick={() => navigate('/car-owner-registration')} className='header-items'>
+                    <div onClick={() => user?.access_token ? navigate('/bus-owner-registration') : navigate('/sign-up')} className='header-items'>
                         <UsergroupAddOutlined style={{ marginRight: '10px', fontSize: '20px' }} />
                         Trở thành đối tác
                     </div>

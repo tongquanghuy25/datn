@@ -1,8 +1,8 @@
 import { message } from "antd";
 
-const success = (mes = 'Success') => {
+const success = (mes) => {
     destroy();
-    message.success(mes);
+    message.success(mes ? mes : 'Success');
 };
 
 const error = (mes) => {
