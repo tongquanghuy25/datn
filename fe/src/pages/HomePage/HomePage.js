@@ -167,7 +167,7 @@ const HomePage = () => {
     return (
         <div>
             <HeaderComponent></HeaderComponent>
-            <div style={{ backgroundColor: '#dce6b5', minHeight: '100vh', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+            <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                 <div style={{ backgroundImage: `url(${background})`, backgroundRepeat: 'no-repeat', objectFit: 'cover', height: '50vh', width: '80%' }}>
                     <div style={{ width: '50%', margin: 'auto' }}>
                         <div style={{ marginBottom: '20px' }}>

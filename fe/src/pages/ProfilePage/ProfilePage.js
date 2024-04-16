@@ -21,11 +21,13 @@ const ProfilePage = () => {
     const [isloading, setisLoading] = useState(false);
     const [avatar, setAvatar] = useState('')
     const [form] = Form.useForm();
+    const [avatarFile, setAvatarFile] = useState('')
+
 
     const mutation = useMutation({
         mutationFn: (data) => {
-            const { id, access_token, ...rests } = data
-            return updateUserApi(id, rests, access_token)
+            const { id, formData, access_token } = data
+            return updateUserApi(id, formData, access_token)
         }
     })
 
@@ -52,29 +54,27 @@ const ProfilePage = () => {
 
     const onFinish = (values) => {
         loading()
-        console.log('value', values);
+        const formData = new FormData();
+        formData.append('email', values.email);
+        formData.append('phone', values.phone);
+        formData.append('name', values.name);
+        formData.append('avatar', avatarFile);
+
         mutation.mutate({
             id: user?.id,
-            email: values?.email,
-            name: values?.name,
-            phone: values?.phone,
-            avatar: avatar,
+            formData,
             access_token: user?.access_token
         });
     }
 
 
     const handleChange = (info) => {
-        if (info.file.status === 'uploading') {
-            setisLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            getBase64(info.file.originFileObj, (url) => {
-                setisLoading(false);
-                setAvatar(url);
-            });
-        }
+        console.log('in', info.file.status);
+        setAvatarFile(info.file.originFileObj)
+        getBase64(info.file.originFileObj, (url) => {
+            setisLoading(false);
+            setAvatar(url);
+        });
     };
     const uploadButton = (
         <button
@@ -111,10 +111,10 @@ const ProfilePage = () => {
                 <Form.Item>
                     <Upload
                         name="avatar"
+                        maxCount={1}
                         listType="picture-circle"
                         className="avatar-uploader"
                         showUploadList={false}
-                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                         onChange={handleChange}
                     >
                         {avatar ? (

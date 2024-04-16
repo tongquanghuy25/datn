@@ -1,5 +1,6 @@
 import TabSeatSelection from "../components/BusCard/TabContent/TabSeat/TabSeatSelection";
 import AdminPage from "../pages/AdminPage/AdminPage";
+import BusOwnerPage from "../pages/BusOwnerPage/BusOwnerPage";
 import BusOwnerRegistration from "../pages/BusOwnerRegistration/BusOwnerRegistration";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import HomePage from "../pages/HomePage/HomePage";
@@ -47,6 +48,13 @@ export const routes = [
     {
         path: '/admin',
         page: AdminPage,
+        isShowHeader: false
+    },
+
+    //BusOwner
+    {
+        path: '/bus-owner',
+        page: BusOwnerPage,
         isShowHeader: false
     },
 

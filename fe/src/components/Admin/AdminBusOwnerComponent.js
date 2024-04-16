@@ -4,7 +4,6 @@ import { SearchOutlined, EditOutlined, DeleteOutlined, ArrowRightOutlined } from
 import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
-import { deleteUser, editUser, getAllUser } from '../../services/UserService'
 import { Select } from 'antd';
 import { error, success } from '../Message';
 import { deleteBusOwner, editBusOwner, getAllBusOwner } from '../../services/BusOwnerSevice';
@@ -76,13 +75,12 @@ const provinces = [
 ];
 
 const AdminBusOwnerComponent = () => {
-
+    const user = useSelector((state) => state.user);
     const [isEdit, setIsEdit] = useState(false)
     const [isDelette, setIsDelette] = useState(false)
     const [busOwnerEditing, setbusOwnerEditing] = useState()
     const [busOwnerDeleting, setBusOwnerDeleting] = useState()
     const [busOwners, setBusOwners] = useState([])
-    const user = useSelector((state) => state.user);
     const [confirmLoading, setConfirmLoading] = useState(false)
     const [options, setOptions] = useState([]);
     const [startPoint, setStartPoint] = useState([]);
@@ -331,6 +329,7 @@ const AdminBusOwnerComponent = () => {
     return (
         <>
             <Table
+                rowKey="_id"
                 bordered
                 dataSource={busOwners}
                 columns={column}

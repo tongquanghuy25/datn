@@ -7,7 +7,7 @@ router.post('/register', authUserMiddleWare, busOwnerController.createBusOwner)
 router.get('/get-all', authAdminMiddleWare, busOwnerController.getAllBusOwner)
 router.put('/edit/:id', authAdminMiddleWare, busOwnerController.editBusOwner)
 router.delete('/delete/:id', authAdminMiddleWare, busOwnerController.deleteBusOwner)
-router.get('/get-all-not-accept', authAdminMiddleWare, busOwnerController.createBusOwner)
+router.get('/get-all-not-accept', authAdminMiddleWare, busOwnerController.getAllBusOwnerNotAccept)
 
 // router.post('/sign-in', userController.loginUser)
 // router.post('/log-out', userController.logoutUser)

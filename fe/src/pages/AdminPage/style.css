@@ -15,6 +15,9 @@
     justify-content: flex-start;
     align-items: flex-start;
     background-color: rgba(0, 0, 0, 0.05);
+    width: 250px;
+    /* Điều chỉnh chiều rộng của menu */
+
 }
 
 .SideMenu {
@@ -27,4 +30,36 @@
 
 .PageContent {
     padding-left: 12px;
+}
+
+
+
+.SideMenuVertical .ant-menu {
+    background-color: #f0f2f5;
+    /* Màu nền của menu */
+    border: none;
+    /* Loại bỏ đường viền của menu */
+}
+
+.SideMenuVertical .ant-menu-item {
+    margin-top: 20px;
+    /* padding: 15px; */
+    /* Điều chỉnh khoảng cách giữa các phần tử con bên trong mục */
+    font-size: 16px;
+    /* Điều chỉnh kích thước chữ cho mục */
+}
+
+.SideMenuVertical .ant-menu-item:hover {
+    background-color: #e6ebf5;
+    /* Màu nền khi di chuột qua một mục */
+}
+
+.SideMenuVertical .ant-menu-item-selected {
+    background-color: #d4d9e3;
+    /* Màu nền khi một mục được chọn */
+}
+
+.SideMenuVertical .ant-menu-item-icon {
+    margin-right: 10px;
+    /* Khoảng cách giữa biểu tượng và văn bản trong mục */
 }

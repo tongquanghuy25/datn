@@ -1,3 +1,4 @@
+import './style.css'
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Upload, DatePicker, Select, Avatar, AutoComplete } from 'antd';
 import { LoadingOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/icons';
@@ -174,7 +175,7 @@ const BusOwnerRegistration = () => {
     );
 
     return (
-        <div style={{ flexDirection: 'column', width: '100%', height: '100vh', display: 'flex', alignItems: 'center' }}>
+        <div style={{ backgroundColor: '#f0f2f5', flexDirection: 'column', width: '100%', height: '100vh', display: 'flex', alignItems: 'center' }}>
             <HeaderComponent></HeaderComponent>
             <Form
                 form={form}

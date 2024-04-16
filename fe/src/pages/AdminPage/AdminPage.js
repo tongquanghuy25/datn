@@ -1,13 +1,11 @@
 import './style.css'
-import { Menu, Space, Typography } from 'antd'
+import { Layout, Menu, Button } from 'antd';
 import React, { useEffect, useState } from 'react'
-import logo from '../../acess/logo.png'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-
 import {
     UserOutlined,
-    CaretDownOutlined,
+    LogoutOutlined,
     AppstoreOutlined,
     ShopOutlined,
     ShoppingCartOutlined,
@@ -20,6 +18,7 @@ import AdminTicketComponent from '../../components/Admin/AdminTicketComponent'
 import AdminDriverComponent from '../../components/Admin/AdminDriverComponent'
 import AcceptBusOwner from '../../components/Admin/AcceptBusOwner'
 
+const { Header, Content } = Layout;
 const AdminPage = () => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
@@ -79,45 +78,17 @@ const AdminPage = () => {
             break;
     }
     return (
-        <div>
-            <div
-                className='Admin-header'>
-                <div onClick={() => navigate('/')}>
-                    {/* <a href="https://vexere.com"> */}
-                    <img className='logo-header' src={logo} alt="logo" />
-                    {/* </a> */}
+        <div >
+            <Header style={{ padding: '10px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div >
+                    <h1 style={{ color: 'white', margin: 0 }}>Trang Admin</h1>
                 </div>
-                <Typography.Title>Admin</Typography.Title>
-                <Space>
-                    {userAvatar ? (
-                        <img src={userAvatar} alt="avatar" style={{
-                            height: '50px',
-                            width: '50px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            marginRight: '10px',
-                            border: '1px solid yellow'
-                        }} />
-                    ) : (
-                        <UserOutlined style={{ fontSize: '30px', color: 'white', marginLeft: '10px' }} />
-                    )}
-                    {user?.access_token ? (
-                        <div style={{ color: 'black', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis' }}
-                        >
-                            {userName?.length ? userName : user?.email}
-                        </div>
-
-                    ) :
-                        (<div onClick={() => { navigate('/sign-in') }} className='text' style={{ cursor: 'pointer' }}>
-                            Đăng nhập/Đăng ký
-                            <div>
-                                Tài khoản
-                                <CaretDownOutlined />
-                            </div>
-                        </div>)
-                    }
-                </Space>
-            </div>
+                <div>
+                    <Button type="primary" icon={<LogoutOutlined />}>
+                        Đăng xuất
+                    </Button>
+                </div>
+            </Header>
             <div style={{ display: 'flex' }}>
                 <div
                     className='Admin-menu'>

@@ -1,5 +1,4 @@
 const BusOwnerSevice = require('../services/BusOwnerService')
-const JwtService = require('../services/JwtService')
 
 const createBusOwner = async (req, res) => {
     try {
@@ -75,9 +74,7 @@ const deleteBusOwner = async (req, res) => {
 const getAllBusOwnerNotAccept = async (req, res) => {
     try {
 
-        const response = await BusOwnerSevice.createBusOwner(req.body)
-        console.log('hhuu', response);
-
+        const response = await BusOwnerSevice.getAllBusOwnerNotAccept()
         return res.status(200).json(response)
     } catch (e) {
         return res.status(404).json({

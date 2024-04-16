@@ -1,0 +1,27 @@
+.user-info-card {
+    background-color: #f0f2f5;
+    /* Màu nền */
+    border: 1px solid #d9d9d9;
+    /* Viền */
+    border-radius: 8px;
+    /* Bo tròn viền */
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.user-info-card p {
+    margin-bottom: 8px;
+    /* Khoảng cách giữa các dòng */
+    position: relative;
+}
+
+.user-info-card p strong {
+    color: #1890ff;
+    /* Màu sắc cho tiêu đề */
+}
+
+.button-container {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+}

@@ -42,12 +42,6 @@ const SignUpPage = () => {
             <Card >
                 <Form
                     name="signin"
-                    // form={form}
-                    // initialValues={{
-                    //     remember: false,
-                    //     email: "",
-                    //     password: ""
-                    // }}
                     onFinish={onFinish}
                 >
                     <Title level={2} className="text-center">

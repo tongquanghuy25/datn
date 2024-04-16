@@ -21,7 +21,6 @@ root.render(
         <App />
       </PersistGate>
     </Provider>
-    <ReactQueryDevtools initialIsOpen={true} />
   </QueryClientProvider>
   // </React.StrictMode>
 );

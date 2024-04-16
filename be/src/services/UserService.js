@@ -4,8 +4,7 @@ const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
-        console.log('ne', newUser);
-        const { name, email, password, confirmPassword, phone } = newUser
+        const { name, email, password, phone, avatar } = newUser
         try {
             const checkUser = await User.findOne({
                 email: email
@@ -13,7 +12,7 @@ const createUser = (newUser) => {
             if (checkUser !== null) {
                 resolve({
                     status: 'ERR',
-                    message: 'Email đã tồn tại !'
+                    message: 'Email đã tồn tại!'
                 })
             }
             const hash = bcrypt.hashSync(password, 10)
@@ -21,12 +20,13 @@ const createUser = (newUser) => {
                 name,
                 email,
                 password: hash,
-                phone
+                phone,
+                avatar
             })
             if (createdUser) {
                 resolve({
                     status: 'OK',
-                    message: 'Đăng ký tài khoản thành công !',
+                    message: 'Đăng ký tài khoản thành công!',
                     data: createdUser
                 })
             }
@@ -46,7 +46,7 @@ const loginUser = (userLogin) => {
             if (checkUser === null) {
                 resolve({
                     status: 'ERR',
-                    message: 'Email không chính xác !'
+                    message: 'Email không chính xác!'
                 })
             }
             const comparePassword = bcrypt.compareSync(password, checkUser.password)
@@ -54,7 +54,7 @@ const loginUser = (userLogin) => {
             if (!comparePassword) {
                 resolve({
                     status: 'ERR',
-                    message: 'Mật khẩu không chính xác !'
+                    message: 'Mật khẩu không chính xác!'
                 })
             }
             const access_token = await genneralAccessToken({
@@ -69,7 +69,7 @@ const loginUser = (userLogin) => {
 
             resolve({
                 status: 'OK',
-                message: 'Đăng nhập thành công',
+                message: 'Đăng nhập thành công!',
                 access_token,
                 refresh_token
             })
@@ -87,14 +87,24 @@ const editUser = (id, data) => {
             if (checkUser === null) {
                 resolve({
                     status: 'ERR',
-                    message: 'Người dùng không tồn tại !'
+                    message: 'Người dùng không tồn tại!'
+                })
+            }
+
+            const checkEmail = await User.findOne({
+                email: data?.email
+            })
+            if (checkEmail !== null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Email đã tồn tại!'
                 })
             }
 
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
             resolve({
                 status: 'OK',
-                message: 'SUCCESS',
+                message: 'Chỉnh sửa người dùng thành công!',
                 data: updatedUser
             })
         } catch (e) {
@@ -111,14 +121,23 @@ const updateUser = (id, data) => {
             if (checkUser === null) {
                 resolve({
                     status: 'ERR',
-                    message: 'Người dùng không tồn tại !'
+                    message: 'Người dùng không tồn tại!'
                 })
             }
 
+            const checkEmail = await User.findOne({
+                email: data?.email
+            })
+            if (checkEmail !== null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Email đã tồn tại!'
+                })
+            }
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
             resolve({
                 status: 'OK',
-                message: 'Cập nhật thông tin người dùng thành công !',
+                message: 'Cập nhật thông tin người dùng thành công!',
                 data: updatedUser
             })
         } catch (e) {

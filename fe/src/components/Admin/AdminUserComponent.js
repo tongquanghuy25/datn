@@ -31,7 +31,6 @@ const AdminUserComponent = () => {
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            console.log('huy', data?.data);
             setUsers(data?.data)
         } else if (isError || data?.status === "ERR") {
             console.log('err', data);
@@ -196,6 +195,7 @@ const AdminUserComponent = () => {
     return (
         <>
             <Table
+                rowKey="_id"
                 bordered
                 dataSource={users}
                 columns={column}
