@@ -4,7 +4,6 @@ import { Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space, Uploa
 import { useMutation } from '@tanstack/react-query';
 import { driverRegister } from '../../../services/DriverService';
 import { useSelector } from 'react-redux'
-import { loading } from '../../Message';
 
 
 const getBase64 = (img, callback) => {
@@ -81,6 +80,7 @@ const DrawerCreateDriver = (props) => {
         formData.append('phone', values.phone);
         formData.append('password', values.password);
         formData.append('confirmPassword', values.confirmPassword);
+        formData.append('role', 'driver');
         formData.append('avatar', avatarFile?.originFileObj);
         formData.append('busOwnerId', user?.id);
 

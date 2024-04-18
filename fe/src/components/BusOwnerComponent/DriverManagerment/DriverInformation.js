@@ -48,10 +48,7 @@ const DriverInformation = (props) => {
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       success(data?.message)
-
-
     } else if (isError || data?.status === "ERR") {
-      console.log('mes', data?.message);
       error(data?.message)
     }
     refetch()
@@ -88,11 +85,8 @@ const DriverInformation = (props) => {
   const { data: dataDelete, isSuccess: isSuccessDelete, isError: isErrorDelete } = mutationDelete
 
   useEffect(() => {
-    console.log('isSuccessDelete, isErrorDelete', dataDelete, isSuccessDelete, isErrorDelete);
     if (isSuccessDelete && dataDelete?.status === "OK") {
       success(dataDelete?.message)
-
-
     } else if (isErrorDelete || dataDelete?.status === "ERR") {
       error(dataDelete?.message)
     }

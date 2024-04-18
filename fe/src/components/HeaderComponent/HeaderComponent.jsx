@@ -29,9 +29,6 @@ const HeaderComponent = () => {
         await logoutUser()
         dispatch(resetUser());
         localStorage.clear();
-        // const qr = queryCache.find(['users'])
-        // console.log('hhhhh', qr);
-        // invalidateQueries('users')
     }
 
     useEffect(() => {

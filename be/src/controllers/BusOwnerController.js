@@ -83,10 +83,29 @@ const getAllBusOwnerNotAccept = async (req, res) => {
     }
 }
 
+const getDetailBusOwnerByUserId = async (req, res) => {
+    try {
+        const userId = req.params.id
+        if (!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Id người dùng không được bỏ trống!'
+            })
+        }
+        const response = await BusOwnerSevice.getDetailBusOwnerByUserId(userId)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
     createBusOwner,
     getAllBusOwner,
     getAllBusOwnerNotAccept,
     editBusOwner,
-    deleteBusOwner
+    deleteBusOwner,
+    getDetailBusOwnerByUserId
 }

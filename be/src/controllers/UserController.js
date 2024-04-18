@@ -1,6 +1,7 @@
 const UserService = require('../services/UserService')
 const JwtService = require('../services/JwtService')
-const uploadCloud = require('../middleware/uploader')
+const uploadCloud = require('../middleware/uploader');
+const { deleteImgCloud } = require('../utils');
 const cloudinary = require('cloudinary').v2;
 
 
@@ -93,14 +94,14 @@ const updateUser = async (req, res) => {
         const userId = req.params.id
         const data = avatar ? { ...req.body, avatar: avatar.path } : req.body
         if (!userId) {
-            cloudinary.uploader.destroy(avatar?.filename)
+            deleteImgCloud({ publicId: avatar?.filename })
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Id người dùng không được bỏ trống!'
             })
         }
         const response = await UserService.updateUser(userId, data)
-        if (avatar && response.status !== 'OK') cloudinary.uploader.destroy(avatar?.filename)
+        if (avatar && response.status !== 'OK') deleteImgCloud({ publicId: avatar?.filename })
         return res.status(200).json(response)
     } catch (e) {
         return res.status(404).json({

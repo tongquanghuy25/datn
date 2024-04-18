@@ -16,7 +16,6 @@ const AcceptBusOwner = () => {
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            console.log('huy', data?.data);
             setBusOwnerNotAccept(data?.data)
         } else if (isError || data?.status === "ERR") {
             console.log('err', data);

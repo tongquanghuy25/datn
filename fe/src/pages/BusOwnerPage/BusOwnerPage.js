@@ -3,19 +3,30 @@ import { Layout, Menu, Button } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
 import DriverManagement from '../../components/BusOwnerComponent/DriverManagerment/DriverManagement';
 import LoadingComponent from '../../components/Loading/LoadingComponent';
+import BusManagerment from '../../components/BusOwnerComponent/BusManagerment/BusManagerment';
+import { logoutUser } from '../../services/UserService';
+import { useDispatch } from 'react-redux';
+import { resetUser } from '../../redux/slides/userSlide';
+import { useNavigate } from 'react-router-dom';
 
 
 const { Header, Content } = Layout;
 const BusOwnerPage = () => {
     const [selectedTab, setSelectedTab] = useState('tab1');
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
 
     const handleTabChange = ({ key }) => {
         setSelectedTab(key);
     };
 
-    const handleLogout = () => {
-        // Implement logout logic here
-    };
+    const handleLogout = async () => {
+        await logoutUser()
+        dispatch(resetUser());
+        localStorage.clear();
+        navigate('/sign-in')
+    }
     return (
         <Layout style={{ backgroundColor: '#fff' }}>
             <Header style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -42,7 +53,7 @@ const BusOwnerPage = () => {
                 {selectedTab === 'driver' && <DriverManagement></DriverManagement>}
                 {selectedTab === 'tab2' && <LoadingComponent></LoadingComponent>}
                 {selectedTab === 'tab3' && 'TabContent3'}
-                {selectedTab === 'tab4' && 'TabContent4'}
+                {selectedTab === 'tab4' && <BusManagerment></BusManagerment>}
                 {selectedTab === 'tab5' && 'TabContent5'}
             </Content>
         </Layout>

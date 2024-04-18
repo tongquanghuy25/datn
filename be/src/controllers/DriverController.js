@@ -1,6 +1,6 @@
 const DriverService = require('../services/DriverService')
-const UserService = require('../services/UserService')
-const cloudinary = require('cloudinary').v2;
+const UserService = require('../services/UserService');
+const { deleteImgCloud } = require('../utils');
 
 
 const createDriver = async (req, res) => {
@@ -11,19 +11,19 @@ const createDriver = async (req, res) => {
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
         if (!email || !name || !password || !confirmPassword || !busOwnerId) {
-            if (req.file && req.file?.public_id) await cloudinary.uploader.destroy(req.file.public_id);
+            if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         } else if (!isCheckEmail) {
-            if (req.file && req.file?.public_id) await cloudinary.uploader.destroy(req.file.public_id);
+            if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Email không đúng định dạng !'
             })
         } else if (password !== confirmPassword) {
-            if (req.file && req.file?.public_id) await cloudinary.uploader.destroy(req.file.public_id);
+            if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Nhập lại mật khẩu không đúng'
@@ -31,21 +31,19 @@ const createDriver = async (req, res) => {
         }
         let responseUser = await UserService.createUser({ ...req.body, avatar })
         if (responseUser.status !== 'OK') {
-            if (req.file && req.file?.public_id) await cloudinary.uploader.destroy(req.file.public_id);
-            console.log('a', responseUser.status);
+            if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
             return res.status(200).json(responseUser)
         }
         else {
             const response = await DriverService.createDriver(responseUser.data._id, busOwnerId)
             if (response.status !== 'OK') {
-                console.log('a');
-                if (req.file && req.file?.public_id) await cloudinary.uploader.destroy(req.file.public_id);
+                if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
                 await UserService.deleteUser(responseUser.data._id)
             }
             return res.status(200).json(response)
         }
     } catch (e) {
-        if (req.file && req.file?.public_id) await cloudinary.uploader.destroy(req.file.public_id)
+        if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
         if (e.userId) await UserService.deleteUser(e.userId)
         return res.status(404).json({
             message: e.e

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Button } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined } from '@ant-design/icons';
 
 import { Avatar, Divider, List, Skeleton } from 'antd';
 import DrawerCreateDriver from './DrawerCreateDriver';
@@ -48,7 +48,6 @@ const DriverManagement = () => {
         <div>
             <Row justify="space-between">
                 <div>
-                    {/* Nội dung bên trái của row (nếu cần) */}
                 </div>
                 <div>
                     <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />} style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', marginBottom: '20px', marginRight: '60px' }}>
@@ -65,10 +64,10 @@ const DriverManagement = () => {
                     {
                         listDriver?.map((driver) => (
                             <div onClick={() => handleClickDriver(driver)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: '#f0f0f0', padding: '10px' }}>
-                                <Avatar src={driver.userId.avatar} size={64} style={{ marginRight: '20px' }} />
+                                {driver?.userId?.avatar ? <Avatar src={driver?.userId?.avatar} size={64} style={{ marginRight: '20px' }} /> : <UserOutlined style={{ marginRight: '20px', fontSize: '50px', width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'gray', display: 'flex', justifyContent: 'center' }}></UserOutlined>}
                                 <div>
-                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff', textDecoration: 'none' }}>{driver.userId.name}</div>
-                                    <p style={{ color: '#555' }}>{driver.userId.email}</p>
+                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff', textDecoration: 'none' }}>{driver?.userId?.name}</div>
+                                    <p style={{ color: '#555' }}>{driver?.userId?.email}</p>
                                 </div>
                             </div>
                         ))

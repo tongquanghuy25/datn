@@ -1,6 +1,9 @@
 const User = require("../models/UserModel")
 const bcrypt = require("bcrypt")
-const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
+const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
+const getPublicIdFromUrl = require("../utils");
+const cloudinary = require('cloudinary').v2;
+
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -135,6 +138,11 @@ const updateUser = (id, data) => {
                 })
             }
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
+
+            if (checkUser?.avatar && data.avatar && updatedUser.avatar) {
+                const publicId = getPublicIdFromUrl(checkUser.avatar)
+                cloudinary.uploader.destroy(publicId)
+            }
             resolve({
                 status: 'OK',
                 message: 'Cập nhật thông tin người dùng thành công!',

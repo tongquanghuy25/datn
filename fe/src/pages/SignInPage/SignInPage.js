@@ -10,6 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUser } from '../../redux/slides/userSlide';
+import { getDetailBusOwnerByUserId } from '../../services/BusOwnerSevice';
 
 
 
@@ -30,16 +31,21 @@ const SignInPage = () => {
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       success();
-      console.log('success', mutation);
       localStorage.setItem('access_token', JSON.stringify(data?.access_token))
       localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token)
+        console.log('decoded', decoded);
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token)
         }
-      }
-      navigate('/')
+        if (decoded?.role === 'admin') {
+          navigate('/admin')
+        } else if (decoded?.role === 'busowner') {
+          handleGetDetailBusOwner(decoded?.id, data?.access_token)
+          navigate('/bus-owner')
+        }
+      } else navigate('/')
     } else if (isError || data?.status === "ERR") {
       console.log('err', data);
       console.log('e', mutation);
@@ -52,6 +58,12 @@ const SignInPage = () => {
     const refreshToken = JSON.parse(storage)
     const res = await getDetailsUser(id, token)
     dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }))
+  }
+
+  const handleGetDetailBusOwner = async (id, token) => {
+    const res = await getDetailBusOwnerByUserId(id, token)
+    localStorage.setItem('bus_owner_id', JSON.stringify(res?.data?._id))
+    localStorage.setItem('bus_owner_name', JSON.stringify(res?.data?.name))
   }
 
   const onFinish = (values) => {

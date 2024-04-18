@@ -128,7 +128,28 @@ const getAllBusOwnerNotAccept = () => {
     })
 }
 
-
+const getDetailBusOwnerByUserId = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const busOwner = await BusOwner.findOne({
+                userId: id
+            })
+            if (busOwner === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Nhà xe không tồn tại!'
+                })
+            }
+            resolve({
+                status: 'OK',
+                message: 'SUCESS',
+                data: busOwner
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 
 
@@ -137,6 +158,7 @@ module.exports = {
     getAllBusOwnerNotAccept,
     getAllBusOwner,
     editBusOwner,
-    deleteBusOwner
+    deleteBusOwner,
+    getDetailBusOwnerByUserId
 
 }

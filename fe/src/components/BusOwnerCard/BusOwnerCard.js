@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Card, Row, Col, Button } from 'antd';
 import { error, success } from '../Message';
 import { editBusOwner } from '../../services/BusOwnerSevice';
+import { editUser } from '../../services/UserService';
 const BusOwnerCard = (props) => {
     const { data, access_token, refetch } = props
     console.log('accept', access_token);
@@ -12,19 +13,22 @@ const BusOwnerCard = (props) => {
     const mutation = useMutation({
         mutationFn: async (data) => {
             // console.log('id', data._id, data.access_token);
-            await editBusOwner(data._id, { isAccept: true }, data.access_token);
+            console.log('dataaaa', data);
+            await editUser(data.userId._id, { role: 'busowner' }, data.access_token);
+            return await editBusOwner(data._id, { isAccept: true }, data.access_token);
         },
         onSuccess: () => {
             refetch()
             success('Sửa người dùng thành công !')
         },
-        onError: () => {
+        onError: (e) => {
+            console.log(e);
             refetch()
             error('Sửa người dùng không thành công !')
         }
     });
     const HandleAccept = () => {
-        mutation.mutate({ _id, access_token })
+        mutation.mutate({ _id, access_token, userId })
     }
     return (
         <Card title="Thông tin nhà xe" className="user-info-card">
