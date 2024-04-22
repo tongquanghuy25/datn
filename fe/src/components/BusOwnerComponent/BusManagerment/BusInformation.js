@@ -167,12 +167,10 @@ const BusInformation = (props) => {
         if (images.length > 0) images = images.map((img) => img.url)
 
         const deleteImages = bus.images.filter(img => !images.includes(img))
-        console.log('deleteImages', deleteImages);
 
         const newImages = fileList.filter((file) => {
             return !file.url
         })
-        console.log(values.convinients?.length > 0);
         let data = {}
         if (values.licensePlate !== bus?.licensePlate) data = { ...data, licensePlate: values.licensePlate }
         if (values.color !== bus?.color) data = { ...data, color: values.color }
@@ -188,7 +186,6 @@ const BusInformation = (props) => {
         if (newImages.length > 0) { data = { ...data, images: images, newImages: newImages } }
         if (deleteImages.length > 0) { data = { ...data, images: images > 0 ? images : 'null', deleteImages: deleteImages } }
         if (Object.keys(data).length > 0) {
-            console.log('aa', data);
             mutation.mutate({ ...data, id: bus?._id, access_token })
             setAvatarFile('')
             loading()
@@ -243,9 +240,7 @@ const BusInformation = (props) => {
             setVisible(true)
         } else setVisible(false)
     };
-    const onSearch = (value) => {
-        console.log('search:', value);
-    };
+
 
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
@@ -334,7 +329,7 @@ const BusInformation = (props) => {
                             placeholder="Chọn loại xe"
                             optionFilterProp="children"
                             onChange={onChange}
-                            onSearch={onSearch}
+                            // onSearch={onSearch}
                             filterOption={filterOption}
                             options={typeOfBus}
                         />

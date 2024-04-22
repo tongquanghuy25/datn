@@ -60,7 +60,6 @@ const HomePage = () => {
 
     const [value, setValue] = useState();
     const onChange = (e) => {
-        console.log('radio checked', e.target.value);
         setValue(e.target.value);
     };
 
@@ -82,7 +81,6 @@ const HomePage = () => {
 
     const handleCheckboxChange = checkedValues => {
         setSelectedOptions(checkedValues);
-        console.log('checkedValues', checkedValues);
     };
 
     const [selectedRatings, setselectedRatings] = useState('');

@@ -79,7 +79,6 @@ const updateBus = (busId, data) => {
                 data: updateBus
             })
         } catch (e) {
-            console.log(e);
             reject(e)
         }
     })
@@ -100,7 +99,7 @@ const deleteBus = (busId) => {
             }
 
             await Bus.findByIdAndDelete(busId)
-            if (checkBus.avatar) await deleteImgCloud(checkBus.avatar)
+            if (checkBus.avatar) await deleteImgCloud({ path: checkBus.avatar })
             if (checkBus.images?.length > 0)
                 for (const img of checkBus.images) {
                     await deleteImgCloud({ path: img })
@@ -110,7 +109,6 @@ const deleteBus = (busId) => {
                 message: 'Xóa tài xế thành công!',
             })
         } catch (e) {
-            console.log(e);
             reject(e)
         }
     })
@@ -150,11 +148,9 @@ const findBusOwnerIdByUserId = async (id) => {
 const editBusOwner = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('huyaaa', id, data);
             const checkBusOwner = await BusOwner.findOne({
                 _id: id
             })
-            console.log('lll', checkBusOwner);
             if (checkBusOwner === null) {
                 resolve({
                     status: 'ERR',
@@ -163,7 +159,6 @@ const editBusOwner = (id, data) => {
             }
 
             const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
-            console.log('loi', updatedBusOwner);
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
@@ -181,7 +176,6 @@ const getAllBusOwnerNotAccept = () => {
         try {
 
             const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            console.log('allBusOwnerNotAccept', allBusOwnerNotAccept);
             resolve({
                 status: 'OK',
                 message: 'Success',

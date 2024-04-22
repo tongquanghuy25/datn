@@ -39,7 +39,6 @@ const DriverInformation = (props) => {
     if (avatarFile) data = { ...data, avatar: avatarFile }
 
     if (Object.keys(data).length > 0) {
-      console.log('aa', data);
       mutation.mutate({ ...data, id: driver.userId._id, access_token })
       loading()
     }

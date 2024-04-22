@@ -6,7 +6,6 @@ const cloudinary = require('cloudinary').v2;
 
 const createBus = async (req, res) => {
     try {
-        // console.log('req', req.body, req.file, req.files);
         let { licensePlate, typeBus, type, numberSeat, color, convinients, busOwnerId } = req.body
         const arrPath = req.files.map((file) => file?.path)
         const avatar = arrPath[0]
@@ -22,7 +21,6 @@ const createBus = async (req, res) => {
 
         if (typeBus === 'Khác') {
             typeBus = `${type} ${numberSeat}`
-            console.log('t', typeBus);
         } else {
             numberSeat = typeBus.split(" ").pop()
         }
@@ -83,7 +81,6 @@ const updateBus = async (req, res) => {
                 data.images.push(file.path)
             }
         })
-        console.log('data', data);
         if (!busId) {
             if (req.files) await deleteImgCloud({ files: req?.files })
             return res.status(200).json({

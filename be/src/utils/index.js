@@ -1,10 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 
 const getPublicIdFromUrl = (url) => {
-    // Chia chuỗi URL thành mảng các phần tử bằng dấu '/'
     const parts = url.split('/');
-
-    // Tìm và trả về phần tử cuối cùng của mảng, đó là public ID
     return parts[parts.length - 2] + '/' + parts[parts.length - 1].split('.')[0];
 }
 

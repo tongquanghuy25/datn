@@ -47,7 +47,6 @@ export const getAllBusOwner = async (access_token) => {
 
 
 export const editBusOwner = async (id, data, access_token) => {
-    console.log('data, data', data);
     const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/bus-owner/edit/${id}`, data, {
         headers: {
             token: `Bearer ${access_token}`,

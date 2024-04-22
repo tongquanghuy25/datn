@@ -4,7 +4,6 @@ export const axiosJWT = axios.create()
 
 export const loginUser = async (data) => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/sign-in`, data)
-    console.log('res', res);
     return res.data
 }
 
@@ -32,7 +31,6 @@ export const deleteUser = async (id, access_token, data) => {
 }
 
 export const getAllUser = async (access_token) => {
-    console.log('hh', access_token);
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/user/getAll`, {
         headers: {
             token: `Bearer ${access_token}`,

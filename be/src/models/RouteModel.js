@@ -1,18 +1,14 @@
-// const mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-// const routeSchema = new mongoose.Schema(
-//     {
-//         busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner', required: true },
-//         : { type: String, required: true },
-//         departureTime: { type: String, required: true },
-//         endDate: { type: String, required: true },
-//         endTime: { type: String, required: true },
-//         availableSeats: { type: Number, required: true },
-//         departed: { type: Boolean, default: false },
-//         ended: { type: Boolean, default: false },
-//         ticketPrice: { type: Number, required: true }
-//     }
-// );
-// const Route = mongoose.model('Route', routeSchema);
+const routeSchema = new mongoose.Schema(
+    {
+        busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner', required: true },
+        provinceStart: { type: String, required: true },
+        districtStart: { type: String, required: true },
+        provinceEnd: { type: String, required: true },
+        districtEnd: { type: String, required: true },
+    }
+);
+const Route = mongoose.model('Route', routeSchema);
 
-// module.exports = Route;
+module.exports = Route;

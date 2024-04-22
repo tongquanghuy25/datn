@@ -192,7 +192,6 @@ const DrawerCreateBus = (props) => {
         });
 
         const formData = new FormData();
-        console.log(' values.convinients', values.convinients);
         formData.append('licensePlate', values.licensePlate);
         formData.append('typeBus', values.typeBus);
         formData.append('type', values.type);
@@ -214,7 +213,6 @@ const DrawerCreateBus = (props) => {
         } else setVisible(false)
     };
     const onSearch = (value) => {
-        console.log('search:', value);
     };
 
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());

@@ -59,7 +59,6 @@ const AdminUserComponent = () => {
                     onChange={(e) => {
                         setSelectedKeys(e.target.value ? [e.target.value] : [])
                         confirm({ closeDropdown: false })
-                        console.log('se', selectedKeys[0]);
                     }}
                     onPressEnter={() => { confirm() }}
                     onBlur={() => { confirm() }}
@@ -84,7 +83,6 @@ const AdminUserComponent = () => {
                     onChange={(e) => {
                         setSelectedKeys(e.target.value ? [e.target.value] : [])
                         confirm({ closeDropdown: false })
-                        console.log('se', selectedKeys[0]);
                     }}
                     onPressEnter={() => { confirm() }}
                     onBlur={() => { confirm() }}

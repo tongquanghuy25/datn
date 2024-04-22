@@ -85,7 +85,6 @@ const deleteDriver = (id) => {
                 message: 'Xóa tài xế thành công!',
             })
         } catch (e) {
-            console.log(e);
             reject(e)
         }
     })
@@ -125,11 +124,9 @@ const findBusOwnerIdByUserId = async (id) => {
 const editBusOwner = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('huyaaa', id, data);
             const checkBusOwner = await BusOwner.findOne({
                 _id: id
             })
-            console.log('lll', checkBusOwner);
             if (checkBusOwner === null) {
                 resolve({
                     status: 'ERR',
@@ -138,7 +135,6 @@ const editBusOwner = (id, data) => {
             }
 
             const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
-            console.log('loi', updatedBusOwner);
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
@@ -156,7 +152,6 @@ const getAllBusOwnerNotAccept = () => {
         try {
 
             const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            console.log('allBusOwnerNotAccept', allBusOwnerNotAccept);
             resolve({
                 status: 'OK',
                 message: 'Success',

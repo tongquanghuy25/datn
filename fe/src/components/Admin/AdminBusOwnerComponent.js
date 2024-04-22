@@ -94,7 +94,6 @@ const AdminBusOwnerComponent = () => {
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            console.log('huy', data?.data);
             setBusOwners(data?.data)
         } else if (isError || data?.status === "ERR") {
             console.log('err', data);
@@ -123,7 +122,6 @@ const AdminBusOwnerComponent = () => {
                     onChange={(e) => {
                         setSelectedKeys(e.target.value ? [e.target.value] : [])
                         confirm({ closeDropdown: false })
-                        console.log('se', selectedKeys[0]);
                     }}
                     onPressEnter={() => { confirm() }}
                     onBlur={() => { confirm() }}
@@ -141,7 +139,7 @@ const AdminBusOwnerComponent = () => {
             title: "Email",
             dataIndex: 'userId',
             key: 'email',
-            render: (userId) => userId.email,
+            render: (userId) => userId?.email,
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
                 return <Input
                     autoFocus placeholder='Nhập email muốn tìm ?'
@@ -149,7 +147,6 @@ const AdminBusOwnerComponent = () => {
                     onChange={(e) => {
                         setSelectedKeys(e.target.value ? [e.target.value] : [])
                         confirm({ closeDropdown: false })
-                        console.log('se', selectedKeys[0]);
                     }}
                     onPressEnter={() => { confirm() }}
                     onBlur={() => { confirm() }}
@@ -169,7 +166,7 @@ const AdminBusOwnerComponent = () => {
             title: "Số điện thoại",
             dataIndex: 'userId',
             key: 'phone',
-            render: (userId) => userId.phone,
+            render: (userId) => userId?.phone,
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
                 return <Input
                     autoFocus placeholder='Nhập email muốn tìm ?'
@@ -177,7 +174,6 @@ const AdminBusOwnerComponent = () => {
                     onChange={(e) => {
                         setSelectedKeys(e.target.value ? [e.target.value] : [])
                         confirm({ closeDropdown: false })
-                        console.log('se', selectedKeys[0]);
                     }}
                     onPressEnter={() => { confirm() }}
                     onBlur={() => { confirm() }}
@@ -230,7 +226,6 @@ const AdminBusOwnerComponent = () => {
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
             const { id, busOwner, token } = data;
-            console.log('huyhuyhhh', id, token, busOwner);
             await editBusOwner(id, busOwner, token);
         },
         onSuccess: () => {
@@ -270,10 +265,9 @@ const AdminBusOwnerComponent = () => {
             setEndPoint(busOwnerEditing?.route?.split(' - ')[1])
         }
     }, [busOwnerEditing])
+
     const HandleEditBusOwner = () => {
         setConfirmLoading(true)
-        console.log('startPoint', startPoint);
-        console.log('endPoint', endPoint);
         if (startPoint && endPoint) {
             mutationUpdate.mutate({
                 id: busOwnerEditing._id,

@@ -109,7 +109,6 @@ const BusOwnerRegistration = () => {
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            console.log('jj', data);
             success("Cập nhật người dùng thành công !");
         } else if (isError || data?.status === "ERR") {
             error(data?.message);

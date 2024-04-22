@@ -7,19 +7,14 @@ const authAdminMiddleWare = (req, res, next) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
         if (err) {
-            console.log('hh');
             return res.status(404).json({
                 message: 'The authemtication',
                 status: 'ERR'
             })
         }
         if (user?.role === 'admin') {
-            console.log(token);
-
             next()
         } else {
-            console.log('hh1');
-
             return res.status(404).json({
                 message: 'The authemtication',
                 status: 'ERR'
@@ -32,7 +27,6 @@ const authUserMiddleWare = (req, res, next) => {
     const token = req.headers.token.split(' ')[1]
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
         if (err) {
-            console.log('aa', token);
             return res.status(404).json({
                 message: 'The authemtication',
                 status: 'ERROR'

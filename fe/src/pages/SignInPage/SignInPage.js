@@ -35,7 +35,6 @@ const SignInPage = () => {
       localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token)
-        console.log('decoded', decoded);
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token)
         }
@@ -44,11 +43,9 @@ const SignInPage = () => {
         } else if (decoded?.role === 'busowner') {
           handleGetDetailBusOwner(decoded?.id, data?.access_token)
           navigate('/bus-owner')
-        }
-      } else navigate('/')
+        } else navigate('/')
+      }
     } else if (isError || data?.status === "ERR") {
-      console.log('err', data);
-      console.log('e', mutation);
       error(data?.message);
     }
   }, [isSuccess, isError])

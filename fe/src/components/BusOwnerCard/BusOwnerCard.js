@@ -7,13 +7,10 @@ import { editBusOwner } from '../../services/BusOwnerSevice';
 import { editUser } from '../../services/UserService';
 const BusOwnerCard = (props) => {
     const { data, access_token, refetch } = props
-    console.log('accept', access_token);
     const { _id, userId, busOwnerName, citizenId, address, route } = data;
     const { email, phone, name } = userId;
     const mutation = useMutation({
         mutationFn: async (data) => {
-            // console.log('id', data._id, data.access_token);
-            console.log('dataaaa', data);
             await editUser(data.userId._id, { role: 'busowner' }, data.access_token);
             return await editBusOwner(data._id, { isAccept: true }, data.access_token);
         },

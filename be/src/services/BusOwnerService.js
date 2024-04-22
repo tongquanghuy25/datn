@@ -5,7 +5,6 @@ const createBusOwner = (newBusOwner) => {
     return new Promise(async (resolve, reject) => {
 
         const { userId, busOwnerName, address, citizenId, route } = newBusOwner
-        console.log('lll', newBusOwner);
 
         try {
             const checkUser = await User.findOne({
@@ -26,7 +25,6 @@ const createBusOwner = (newBusOwner) => {
                 citizenId,
                 route
             })
-            console.log('aaaa', createdBusOwner);
 
             if (createdBusOwner) {
                 resolve({
@@ -61,21 +59,17 @@ const getAllBusOwner = () => {
 const editBusOwner = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('huyaaa', id, data);
             const checkBusOwner = await BusOwner.findOne({
                 _id: id
             })
-            console.log('lll', checkBusOwner);
             if (checkBusOwner === null) {
                 resolve({
                     status: 'ERR',
                     message: 'NNhà xe không tồn tại !'
                 })
             }
-            console.log('loi');
 
             const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
-            console.log('loi', updatedBusOwner);
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
@@ -116,7 +110,6 @@ const getAllBusOwnerNotAccept = () => {
         try {
 
             const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            console.log('allBusOwnerNotAccept', allBusOwnerNotAccept);
             resolve({
                 status: 'OK',
                 message: 'Success',

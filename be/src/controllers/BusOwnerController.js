@@ -11,7 +11,6 @@ const createBusOwner = async (req, res) => {
             })
         }
         const response = await BusOwnerSevice.createBusOwner(req.body)
-        console.log('hhuu', response);
 
         return res.status(200).json(response)
     } catch (e) {

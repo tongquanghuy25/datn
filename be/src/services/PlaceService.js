@@ -918,12 +918,43 @@ const addPlace = (id) => {
                 message: 'adđ',
             })
         } catch (e) {
-            console.log(e);
+            reject(e)
+        }
+    })
+}
+
+const getAllProvince = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const listProvince = await Province.find()
+            resolve({
+                status: 'OK',
+                message: 'Lấy danh sách tỉnh thành công!',
+                data: listProvince
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getDistrictByProvince = (provinceId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const listDistrict = await District.find({ provinceId: provinceId })
+            resolve({
+                status: 'OK',
+                message: 'Lấy danh sách huyện thành công!',
+                data: listDistrict
+            })
+        } catch (e) {
             reject(e)
         }
     })
 }
 
 module.exports = {
-    addPlace
+    addPlace,
+    getAllProvince,
+    getDistrictByProvince
 }

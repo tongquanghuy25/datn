@@ -24,11 +24,8 @@ const SignUpPage = () => {
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
             success();
-            console.log('success', mutation);
             navigate('/sign-in')
         } else if (isError || data?.status === "ERR") {
-            console.log('err', data);
-            console.log('e', mutation);
             error(data?.message);
         }
     }, [isSuccess, isError])

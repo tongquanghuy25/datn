@@ -7,10 +7,12 @@ import { jwtDecode } from 'jwt-decode';
 import { axiosJWT, getDetailsUser, refreshToken } from './services/UserService';
 import { resetUser, updateUser } from './redux/slides/userSlide';
 
+
 function App() {
   const dispatch = useDispatch();
   // const [isLoading, setIsLoading] = useState(false)
   const user = useSelector((state) => state.user)
+
 
   useEffect(() => {
     // setIsLoading(true)
@@ -33,6 +35,8 @@ function App() {
   const handleDecoded = () => {
     let storageData = user?.access_token || localStorage.getItem('access_token')
     let decoded = {}
+    const currentTime = new Date()
+
     if (storageData && isJsonString(storageData) && !user?.access_token) {
       storageData = JSON.parse(storageData)
       decoded = jwtDecode(storageData)
@@ -52,6 +56,7 @@ function App() {
         config.headers['token'] = `Bearer ${data?.access_token}`
       } else {
         dispatch(resetUser())
+        localStorage.clear()
       }
     }
     return config;

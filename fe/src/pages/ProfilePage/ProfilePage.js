@@ -36,7 +36,6 @@ const ProfilePage = () => {
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
             success("Cập nhật người dùng thành công !");
-            console.log('ss', data);
             dispatch(updateUser({ email: data?.data?.email, name: data?.data?.name, phone: data?.data?.phone, avatar: data?.data?.avatar }))
         } else if (isError || data?.status === "ERR") {
             error(data?.message);
@@ -69,7 +68,6 @@ const ProfilePage = () => {
 
 
     const handleChange = (info) => {
-        console.log('in', info.file.status);
         setAvatarFile(info.file.originFileObj)
         getBase64(info.file.originFileObj, (url) => {
             setisLoading(false);

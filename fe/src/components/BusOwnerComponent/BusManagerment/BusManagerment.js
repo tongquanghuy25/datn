@@ -43,7 +43,6 @@ const BusManagerment = () => {
     const handleClickBus = (bus) => {
         setBusSelected(bus);
     }
-    console.log('listBus', listBus);
     return (
         <div>
             <Row justify="space-between">

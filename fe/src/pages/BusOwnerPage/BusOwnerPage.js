@@ -8,6 +8,7 @@ import { logoutUser } from '../../services/UserService';
 import { useDispatch } from 'react-redux';
 import { resetUser } from '../../redux/slides/userSlide';
 import { useNavigate } from 'react-router-dom';
+import RouteManagerment from '../../components/BusOwnerComponent/RouteManagerment/RouteManagerment';
 
 
 const { Header, Content } = Layout;
@@ -35,12 +36,11 @@ const BusOwnerPage = () => {
                 </div>
                 <div style={{ flex: 1, marginLeft: '80px' }}>
                     <Menu theme="dark" mode="horizontal" selectedKeys={[selectedTab]} onClick={handleTabChange}>
-                        <Menu.Item key="tab1">Trang chủ</Menu.Item>
-                        <Menu.Item key="tab6">Quản lý chuyến</Menu.Item>
-                        <Menu.Item key="tab2">Quản lý tuyến đường</Menu.Item>
+                        <Menu.Item key="home">Trang chủ</Menu.Item>
+                        <Menu.Item key="trip">Quản lý chuyến</Menu.Item>
+                        <Menu.Item key="route">Quản lý tuyến đường</Menu.Item>
                         <Menu.Item key="driver">Quản lý tài xế</Menu.Item>
-                        <Menu.Item key="tab4">Quản lý xe</Menu.Item>
-                        <Menu.Item key="tab5"></Menu.Item>
+                        <Menu.Item key="bus">Quản lý xe</Menu.Item>
                     </Menu>
                 </div>
                 <div>
@@ -50,11 +50,11 @@ const BusOwnerPage = () => {
                 </div>
             </Header>
             <Content style={{ padding: '0 20px' }}>
+                {selectedTab === 'home' && 'Home Page'}
                 {selectedTab === 'driver' && <DriverManagement></DriverManagement>}
-                {selectedTab === 'tab2' && <LoadingComponent></LoadingComponent>}
-                {selectedTab === 'tab3' && 'TabContent3'}
-                {selectedTab === 'tab4' && <BusManagerment></BusManagerment>}
-                {selectedTab === 'tab5' && 'TabContent5'}
+                {selectedTab === 'trip' && <LoadingComponent></LoadingComponent>}
+                {selectedTab === 'route' && <RouteManagerment></RouteManagerment>}
+                {selectedTab === 'bus' && <BusManagerment></BusManagerment>}
             </Content>
         </Layout>
     )
