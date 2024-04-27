@@ -16,15 +16,16 @@ const RouteManagerment = () => {
 
   const { data, isSuccess, isError, refetch } = useQuery(
     {
-      queryKey: ['route'],
+      queryKey: ['routes'],
       queryFn: () => getRouteByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token),
+      staleTime: Infinity,
     });
 
   useEffect(() => {
-    if (isSuccess && data?.status === "OK") {
+    if (isSuccess) {
       setListRoute(data?.data)
       setRouteSelected(data?.data[0])
-    } else if (isError || data?.status === "ERR") {
+    } else if (isError) {
       console.log('err', data);
     }
   }, [isSuccess, isError, data])
@@ -46,7 +47,7 @@ const RouteManagerment = () => {
                   setIsCreateRoute(false)
                   setRouteSelected(route)
                 }}
-                style={{ cursor: 'pointer', fontSize: '20px', color: ' #333', backgroundColor: routeSelected._id === route._id ? '#FFA07A' : '#e6e6e6', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}>
+                style={{ cursor: 'pointer', fontSize: '20px', color: ' #333', backgroundColor: routeSelected._id === route._id ? '#c6e7f5' : '#f0f0f0', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}>
                 <div>
                   <strong>{route.districtStart} - {route.provinceStart}</strong>
                 </div>

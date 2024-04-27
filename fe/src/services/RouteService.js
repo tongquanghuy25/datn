@@ -57,15 +57,6 @@ export const getAllPlace = async (access_token, province, district) => {
     },)
     return res.data
 }
-// export const addStopPoint = async (data, access_token) => {
-//     const res = await axiosJWT.post(`${process.env.REATC_APP_API_URL}/route/add-stop-point`, data, {
-//         headers: {
-//             token: `Bearer ${access_token}`,
-//         }
-//     },)
-//     return res.data
-// }
-
 
 export const createRoute = async (data, access_token) => {
     const res = await axiosJWT.post(`${process.env.REACT_APP_API_URL}/route/create-route`, data, {
@@ -76,6 +67,7 @@ export const createRoute = async (data, access_token) => {
     return res.data
 }
 export const getRouteByBusOwner = async (id, access_token) => {
+    console.log('id, access_token', id, access_token);
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/route/get-route-by-busowner/${id}`, {
         headers: {
             token: `Bearer ${access_token}`,
@@ -93,11 +85,3 @@ export const getStopPointsByBusRoute = async (id, access_token) => {
     return res.data
 }
 
-// export const refreshToken = async (refreshToken) => {
-//     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/refresh-token`, {}, {
-//         headers: {
-//             token: `Bearer ${refreshToken}`,
-//         }
-//     })
-//     return res.data
-// }

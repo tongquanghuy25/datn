@@ -26,33 +26,28 @@ const DrawerCreateDriver = (props) => {
             mutationFn: (data) => {
                 const { formData, access_token } = data
                 return driverRegister(access_token, formData)
+            },
+            onSuccess: (data) => {
+                message.destroy()
+                message.success({
+                    content: `${data?.message}`,
+                    style: {
+                        marginLeft: '700px'
+                    },
+                });
+                refetch()
+            },
+            onError: (data) => {
+                message.destroy()
+                message.error({
+                    content: data?.response?.data?.message ? data?.response?.data?.message : 'Thêm tài xế thất bại!',
+                    style: {
+                        marginLeft: '700px'
+                    },
+                });
             }
         }
     )
-
-    const { data, isSuccess, isError } = mutation
-
-    useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
-            message.destroy()
-            message.success({
-                content: `${data?.message}`,
-                style: {
-                    marginLeft: '700px'
-                },
-            });
-
-        } else if (isError || data?.status === "ERR") {
-            message.destroy()
-            message.error({
-                content: data?.message ? `${data?.message}` : 'Thêm tài xế thất bại!',
-                style: {
-                    marginLeft: '700px'
-                },
-            });
-        }
-        refetch()
-    }, [isSuccess, isError])
 
 
     const handleChange = (info) => {

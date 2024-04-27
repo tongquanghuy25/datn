@@ -2,11 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button, Form, Input, Popconfirm, Select, Upload, Image } from 'antd'
 import { UploadOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
-import { error, loading, success } from '../../Message';
-import { deleteDriver } from '../../../services/DriverService';
+import { errorMes, loadingMes, successMes } from '../../Message';
 import { deleteBus, updateBus } from '../../../services/BusService';
-import axios from 'axios';
-import { createPlace } from '../../../services/PlaceService';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -114,10 +111,10 @@ const optionconvinients = [
 const BusInformation = (props) => {
     const { bus, access_token, refetch } = props
     const [form] = Form.useForm();
+    const formRef = useRef(null);
     const [imageUrl, setImageUrl] = useState();
     const [avatarFile, setAvatarFile] = useState();
     const [visible, setVisible] = useState(false);
-    const formRef = useRef(null);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([]);
@@ -129,7 +126,6 @@ const BusInformation = (props) => {
             color: bus?.color,
             convinients: bus?.convinients,
             typeBus: bus?.typeBus
-            // licensePlate: bus?.licensePlate,
         });
         setFileList(bus?.images.map((img, index) => {
             return {
@@ -144,21 +140,18 @@ const BusInformation = (props) => {
             mutationFn: (data) => {
                 const { id, access_token, ...rest } = data
                 return updateBus(id, rest, access_token)
+            },
+            onSuccess: (data) => {
+                successMes(data?.message)
+                setVisible(false)
+                refetch()
+
+            },
+            onError: (data) => {
+                errorMes(data?.response?.data?.message)
             }
         }
     )
-
-    const { data, isSuccess, isError } = mutation
-
-    useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
-            success(data?.message)
-            setVisible(false)
-        } else if (isError || data?.status === "ERR") {
-            error(data?.message)
-        }
-        refetch()
-    }, [isSuccess, isError])
 
     const onFinish = (values) => {
         let images = fileList.filter((file) => {
@@ -188,7 +181,7 @@ const BusInformation = (props) => {
         if (Object.keys(data).length > 0) {
             mutation.mutate({ ...data, id: bus?._id, access_token })
             setAvatarFile('')
-            loading()
+            loadingMes()
         }
     };
 
@@ -211,28 +204,25 @@ const BusInformation = (props) => {
             mutationFn: (data) => {
                 const { id, access_token } = data
                 return deleteBus(id, access_token)
+            },
+            onSuccess: (data) => {
+                successMes(data.message)
+                refetch()
+
+            },
+            onError: (data) => {
+                errorMes(data?.response?.data?.message)
             }
         }
     )
 
-    const { data: dataDelete, isSuccess: isSuccessDelete, isError: isErrorDelete } = mutationDelete
-
-    useEffect(() => {
-        if (isSuccessDelete && dataDelete?.status === "OK") {
-            success(dataDelete?.message)
-        } else if (isErrorDelete || dataDelete?.status === "ERR") {
-            error(dataDelete?.message)
-        }
-        refetch()
-    }, [isSuccessDelete, isErrorDelete])
-
     const handleDeleteBus = () => {
         mutationDelete.mutate({ id: bus._id, access_token })
+        loadingMes()
     }
 
     const confirm = () => {
-        // handleDeleteBus()    
-        createPlace()
+        handleDeleteBus()
     };
 
     const onChange = (value) => {
@@ -415,8 +405,8 @@ const BusInformation = (props) => {
                     Chỉnh sửa
                 </Button>
                 <Popconfirm
-                    title="Xóa tài xế"
-                    description="Bạn có chắc chắn muốn xóa tài xế"
+                    title="Bạn có chắc chắn muốn xóa xe?"
+                    description={<div style={{ color: 'red', width: '300px' }}>! Lưu ý: Các chuyến sắp tới của xe này sẽ được cập nhật. Bạn cần kiểm tra lại.</div>}
                     onConfirm={confirm}
                     // onCancel={cancel}
                     okText="Đồng ý"

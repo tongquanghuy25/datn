@@ -3,7 +3,7 @@ import { Form, Input, Button, Card } from "antd";
 import { LoginOutlined, HomeOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
-import { error, success, loading, destroy } from '../../components/Message';
+import { errorMes, successMes, loadingMes, destroyMes } from '../../components/Message';
 import { useMutation } from '@tanstack/react-query';
 import { signupUser } from '../../services/UserService';
 
@@ -16,22 +16,21 @@ const SignUpPage = () => {
     const navigate = useNavigate()
 
     const mutation = useMutation(
-        { mutationFn: (data) => signupUser(data) }
+        {
+            mutationFn: (data) => signupUser(data),
+            onSuccess: (data) => {
+                successMes();
+                navigate('/sign-in')
+            },
+            onError: (data) => {
+                errorMes(data?.response?.data?.message)
+            }
+        }
     )
 
-    const { data, isLoading, isSuccess, isError } = mutation
-
-    useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
-            success();
-            navigate('/sign-in')
-        } else if (isError || data?.status === "ERR") {
-            error(data?.message);
-        }
-    }, [isSuccess, isError])
 
     const onFinish = (values) => {
-        loading()
+        loadingMes()
         mutation.mutate({ email: values.email, phone: values.phone, password: values.password, confirmPassword: values.confirmPassword });
     }
     return (

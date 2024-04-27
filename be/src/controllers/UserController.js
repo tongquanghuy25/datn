@@ -12,23 +12,20 @@ const createUser = async (req, res) => {
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
         if (!email || !password || !confirmPassword || !phone) {
-            return res.status(200).json({
-                status: 'ERR',
+            return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         } else if (!isCheckEmail) {
-            return res.status(200).json({
-                status: 'ERR',
+            return res.status(400).json({
                 message: 'Email không đúng định dạng !'
             })
         } else if (password !== confirmPassword) {
-            return res.status(200).json({
-                status: 'ERR',
+            return res.status(400).json({
                 message: 'Nhập lại mật khẩu không đúng'
             })
         }
         const response = await UserService.createUser(req.body)
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -61,7 +58,7 @@ const loginUser = async (req, res) => {
             sameSite: 'strict',
             path: '/',
         })
-        return res.status(200).json({ ...newReponse, refresh_token })
+        return res.status(response.status).json({ ...newReponse, refresh_token })
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -74,13 +71,12 @@ const editUser = async (req, res) => {
         const userId = req.params.id
         const data = req.body
         if (!userId) {
-            return res.status(200).json({
-                status: 'ERR',
+            return res.status(400).json({
                 message: 'Id người dùng không được bỏ trống!'
             })
         }
         const response = await UserService.editUser(userId, data)
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -95,14 +91,13 @@ const updateUser = async (req, res) => {
         const data = avatar ? { ...req.body, avatar: avatar.path } : req.body
         if (!userId) {
             deleteImgCloud({ publicId: avatar?.filename })
-            return res.status(200).json({
-                status: 'ERR',
+            return res.status(400).json({
                 message: 'Id người dùng không được bỏ trống!'
             })
         }
         const response = await UserService.updateUser(userId, data)
-        if (avatar && response.status !== 'OK') deleteImgCloud({ publicId: avatar?.filename })
-        return res.status(200).json(response)
+        if (avatar && response.status !== 200) deleteImgCloud({ publicId: avatar?.filename })
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -114,13 +109,12 @@ const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id
         if (!userId) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'The userId is required'
+            return res.status(400).json({
+                message: 'Id người dùng không được bỏ trống!'
             })
         }
         const response = await UserService.deleteUser(userId)
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -132,13 +126,12 @@ const deleteMany = async (req, res) => {
     try {
         const ids = req.body.ids
         if (!ids) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'The ids is required'
+            return res.status(400).json({
+                message: 'Ids người dùng không được bỏ trống!'
             })
         }
         const response = await UserService.deleteManyUser(ids)
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -150,7 +143,7 @@ const deleteMany = async (req, res) => {
 const getAllUser = async (req, res) => {
     try {
         const response = await UserService.getAllUser()
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -162,13 +155,12 @@ const getDetailsUser = async (req, res) => {
     try {
         const userId = req.params.id
         if (!userId) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'The userId is required'
+            return res.status(400).json({
+                message: 'Id người dùng không được bỏ trống!'
             })
         }
         const response = await UserService.getDetailsUser(userId)
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -180,13 +172,12 @@ const refreshToken = async (req, res) => {
     try {
         let token = req.headers.token.split(' ')[1]
         if (!token) {
-            return res.status(200).json({
-                status: 'ERR',
+            return res.status(400).json({
                 message: 'The token is required'
             })
         }
         const response = await JwtService.refreshTokenJwtService(token)
-        return res.status(200).json(response)
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -199,7 +190,6 @@ const logoutUser = async (req, res) => {
     try {
         res.clearCookie('refresh_token')
         return res.status(200).json({
-            status: 'OK',
             message: 'Logout successfully'
         })
     } catch (e) {

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { getDistrictByProvince } from '../../../services/PlaceService';
 import { addLocation, addStopPoint, getAllPlace } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
-import { error, success } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message';
 
 const ModalAddStopPoint = (props) => {
     const { listProvince, isCreatePoint, isPickUpPoint, handleCancel, filterOption, addDataToListPoint, route, refetch } = props
@@ -62,9 +62,7 @@ const ModalAddStopPoint = (props) => {
             return await getAllPlace(access_token, province, district);
         },
         onSuccess: (data) => {
-            if (data?.status === 'OK') {
-                setListPlace(data?.data)
-            }
+            setListPlace(data?.data)
         }
     });
     const onChangeDistrict = (value) => {
@@ -81,19 +79,17 @@ const ModalAddStopPoint = (props) => {
             return await addLocation(rest, access_token);
         },
         onSuccess: (data) => {
-            if (data.status === 'OK') {
-                formRef.current.resetFields(['place', 'extracost']);
-                handleCancel()
-                success(data.message)
-                addDataToListPoint({
-                    locationId: data.data?._id,
-                    district: district,
-                    province: province,
-                    place: place,
-                    timeFromStart: timeFromStart,
-                    extracost: extracost
-                });
-            }
+            formRef.current.resetFields(['place', 'extracost']);
+            handleCancel()
+            successMes(data.message)
+            addDataToListPoint({
+                locationId: data.data?._id,
+                district: district,
+                province: province,
+                place: place,
+                timeFromStart: timeFromStart,
+                extracost: extracost
+            });
         }
     });
 
@@ -103,13 +99,10 @@ const ModalAddStopPoint = (props) => {
             return await addStopPoint(rest, access_token);
         },
         onSuccess: (data) => {
-            if (data.status === 'OK') {
-                formRef.current.resetFields(['place', 'extracost']);
-                success(data.message)
-                refetch()
-                handleCancel()
-
-            }
+            formRef.current.resetFields(['place', 'extracost']);
+            successMes(data.message)
+            refetch()
+            handleCancel()
         }
     });
 

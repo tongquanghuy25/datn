@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { Select } from 'antd';
-import { error, success } from '../Message';
+import { errorMes, successMes } from '../Message';
 import { deleteBusOwner, editBusOwner, getAllBusOwner } from '../../services/BusOwnerSevice';
 const { Option } = Select;
 
@@ -93,12 +93,11 @@ const AdminBusOwnerComponent = () => {
         });
 
     useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
+        if (isSuccess) {
             setBusOwners(data?.data)
-        } else if (isError || data?.status === "ERR") {
+        } else if (isError) {
             console.log('err', data);
         }
-
     }, [isSuccess, isError, data])
 
 
@@ -226,24 +225,23 @@ const AdminBusOwnerComponent = () => {
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
             const { id, busOwner, token } = data;
-            await editBusOwner(id, busOwner, token);
+            return await editBusOwner(id, busOwner, token);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            successMes(data?.message)
             setConfirmLoading(false)
             refetch()
             setIsEdit(false)
-            success('Sửa người dùng thành công !')
         },
-        onError: () => {
+        onError: (data) => {
             setConfirmLoading(false)
             setIsEdit(false)
             refetch()
-            error('Sửa người dùng không thành công !')
+            errorMes(data?.response?.data?.message)
         }
     });
 
 
-    const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
     const OnEditBusOwner = (record) => {
         setbusOwnerEditing(record)
         setIsEdit(true)
@@ -285,22 +283,21 @@ const AdminBusOwnerComponent = () => {
     const mutationDeleted = useMutation({
         mutationFn: async (data) => {
             const { id, token, ...rest } = data;
-            await deleteBusOwner(id, token);
+            return await deleteBusOwner(id, token);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             setConfirmLoading(false)
             refetch()
             setIsDelette(false)
-            success('Xóa nhà thành công !')
+            successMes(data?.message)
         },
-        onError: () => {
+        onError: (data) => {
             setConfirmLoading(false)
             setIsDelette(false)
             refetch()
-            error('Xóa nhà xe không thành công !')
+            errorMes(data?.response?.data?.message)
         }
     });
-    const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
 
     const OnDeleteBusOwner = (record) => {
         setIsDelette(true)

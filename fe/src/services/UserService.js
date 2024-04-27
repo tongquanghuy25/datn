@@ -68,6 +68,7 @@ export const editUser = async (id, data, access_token) => {
             token: `Bearer ${access_token}`,
         }
     })
+    console.log('e', res.data);
     return res.data
 }
 export const updateUser = async (id, data, access_token) => {

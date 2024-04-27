@@ -1,26 +1,29 @@
 import { message } from "antd";
 
-const success = (mes) => {
-    destroy();
+const successMes = (mes) => {
+    destroyMes();
     message.success(mes ? mes : 'Success');
 };
 
-const error = (mes) => {
-    destroy();
+const errorMes = (mes) => {
+    destroyMes();
     message.error(mes ? mes : "Error")
 };
 
-const warning = (mes = 'Warning') => {
+const warningMes = (mes = 'Warning') => {
     message.warning(mes);
 };
 
-const loading = (mes = 'Loading') => {
-    message.loading(mes);
+const loadingMes = (mes = 'Loading') => {
+    message.loading({
+        content: mes,
+        duration: 10,
+    });
 };
 
-const destroy = () => {
+const destroyMes = () => {
     message.destroy();
 }
 
 
-export { success, error, warning, loading, destroy }
+export { successMes, errorMes, warningMes, loadingMes, destroyMes }

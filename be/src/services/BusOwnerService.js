@@ -13,11 +13,11 @@ const createBusOwner = (newBusOwner) => {
             if (checkUser === null) {
 
                 resolve({
-                    status: 'ERR',
-                    message: 'Người dùng không tồn tại'
+                    status: 404,
+                    message: 'Người dùng không tồn tại!'
                 })
+                return;
             }
-
             const createdBusOwner = await BusOwner.create({
                 userId,
                 busOwnerName,
@@ -28,8 +28,8 @@ const createBusOwner = (newBusOwner) => {
 
             if (createdBusOwner) {
                 resolve({
-                    status: 'OK',
-                    message: 'Đăng ký nhà xe thành công !',
+                    status: 200,
+                    message: 'Đăng ký nhà xe thành công!',
                     data: createdBusOwner
                 })
             }
@@ -46,7 +46,7 @@ const getAllBusOwner = () => {
             const allBusOwner = await BusOwner.find({ isAccept: true }).populate('userId', 'email phone').sort({ createdAt: -1, updatedAt: -1 })
 
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Success',
                 data: allBusOwner
             })
@@ -64,15 +64,16 @@ const editBusOwner = (id, data) => {
             })
             if (checkBusOwner === null) {
                 resolve({
-                    status: 'ERR',
-                    message: 'NNhà xe không tồn tại !'
+                    status: 404,
+                    message: 'Nhà xe không tồn tại!'
                 })
+                return;
             }
 
             const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
             resolve({
-                status: 'OK',
-                message: 'SUCCESS',
+                status: 200,
+                message: 'Sửa nhà xe thành công!',
                 data: updatedBusOwner
             })
         } catch (e) {
@@ -89,15 +90,16 @@ const deleteBusOwner = (id) => {
             })
             if (checkBusOwner === null) {
                 resolve({
-                    status: 'ERR',
-                    message: 'The bus owner is not defined'
+                    status: 404,
+                    message: 'Nhà xe không tồn tại!'
                 })
+                return;
             }
 
             await BusOwner.findByIdAndDelete(id)
             resolve({
-                status: 'OK',
-                message: 'Delete bus owner success',
+                status: 200,
+                message: 'Xóa nhà xe thành công!',
             })
         } catch (e) {
             reject(e)
@@ -111,7 +113,7 @@ const getAllBusOwnerNotAccept = () => {
 
             const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Success',
                 data: allBusOwnerNotAccept
             })
@@ -129,12 +131,13 @@ const getDetailBusOwnerByUserId = (id) => {
             })
             if (busOwner === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Nhà xe không tồn tại!'
                 })
+                return;
             }
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'SUCESS',
                 data: busOwner
             })

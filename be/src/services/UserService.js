@@ -1,8 +1,7 @@
 const User = require("../models/UserModel")
 const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
-const getPublicIdFromUrl = require("../utils");
-const cloudinary = require('cloudinary').v2;
+const { deleteImgCloud } = require("../utils");
 
 
 const createUser = (newUser) => {
@@ -14,9 +13,10 @@ const createUser = (newUser) => {
             })
             if (checkUser !== null) {
                 resolve({
-                    status: 'ERR',
+                    status: 400,
                     message: 'Email đã tồn tại!'
                 })
+                return
             }
             const hash = bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
@@ -28,7 +28,7 @@ const createUser = (newUser) => {
             })
             if (createdUser) {
                 resolve({
-                    status: 'OK',
+                    status: 200,
                     message: 'Đăng ký tài khoản thành công!',
                     data: createdUser
                 })
@@ -48,17 +48,19 @@ const loginUser = (userLogin) => {
             })
             if (checkUser === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Email không chính xác!'
                 })
+                return;
             }
             const comparePassword = bcrypt.compareSync(password, checkUser.password)
 
             if (!comparePassword) {
                 resolve({
-                    status: 'ERR',
+                    status: 400,
                     message: 'Mật khẩu không chính xác!'
                 })
+                return;
             }
             const access_token = await genneralAccessToken({
                 id: checkUser.id,
@@ -71,7 +73,7 @@ const loginUser = (userLogin) => {
             })
 
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Đăng nhập thành công!',
                 access_token,
                 refresh_token
@@ -89,24 +91,25 @@ const editUser = (id, data) => {
             })
             if (checkUser === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Người dùng không tồn tại!'
                 })
+                return;
             }
 
             const checkEmail = await User.findOne({
                 email: data?.email
             })
-            if (checkEmail !== null) {
+            if (checkEmail !== null && checkEmail.email !== data?.email) {
                 resolve({
-                    status: 'ERR',
+                    status: 400,
                     message: 'Email đã tồn tại!'
                 })
+                return;
             }
-
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Chỉnh sửa người dùng thành công!',
                 data: updatedUser
             })
@@ -123,28 +126,30 @@ const updateUser = (id, data) => {
             })
             if (checkUser === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Người dùng không tồn tại!'
                 })
+                return;
             }
 
             const checkEmail = await User.findOne({
                 email: data?.email
             })
-            if (checkEmail !== null) {
+            if (checkEmail !== null && checkEmail.email !== data?.email) {
                 resolve({
-                    status: 'ERR',
+                    status: 400,
                     message: 'Email đã tồn tại!'
                 })
+                return;
             }
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
 
             if (checkUser?.avatar && data.avatar && updatedUser.avatar) {
-                const publicId = getPublicIdFromUrl(checkUser.avatar)
-                cloudinary.uploader.destroy(publicId)
+                deleteImgCloud({ path: checkUser?.avatar })
             }
+            console.log('updatedUser', updatedUser);
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Cập nhật thông tin người dùng thành công!',
                 data: updatedUser
             })
@@ -162,15 +167,16 @@ const deleteUser = (id) => {
             })
             if (checkUser === null) {
                 resolve({
-                    status: 'ERR',
-                    message: 'The user is not defined'
+                    status: 400,
+                    message: 'Người dùng không tồn tại!'
                 })
+                return;
             }
 
             await User.findByIdAndDelete(id)
             resolve({
-                status: 'OK',
-                message: 'Delete user success',
+                status: 200,
+                message: 'Xóa người dùng thành công!',
             })
         } catch (e) {
             reject(e)
@@ -184,7 +190,7 @@ const deleteManyUser = (ids) => {
 
             await User.deleteMany({ _id: ids })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Delete user success',
             })
         } catch (e) {
@@ -198,7 +204,7 @@ const getAllUser = () => {
         try {
             const allUser = await User.find().sort({ createdAt: -1, updatedAt: -1 })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Success',
                 data: allUser
             })
@@ -216,12 +222,13 @@ const getDetailsUser = (id) => {
             })
             if (user === null) {
                 resolve({
-                    status: 'ERR',
-                    message: 'The user is not defined'
+                    status: 404,
+                    message: 'Người dùng không tồn tại!'
                 })
+                return;
             }
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'SUCESS',
                 data: user
             })

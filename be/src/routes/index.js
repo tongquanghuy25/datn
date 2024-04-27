@@ -4,6 +4,7 @@ const DriverRouter = require('./DriverRouter')
 const BusRouter = require('./BusRouter')
 const PlaceRouter = require('./PlaceRouter')
 const RouteRouter = require('./RouteRouter')
+const TripRouter = require('./TripRouter')
 
 
 const ProductRouter = require('./ProductRouter')
@@ -17,6 +18,7 @@ const routes = (app) => {
     app.use('/api/bus', BusRouter)
     app.use('/api/place', PlaceRouter)
     app.use('/api/route', RouteRouter)
+    app.use('/api/trip', TripRouter)
 
 
 

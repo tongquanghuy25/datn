@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { deleteUser, editUser, getAllUser, updateUser } from '../../services/UserService'
 import { Select } from 'antd';
-import { error, success } from '../Message';
+import { errorMes, successMes } from '../Message';
 const { Option } = Select;
 
 
@@ -30,9 +30,9 @@ const AdminUserComponent = () => {
         });
 
     useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
+        if (isSuccess) {
             setUsers(data?.data)
-        } else if (isError || data?.status === "ERR") {
+        } else if (isError) {
             console.log('err', data);
         }
 
@@ -140,19 +140,20 @@ const AdminUserComponent = () => {
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
             const { id, token, user } = data;
-            await editUser(id, user, token);
+            return await editUser(id, user, token);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            successMes(data.message)
             setConfirmLoading(false)
             refetch()
             setIsEdit(false)
-            success('Sửa người dùng thành công !')
+            // successMes('Sửa người dùng thành công !')
         },
-        onError: () => {
+        onError: (data) => {
             setConfirmLoading(false)
             setIsEdit(false)
             refetch()
-            error('Sửa người dùng không thành công !')
+            errorMes(data?.response?.data?.message)
         }
     });
     const mutationDeleted = useMutation({
@@ -164,13 +165,13 @@ const AdminUserComponent = () => {
             setConfirmLoading(false)
             refetch()
             setIsDelette(false)
-            success('Xóa người dùng thành công !')
+            successMes('Xóa người dùng thành công !')
         },
         onError: () => {
             setConfirmLoading(false)
             setIsDelette(false)
             refetch()
-            error('Xóa người dùng không thành công !')
+            errorMes('Xóa người dùng không thành công !')
         }
     });
 

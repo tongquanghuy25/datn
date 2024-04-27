@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { resetUser } from '../../redux/slides/userSlide';
 import { useNavigate } from 'react-router-dom';
 import RouteManagerment from '../../components/BusOwnerComponent/RouteManagerment/RouteManagerment';
+import TripManagerment from '../../components/BusOwnerComponent/TripManagerment/TripManagerment';
 
 
 const { Header, Content } = Layout;
@@ -50,9 +51,9 @@ const BusOwnerPage = () => {
                 </div>
             </Header>
             <Content style={{ padding: '0 20px' }}>
-                {selectedTab === 'home' && 'Home Page'}
+                {selectedTab === 'home' && <LoadingComponent></LoadingComponent>}
                 {selectedTab === 'driver' && <DriverManagement></DriverManagement>}
-                {selectedTab === 'trip' && <LoadingComponent></LoadingComponent>}
+                {selectedTab === 'trip' && <TripManagerment></TripManagerment>}
                 {selectedTab === 'route' && <RouteManagerment></RouteManagerment>}
                 {selectedTab === 'bus' && <BusManagerment></BusManagerment>}
             </Content>

@@ -22,18 +22,18 @@ const ForgotPasswordPage = () => {
 
     // useEffect(() => {
     //     if (isSuccess && data?.status === "OK") {
-    //         success();
+    //         successMes();
     //         console.log('success', mutation);
     //         navigate('/sign-in')
     //     } else if (isError || data?.status === "ERR") {
     //         console.log('err', data);
     //         console.log('e', mutation);
-    //         error(data?.message);
+    //         errorMes(data?.message);
     //     }
     // }, [isSuccess, isError])
 
     const onFinish = (values) => {
-        // loading()
+        // loadingMes()
         showModal()
         // mutation.mutate({ email: values.email, phone: values.phone, password: values.password, confirmPassword: values.confirmPassword });
     }

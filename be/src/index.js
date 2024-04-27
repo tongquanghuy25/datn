@@ -30,7 +30,7 @@ routes(app);
 //         await sequelize.authenticate();
 //         console.log('Connect Db success');
 //     } catch (error) {
-//         console.error('Connect Db failed', error);
+//         console.errorMes('Connect Db failed', error);
 //     }
 // }
 

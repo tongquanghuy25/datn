@@ -9,8 +9,5 @@ router.get('/get-bus-by-busowner/:id', authBusOwnerMiddleWare, BusController.get
 router.put('/update/:id', uploadCloud.any(), authBusOwnerMiddleWare, BusController.updateBus)
 router.delete('/delete/:id', authBusOwnerMiddleWare, BusController.deleteBus)
 
-// router.get('/get-all', authAdminMiddleWare, busOwnerController.getAllBusOwner)
-// router.put('/edit/:id', authAdminMiddleWare, busOwnerController.editBusOwner)
-// router.get('/get-all-not-accept', authAdminMiddleWare, busOwnerController.getAllBusOwnerNotAccept)
 
 module.exports = router

@@ -116,10 +116,7 @@ const DrawerCreateBus = (props) => {
     const [form] = Form.useForm();
     const [imageUrl, setImageUrl] = useState();
     const [avatarFile, setAvatarFile] = useState(null);
-    const [type, setType] = useState();
-    const [numberSeat, setNumberSeat] = useState();
     const [visible, setVisible] = useState(false);
-
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([]);
@@ -154,32 +151,31 @@ const DrawerCreateBus = (props) => {
             mutationFn: (data) => {
                 const { formData, access_token } = data
                 return busRegister(access_token, formData)
+            },
+            onSuccess: (data) => {
+                message.destroy()
+                message.success({
+                    content: `${data?.message}`,
+                    style: {
+                        marginLeft: '700px'
+                    },
+                });
+                refetch()
+
+
+            },
+            onError: (data) => {
+                message.destroy()
+                message.error({
+                    content: data?.response?.data?.message ? data?.response?.data?.message : 'Thêm xe thất bại!',
+                    style: {
+                        marginLeft: '700px'
+                    },
+                });
             }
         }
     )
 
-    const { data, isSuccess, isError } = mutation
-    useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
-            message.destroy()
-            message.success({
-                content: `${data?.message}`,
-                style: {
-                    marginLeft: '700px'
-                },
-            });
-
-        } else if (isError || data?.status === "ERR") {
-            message.destroy()
-            message.error({
-                content: data?.message ? `${data?.message}` : 'Thêm xe thất bại!',
-                style: {
-                    marginLeft: '700px'
-                },
-            });
-        }
-        refetch()
-    }, [isSuccess, isError])
 
     const onFinish = (values) => {
         message.destroy()
@@ -216,8 +212,6 @@ const DrawerCreateBus = (props) => {
     };
 
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
-
-
 
     const uploadButton = (
         <button

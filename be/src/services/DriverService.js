@@ -1,6 +1,7 @@
 const Driver = require("../models/DriverModel");
 const User = require("../models/UserModel");
 const BusOwner = require("../models/BusOwnerModel");
+const { deleteImgCloud } = require("../utils");
 
 
 const createDriver = (userId, busOwnerId) => {
@@ -13,9 +14,10 @@ const createDriver = (userId, busOwnerId) => {
             if (checkBusOwner === null) {
 
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Nhà xe không tồn tại'
                 })
+                return;
             }
 
             const createdDriver = await Driver.create({
@@ -25,7 +27,7 @@ const createDriver = (userId, busOwnerId) => {
 
             if (createdDriver) {
                 resolve({
-                    status: 'OK',
+                    status: 200,
                     message: 'Đăng ký tài xế thành công !',
                     data: createdDriver
                 })
@@ -38,14 +40,12 @@ const createDriver = (userId, busOwnerId) => {
 }
 
 
-const getDriversByBusOwner = (id) => {
+const getDriversByBusOwner = (busOwnerId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const busOwner = await BusOwner.findOne({ userId: id });
-            const busOwnerId = busOwner._id;
             const allDriver = await Driver.find({ busOwnerId: busOwnerId }).populate('userId', 'email name phone avatar').sort({ createdAt: -1, updatedAt: -1 })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Success',
                 data: allDriver
             })
@@ -64,24 +64,26 @@ const deleteDriver = (id) => {
             })
             if (checkDriver === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Tài xế không tồn tại!'
                 })
+                return;
             }
             const checkUser = await User.findOne({
                 _id: id
             })
             if (checkUser === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Tài khoản tài xế không tồn tại!'
                 })
+                return;
             }
-
             await Driver.findOneAndDelete({ userId: id })
+            if (checkUser?.avatar) deleteImgCloud({ path: checkUser?.avatar })
             await User.findByIdAndDelete(id)
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Xóa tài xế thành công!',
             })
         } catch (e) {
@@ -97,7 +99,7 @@ const getAllDriver = () => {
             const allDriver = await Driver.find({ isAccept: true }).populate('userId', 'email phone').sort({ createdAt: -1, updatedAt: -1 })
 
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Success',
                 data: allDriver
             })
@@ -107,72 +109,12 @@ const getAllDriver = () => {
     })
 }
 
-const findBusOwnerIdByUserId = async (id) => {
-    try {
-        const busOwner = await BusOwner.findOne({ userId: id });
-        if (busOwner) {
-            return busOwner._id;
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error('Lỗi khi tìm BusOwner:', error);
-        throw error;
-    }
-}
-
-const editBusOwner = (id, data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkBusOwner = await BusOwner.findOne({
-                _id: id
-            })
-            if (checkBusOwner === null) {
-                resolve({
-                    status: 'ERR',
-                    message: 'NNhà xe không tồn tại !'
-                })
-            }
-
-            const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
-            resolve({
-                status: 'OK',
-                message: 'SUCCESS',
-                data: updatedBusOwner
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-
-const getAllBusOwnerNotAccept = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            resolve({
-                status: 'OK',
-                message: 'Success',
-                data: allBusOwnerNotAccept
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-
-
 
 
 module.exports = {
     createDriver,
-    getAllBusOwnerNotAccept,
     getAllDriver,
     getDriversByBusOwner,
-    editBusOwner,
     deleteDriver
 
 }

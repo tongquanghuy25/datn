@@ -8,8 +8,4 @@ router.post('/register', uploadCloud.single('avatar'), authBusOwnerMiddleWare, D
 router.get('/get-driver-by-busowner/:id', authBusOwnerMiddleWare, DriverController.getDriversByBusOwner)
 router.delete('/delete/:id', authBusOwnerMiddleWare, DriverController.deleteDriver)
 
-// router.get('/get-all', authAdminMiddleWare, busOwnerController.getAllBusOwner)
-// router.put('/edit/:id', authAdminMiddleWare, busOwnerController.editBusOwner)
-// router.get('/get-all-not-accept', authAdminMiddleWare, busOwnerController.getAllBusOwnerNotAccept)
-
 module.exports = router

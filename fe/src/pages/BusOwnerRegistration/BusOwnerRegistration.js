@@ -5,7 +5,7 @@ import { LoadingOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/i
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import { error, loading, success } from '../../components/Message';
+import { errorMes, loadingMes, successMes } from '../../components/Message';
 import { useSelector } from 'react-redux'
 import { busOwnerRegister } from '../../services/BusOwnerSevice';
 
@@ -92,8 +92,6 @@ const BusOwnerRegistration = () => {
     const [options, setOptions] = useState([]);
     const [startPoint, setStartPoint] = useState([]);
     const [endPoint, setEndPoint] = useState([]);
-
-
     const navigate = useNavigate()
 
     const mutation = useMutation(
@@ -101,22 +99,28 @@ const BusOwnerRegistration = () => {
             mutationFn: (data) => {
                 const { access_token, ...rests } = data
                 return busOwnerRegister(access_token, rests)
+            },
+            onSuccess: (data) => {
+                successMes(data.message)
+            },
+            onError: (data) => {
+                errorMes(data?.response?.data?.message)
             }
         }
     )
 
-    const { data, isSuccess, isError } = mutation
+    // const { data, isSuccess, isError } = mutation
 
-    useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
-            success("Cập nhật người dùng thành công !");
-        } else if (isError || data?.status === "ERR") {
-            error(data?.message);
-        }
-    }, [isSuccess, isError])
+    // useEffect(() => {
+    //     if (isSuccess && data?.status === "OK") {
+    //         successMes("Cập nhật người dùng thành công !");
+    //     } else if (isError || data?.status === "ERR") {
+    //         errorMes(data?.message);
+    //     }
+    // }, [isSuccess, isError])
 
     const onFinish = (values) => {
-        loading()
+        loadingMes()
         mutation.mutate({
             userId: user?.id,
             access_token: user?.access_token,

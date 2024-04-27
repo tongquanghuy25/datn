@@ -6,7 +6,7 @@ import { getAllProvince, getDistrictByProvince } from '../../../services/PlaceSe
 import ModalAddStopPoint from './ModalAddStopPoint';
 import { createRoute } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
-import { error, loading, success } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message';
 
 const AddRouteComponent = (props) => {
     const { refetch, closeCreateRoute } = props
@@ -86,6 +86,7 @@ const AddRouteComponent = (props) => {
     const [provinceEnd, setProvinceEnd] = useState();
     const [districtStart, setDistrictStart] = useState();
     const [districtEnd, setDistrictEnd] = useState();
+    const [journeyTime, setJourneyTime] = useState('');
 
     const [isCreatePoint, setIsCreatePoint] = useState(false)
     const [isPickUpPoint, setIsPickUpPoint] = useState(true)
@@ -120,11 +121,11 @@ const AddRouteComponent = (props) => {
 
     useEffect(() => {
         queryClient.setQueryData(provinceStart, dataDistrictStart?.data);
-        const listData1 = dataDistrictStart?.data?.map((district) => ({
+        const listData = dataDistrictStart?.data?.map((district) => ({
             value: district._id,
             label: district.name,
         }));
-        setListDistrictStart(listData1)
+        setListDistrictStart(listData)
     }, [dataDistrictStart])
 
     const getListDistrictStart = (provinceId) => {
@@ -192,6 +193,10 @@ const AddRouteComponent = (props) => {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
 
+
+    const onchangeJourneyTime = (time, timeString) => {
+        setJourneyTime(timeString)
+    }
     //Table
 
 
@@ -221,15 +226,13 @@ const AddRouteComponent = (props) => {
             return await createRoute(rest, access_token);
         },
         onSuccess: (data) => {
-            if (data.status === 'OK') {
-                success(data.message)
-                closeCreateRoute()
-                refetch()
-            } else
-                error(data.message)
+            successMes(data.message)
+            closeCreateRoute()
+            refetch()
 
         },
         onError: (data) => {
+            errorMes(data?.response?.data?.message)
         }
     });
 
@@ -241,6 +244,7 @@ const AddRouteComponent = (props) => {
             provinceStart,
             districtEnd,
             provinceEnd,
+            journeyTime,
             listPickUpPoint,
             listDropOffPoint
         })
@@ -270,7 +274,12 @@ const AddRouteComponent = (props) => {
                             options={listDistrictStart}
                         />
                     </div>
-                    <ArrowRightOutlined></ArrowRightOutlined>
+                    {/* <ArrowRightOutlined></ArrowRightOutlined> */}
+                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                        <div style={{ marginBottom: '5px', fontWeight: '500' }}>Thời gian di chuyển</div>
+                        <TimePicker placeholder='Giờ phút' format='HH:mm' onChange={onchangeJourneyTime} />
+
+                    </div>
                     <div>
                         <div style={{ marginBottom: '5px', fontWeight: '500' }}>Chọn nơi đến</div>
                         <Select

@@ -9,16 +9,6 @@ export const busOwnerRegister = async (access_token, data) => {
     return res.data
 }
 
-
-// export const getAllBusOwner = async (access_token) => {
-//     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/bus-owner/getAllBusOwner`, {
-//         headers: {
-//             token: `Bearer ${access_token}`,
-//         }
-//     })
-//     return res.data
-// }
-
 export const getAllBusOwner = async (access_token) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/bus-owner/get-all`, {
         headers: {
@@ -35,6 +25,7 @@ export const editBusOwner = async (id, data, access_token) => {
             token: `Bearer ${access_token}`,
         }
     },)
+    console.log('sta', res.data);
     return res.data
 }
 

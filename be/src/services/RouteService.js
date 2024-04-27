@@ -2,6 +2,7 @@ const Route = require("../models/RouteModel");
 const StopPoint = require("../models/StopPointModel");
 const Location = require("../models/LocationModel");
 const BusOwner = require("../models/BusOwnerModel");
+const Trip = require("../models/TripModel");
 
 
 const addLocation = (newLocation) => {
@@ -17,15 +18,15 @@ const addLocation = (newLocation) => {
                 const createdLocation = await Location.create(newLocation)
                 if (createdLocation) {
                     resolve({
-                        status: 'OK',
+                        status: 200,
                         message: 'Thêm địa điểm thành công!',
                         data: createdLocation
                     })
                 }
             } else {
                 resolve({
-                    status: 'OK',
-                    message: 'Địa điểm đã tồn tại!',
+                    status: 200,
+                    message: 'Thêm địa điểm thành công!',
                     data: checkLocation
                 })
             }
@@ -33,7 +34,6 @@ const addLocation = (newLocation) => {
 
 
         } catch (e) {
-
             reject(e)
         }
     })
@@ -63,7 +63,7 @@ const addStopPoint = (newStopPoint) => {
                 })
                 if (createdStopPoint) {
                     resolve({
-                        status: 'OK',
+                        status: 200,
                         message: 'Thêm điểm dừng thành công!',
                         data: createdStopPoint
                     })
@@ -78,7 +78,7 @@ const addStopPoint = (newStopPoint) => {
                 })
                 if (createdStopPoint) {
                     resolve({
-                        status: 'OK',
+                        status: 200,
                         message: 'Thêm điểm dừng thành công!',
                         data: createdStopPoint
                     })
@@ -100,9 +100,10 @@ const createRoute = (newRoute) => {
             const checkBusOwner = await BusOwner.findById(newRoute.busOwnerId)
             if (checkBusOwner === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Nhà xe không tồn tại!',
                 })
+                return;
             }
 
             const createdRoute = await Route.create({
@@ -110,7 +111,8 @@ const createRoute = (newRoute) => {
                 provinceStart: newRoute.provinceStart,
                 districtStart: newRoute.districtStart,
                 provinceEnd: newRoute.provinceEnd,
-                districtEnd: newRoute.districtEnd
+                districtEnd: newRoute.districtEnd,
+                journeyTime: newRoute.journeyTime
             })
             if (createdRoute) {
                 for (const item of newRoute.listPickUpPoint) {
@@ -134,11 +136,10 @@ const createRoute = (newRoute) => {
             }
 
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Thêm tuyến đường thành công!',
                 data: createdRoute
             })
-
         } catch (e) {
             reject(e)
         }
@@ -152,14 +153,15 @@ const getRoutesByBusOwner = (busOwnerId) => {
             const checkBusOwner = await BusOwner.findById(busOwnerId)
             if (checkBusOwner === null) {
                 resolve({
-                    status: 'OK',
+                    status: 404,
                     message: 'Nhà xe không tồn tại!',
                 })
+                return;
             }
 
             const listRoute = await Route.find({ busOwnerId: busOwnerId }).sort({ createdAt: -1, updatedAt: -1 })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Lấy danh sách tuyến đường theo nhà xe thành công!',
                 data: listRoute
             })
@@ -180,9 +182,10 @@ const getStopPointsByBusRoute = (routeId) => {
             const checkRoute = await Route.findById(routeId)
             if (checkRoute === null) {
                 resolve({
-                    status: 'OK',
+                    status: 404,
                     message: 'Tuyến đường không tồn tại!',
                 })
+                return;
             }
             let listPickUpPoint = []
             let listDropOffPoint = []
@@ -211,7 +214,7 @@ const getStopPointsByBusRoute = (routeId) => {
                     }
                 })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Lấy danh sách điểm dừng theo tuyến xe thành công!',
                 data: { listPickUpPoint, listDropOffPoint }
             })
@@ -233,14 +236,15 @@ const deleteStopPoint = (stopPointId) => {
             })
             if (checkStopPoint === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Điểm dừng không tồn tại!'
                 })
+                return;
             }
 
             await StopPoint.findByIdAndDelete(stopPointId)
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Xóa điểm dừng thành công!',
             })
         } catch (e) {
@@ -257,15 +261,17 @@ const deleteRoute = (routeId) => {
             })
             if (checkRoute === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Tuyến đường không tồn tại!'
                 })
+                return;
             }
 
             await StopPoint.deleteMany({ routeId: routeId })
+            await Trip.deleteMany({ routeId: routeId })
             await Route.findByIdAndDelete(routeId)
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Xóa tuyến đường thành công!',
             })
         } catch (e) {
@@ -277,20 +283,21 @@ const deleteRoute = (routeId) => {
 const updateRoute = (routeId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { provinceStart, districtStart, provinceEnd, districtEnd } = data
+            const { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime } = data
             const checkRoute = await Route.findOne({
                 _id: routeId
             })
             if (checkRoute === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Tuyến đường không tồn tại!'
                 })
+                return;
             }
 
-            const updatedRoute = await Route.findByIdAndUpdate(routeId, { provinceStart, districtStart, provinceEnd, districtEnd }, { new: true })
+            const updatedRoute = await Route.findByIdAndUpdate(routeId, { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime }, { new: true })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Chỉnh sửa tuyến đường thành công!',
                 data: updatedRoute
             })
@@ -305,7 +312,7 @@ const getAllPlace = (province, district) => {
         try {
             const listPlace = await Location.distinct('place', { province: province, district: district })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Lấy danh sách địa điểm thành công!',
                 data: listPlace
             })
@@ -316,162 +323,6 @@ const getAllPlace = (province, district) => {
 }
 
 
-const createBus = (newBus) => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-            const checkBusOwner = await BusOwner.findOne({
-                busOwnerId: newBus.busOwnerId
-            })
-            if (checkBusOwner === null) {
-
-                resolve({
-                    status: 'ERR',
-                    message: 'Nhà xe không tồn tại'
-                })
-            }
-
-            const createdBus = await Bus.create(newBus)
-
-            if (createdBus) {
-                resolve({
-                    status: 'OK',
-                    message: 'Thêm xe thành công !',
-                    data: createdBus
-                })
-            }
-        } catch (e) {
-
-            reject(e)
-        }
-    })
-}
-
-
-const getBussByBusOwner = (busOwnerId) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const allBus = await Bus.find({ busOwnerId: busOwnerId }).sort({ createdAt: -1, updatedAt: -1 })
-            resolve({
-                status: 'OK',
-                message: 'Success',
-                data: allBus
-            })
-
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-// const updateBus = (busId, data) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-
-
-//             const checkBus = await Bus.findOne({
-//                 _id: busId
-//             })
-//             if (checkBus === null) {
-//                 resolve({
-//                     status: 'ERR',
-//                     message: 'Xe không tồn tại!'
-//                 })
-//             }
-
-//             const updatedBus = await Bus.findByIdAndUpdate(busId, { ...data }, { new: true })
-//             if (updatedBus && data.deleteImages?.length > 0) {
-//                 for (const img of data.deleteImages) {
-//                     await deleteImgCloud({ path: img })
-//                 }
-//             }
-//             resolve({
-//                 status: 'OK',
-//                 message: 'Cập nhật thông tin xe thành công!',
-//                 data: updateBus
-//             })
-//         } catch (e) {
-//             console.log(e);
-//             reject(e)
-//         }
-//     })
-// }
-
-
-
-
-const getAllDriver = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            const allDriver = await Driver.find({ isAccept: true }).populate('userId', 'email phone').sort({ createdAt: -1, updatedAt: -1 })
-
-            resolve({
-                status: 'OK',
-                message: 'Success',
-                data: allDriver
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-const findBusOwnerIdByUserId = async (id) => {
-    try {
-        const busOwner = await BusOwner.findOne({ userId: id });
-        if (busOwner) {
-            return busOwner._id;
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error('Lỗi khi tìm BusOwner:', error);
-        throw error;
-    }
-}
-
-const editBusOwner = (id, data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkBusOwner = await BusOwner.findOne({
-                _id: id
-            })
-            if (checkBusOwner === null) {
-                resolve({
-                    status: 'ERR',
-                    message: 'NNhà xe không tồn tại !'
-                })
-            }
-
-            const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
-            resolve({
-                status: 'OK',
-                message: 'SUCCESS',
-                data: updatedBusOwner
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-
-const getAllBusOwnerNotAccept = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            resolve({
-                status: 'OK',
-                message: 'Success',
-                data: allBusOwnerNotAccept
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
 
 
 

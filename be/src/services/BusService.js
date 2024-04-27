@@ -14,17 +14,18 @@ const createBus = (newBus) => {
             if (checkBusOwner === null) {
 
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Nhà xe không tồn tại'
                 })
+                return;
             }
 
             const createdBus = await Bus.create(newBus)
 
             if (createdBus) {
                 resolve({
-                    status: 'OK',
-                    message: 'Thêm xe thành công !',
+                    status: 200,
+                    message: 'Thêm xe thành công!',
                     data: createdBus
                 })
             }
@@ -41,7 +42,7 @@ const getBussByBusOwner = (busOwnerId) => {
         try {
             const allBus = await Bus.find({ busOwnerId: busOwnerId }).sort({ createdAt: -1, updatedAt: -1 })
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Success',
                 data: allBus
             })
@@ -62,9 +63,10 @@ const updateBus = (busId, data) => {
             })
             if (checkBus === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Xe không tồn tại!'
                 })
+                return;
             }
 
             const updatedBus = await Bus.findByIdAndUpdate(busId, { ...data }, { new: true })
@@ -74,7 +76,7 @@ const updateBus = (busId, data) => {
                 }
             }
             resolve({
-                status: 'OK',
+                status: 200,
                 message: 'Cập nhật thông tin xe thành công!',
                 data: updateBus
             })
@@ -93,9 +95,10 @@ const deleteBus = (busId) => {
             })
             if (checkBus === null) {
                 resolve({
-                    status: 'ERR',
+                    status: 404,
                     message: 'Xe không tồn tại!'
                 })
+                return;
             }
 
             await Bus.findByIdAndDelete(busId)
@@ -105,99 +108,22 @@ const deleteBus = (busId) => {
                     await deleteImgCloud({ path: img })
                 }
             resolve({
-                status: 'OK',
-                message: 'Xóa tài xế thành công!',
+                status: 200,
+                message: 'Xóa xe thành công!',
             })
         } catch (e) {
             reject(e)
         }
     })
 }
-
-const getAllDriver = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            const allDriver = await Driver.find({ isAccept: true }).populate('userId', 'email phone').sort({ createdAt: -1, updatedAt: -1 })
-
-            resolve({
-                status: 'OK',
-                message: 'Success',
-                data: allDriver
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-const findBusOwnerIdByUserId = async (id) => {
-    try {
-        const busOwner = await BusOwner.findOne({ userId: id });
-        if (busOwner) {
-            return busOwner._id;
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error('Lỗi khi tìm BusOwner:', error);
-        throw error;
-    }
-}
-
-const editBusOwner = (id, data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkBusOwner = await BusOwner.findOne({
-                _id: id
-            })
-            if (checkBusOwner === null) {
-                resolve({
-                    status: 'ERR',
-                    message: 'NNhà xe không tồn tại !'
-                })
-            }
-
-            const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
-            resolve({
-                status: 'OK',
-                message: 'SUCCESS',
-                data: updatedBusOwner
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-
-const getAllBusOwnerNotAccept = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            resolve({
-                status: 'OK',
-                message: 'Success',
-                data: allBusOwnerNotAccept
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
 
 
 
 
 module.exports = {
     createBus,
-    getAllBusOwnerNotAccept,
     updateBus,
-    getAllDriver,
     getBussByBusOwner,
-    editBusOwner,
     deleteBus
 
 }

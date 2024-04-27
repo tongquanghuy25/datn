@@ -25,13 +25,17 @@ const BusManagerment = () => {
         });
 
     useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
+        if (isSuccess) {
             setListBus(data?.data)
             setBusSelected(data?.data[0])
-        } else if (isError || data?.status === "ERR") {
+        } else if (isError) {
             console.log('err', data);
         }
     }, [isSuccess, isError, data])
+
+    const handleClickBus = (bus) => {
+        setBusSelected(bus);
+    }
 
     const showDrawer = () => {
         setOpen(true);
@@ -39,10 +43,6 @@ const BusManagerment = () => {
     const onClose = () => {
         setOpen(false);
     };
-
-    const handleClickBus = (bus) => {
-        setBusSelected(bus);
-    }
     return (
         <div>
             <Row justify="space-between">
@@ -64,7 +64,7 @@ const BusManagerment = () => {
                             listBus?.map((bus) =>
                                 <>
 
-                                    <div onClick={() => handleClickBus(bus)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: '#f0f0f0', padding: '10px', justifyContent: 'space-between' }}>
+                                    <div onClick={() => handleClickBus(bus)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: busSelected === bus ? '#c6e7f5' : '#f0f0f0', padding: '10px', justifyContent: 'space-between' }}>
                                         <div style={{ display: 'flex', }}>
                                             {bus.avatar ? <img src={bus.avatar} style={{ width: '64px', height: '64px', borderRadius: '5px', marginRight: '20px', objectFit: 'cover' }} /> : <CarOutlined style={{ marginRight: '20px', fontSize: '50px', width: '64px', height: '64px', borderRadius: '5px', backgroundColor: 'gray', display: 'flex', justifyContent: 'center' }}></CarOutlined>}
                                             <div>
@@ -84,7 +84,6 @@ const BusManagerment = () => {
                     </Col>
                 </Row>
             }
-            {/* <DrawerCreateDriver open={open} onClose={onClose} refetch={refetch}></DrawerCreateDriver> */}
             <DrawerCreateBus open={open} onClose={onClose} refetch={refetch}></DrawerCreateBus>
         </div>
     )

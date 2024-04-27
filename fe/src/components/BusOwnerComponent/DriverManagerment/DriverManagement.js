@@ -19,14 +19,15 @@ const DriverManagement = () => {
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: ['drivers'],
-            queryFn: () => getDriversByBusOwner(user?.access_token, user?.id),
+            queryFn: () => getDriversByBusOwner(user?.access_token, JSON.parse(localStorage.getItem('bus_owner_id'))),
+            staleTime: Infinity
         });
 
     useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
+        if (isSuccess) {
             setListDriver(data?.data)
             setDriverSelected(data?.data[0])
-        } else if (isError || data?.status === "ERR") {
+        } else if (isError) {
             console.log('err', data);
         }
     }, [isSuccess, isError, data])
@@ -63,7 +64,7 @@ const DriverManagement = () => {
                 <Col span={10} style={{ height: '100%', overflowY: 'auto' }}>
                     {
                         listDriver?.map((driver) => (
-                            <div onClick={() => handleClickDriver(driver)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: '#f0f0f0', padding: '10px' }}>
+                            <div onClick={() => handleClickDriver(driver)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: driverSelected === driver ? '#c6e7f5' : '#f0f0f0', padding: '10px' }}>
                                 {driver?.userId?.avatar ? <Avatar src={driver?.userId?.avatar} size={64} style={{ marginRight: '20px' }} /> : <UserOutlined style={{ marginRight: '20px', fontSize: '50px', width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'gray', display: 'flex', justifyContent: 'center' }}></UserOutlined>}
                                 <div>
                                     <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff', textDecoration: 'none' }}>{driver?.userId?.name}</div>

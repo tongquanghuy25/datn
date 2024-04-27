@@ -3,7 +3,7 @@ import { Button, Form, Input, Popconfirm, Upload } from 'antd'
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { updateUser } from '../../../services/UserService';
-import { error, loading, success } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message';
 import { deleteDriver } from '../../../services/DriverService';
 
 
@@ -24,11 +24,16 @@ const DriverInformation = (props) => {
       mutationFn: (data) => {
         const { id, access_token, ...rest } = data
         return updateUser(id, rest, access_token)
+      },
+      onSuccess: (data) => {
+        successMes(data?.message)
+        refetch()
+      },
+      onError: (data) => {
+        errorMes(data?.response?.data?.message)
       }
     }
   )
-
-  const { data, isSuccess, isError } = mutation
 
 
   const onFinish = (values) => {
@@ -40,18 +45,11 @@ const DriverInformation = (props) => {
 
     if (Object.keys(data).length > 0) {
       mutation.mutate({ ...data, id: driver.userId._id, access_token })
-      loading()
+      loadingMes()
     }
   };
 
-  useEffect(() => {
-    if (isSuccess && data?.status === "OK") {
-      success(data?.message)
-    } else if (isError || data?.status === "ERR") {
-      error(data?.message)
-    }
-    refetch()
-  }, [isSuccess, isError])
+
 
   useEffect(() => {
     form.setFieldsValue({
@@ -77,28 +75,24 @@ const DriverInformation = (props) => {
       mutationFn: (data) => {
         const { id, access_token } = data
         return deleteDriver(id, access_token)
+      },
+      onSuccess: (data) => {
+        successMes(data.message)
+        refetch()
+      },
+      onError: (data) => {
+        errorMes(data?.response?.data?.message)
       }
     }
   )
 
-  const { data: dataDelete, isSuccess: isSuccessDelete, isError: isErrorDelete } = mutationDelete
 
-  useEffect(() => {
-    if (isSuccessDelete && dataDelete?.status === "OK") {
-      success(dataDelete?.message)
-    } else if (isErrorDelete || dataDelete?.status === "ERR") {
-      error(dataDelete?.message)
-    }
-    refetch()
-  }, [isSuccessDelete, isErrorDelete])
 
   const handleDeleteDriver = () => {
     mutationDelete.mutate({ id: driver.userId._id, access_token })
   }
 
-  const confirm = (e) => {
-    handleDeleteDriver()
-  };
+  const me = <h1>Lưu ý</h1>
   return (
     <div style={{ width: '100%', height: '95%', backgroundColor: '#e0f2f5', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <Form
@@ -181,9 +175,9 @@ const DriverInformation = (props) => {
             Chỉnh sửa
           </Button>
           <Popconfirm
-            title="Xóa tài xế"
-            description="Bạn có chắc chắn muốn xóa tài xế"
-            onConfirm={confirm}
+            title="Bạn có chắc chắn muốn xóa tài xế?"
+            description={<div style={{ color: 'red', width: '300px' }}>! Lưu ý: Các chuyến sắp tới của tài xế này sẽ được cập nhật. Bạn cần kiểm tra lại.</div>}
+            onConfirm={handleDeleteDriver}
             // onCancel={cancel}
             okText="Đồng ý"
             cancelText="Hủy"

@@ -5,7 +5,7 @@ import { LoginOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
 import { getDetailsUser, loginUser } from '../../services/UserService';
-import { error, loading, success } from '../../components/Message';
+import { errorMes, loadingMes, successMes } from '../../components/Message';
 import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux'
@@ -23,32 +23,31 @@ const SignInPage = () => {
   const user = useSelector((state) => state.user)
 
   const mutation = useMutation(
-    { mutationFn: (data) => loginUser(data) }
-  )
-
-  const { data, isSuccess, isError } = mutation
-
-  useEffect(() => {
-    if (isSuccess && data?.status === "OK") {
-      success();
-      localStorage.setItem('access_token', JSON.stringify(data?.access_token))
-      localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
-      if (data?.access_token) {
-        const decoded = jwtDecode(data?.access_token)
-        if (decoded?.id) {
-          handleGetDetailsUser(decoded?.id, data?.access_token)
+    {
+      mutationFn: (data) => loginUser(data),
+      onSuccess: (data) => {
+        successMes(data.message)
+        localStorage.setItem('access_token', JSON.stringify(data?.access_token))
+        localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
+        if (data?.access_token) {
+          const decoded = jwtDecode(data?.access_token)
+          if (decoded?.id) {
+            handleGetDetailsUser(decoded?.id, data?.access_token)
+          }
+          if (decoded?.role === 'admin') {
+            navigate('/admin')
+          } else if (decoded?.role === 'busowner') {
+            handleGetDetailBusOwner(decoded?.id, data?.access_token)
+            navigate('/bus-owner')
+          } else navigate('/')
         }
-        if (decoded?.role === 'admin') {
-          navigate('/admin')
-        } else if (decoded?.role === 'busowner') {
-          handleGetDetailBusOwner(decoded?.id, data?.access_token)
-          navigate('/bus-owner')
-        } else navigate('/')
+
+      },
+      onError: (data) => {
+        errorMes(data?.response?.data?.message)
       }
-    } else if (isError || data?.status === "ERR") {
-      error(data?.message);
     }
-  }, [isSuccess, isError])
+  )
 
   const handleGetDetailsUser = async (id, token) => {
     const storage = localStorage.getItem('refresh_token')
@@ -64,7 +63,7 @@ const SignInPage = () => {
   }
 
   const onFinish = (values) => {
-    loading()
+    loadingMes()
     mutation.mutate({ email: values.email, password: values.password });
   }
 

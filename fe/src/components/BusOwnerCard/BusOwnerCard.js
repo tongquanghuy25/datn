@@ -2,7 +2,7 @@ import './style.css'
 import React from 'react'
 import { useMutation } from '@tanstack/react-query';
 import { Card, Row, Col, Button } from 'antd';
-import { error, success } from '../Message';
+import { errorMes, successMes } from '../Message';
 import { editBusOwner } from '../../services/BusOwnerSevice';
 import { editUser } from '../../services/UserService';
 const BusOwnerCard = (props) => {
@@ -14,14 +14,13 @@ const BusOwnerCard = (props) => {
             await editUser(data.userId._id, { role: 'busowner' }, data.access_token);
             return await editBusOwner(data._id, { isAccept: true }, data.access_token);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            successMes(data.message)
             refetch()
-            success('Sửa người dùng thành công !')
         },
-        onError: (e) => {
-            console.log(e);
+        onError: (data) => {
             refetch()
-            error('Sửa người dùng không thành công !')
+            errorMes(data?.response?.data?.message)
         }
     });
     const HandleAccept = () => {

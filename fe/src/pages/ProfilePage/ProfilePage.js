@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { updateUser as updateUserApi } from '../../services/UserService';
 import { Button, Card, Form, Input, Select, Upload } from 'antd';
 import Title from 'antd/es/typography/Title';
-import { error, loading, success } from '../../components/Message';
+import { errorMes, loadingMes, successMes } from '../../components/Message';
 import { updateUser } from '../../redux/slides/userSlide';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
@@ -28,19 +28,17 @@ const ProfilePage = () => {
         mutationFn: (data) => {
             const { id, formData, access_token } = data
             return updateUserApi(id, formData, access_token)
+        },
+        onSuccess: (data) => {
+            successMes("Cập nhật người dùng thành công !");
+            dispatch(updateUser({ email: data?.data?.email, name: data?.data?.name, phone: data?.data?.phone, avatar: data?.data?.avatar }))
+
+        },
+        onError: (data) => {
+            errorMes(data?.response?.data?.message)
         }
     })
 
-    const { data, isSuccess, isError } = mutation
-
-    useEffect(() => {
-        if (isSuccess && data?.status === "OK") {
-            success("Cập nhật người dùng thành công !");
-            dispatch(updateUser({ email: data?.data?.email, name: data?.data?.name, phone: data?.data?.phone, avatar: data?.data?.avatar }))
-        } else if (isError || data?.status === "ERR") {
-            error(data?.message);
-        }
-    }, [isSuccess, isError])
 
     useEffect(() => {
         form.setFieldsValue({
@@ -52,7 +50,7 @@ const ProfilePage = () => {
     }, [user])
 
     const onFinish = (values) => {
-        loading()
+        loadingMes()
         const formData = new FormData();
         formData.append('email', values.email);
         formData.append('phone', values.phone);

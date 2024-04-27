@@ -7,6 +7,7 @@ const routeSchema = new mongoose.Schema(
         districtStart: { type: String, required: true },
         provinceEnd: { type: String, required: true },
         districtEnd: { type: String, required: true },
+        journeyTime: { type: String, required: true },
     }
 );
 const Route = mongoose.model('Route', routeSchema);

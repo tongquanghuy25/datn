@@ -4,9 +4,10 @@ import { ArrowRightOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllProvince, getDistrictByProvince } from '../../../services/PlaceService';
 import ModalAddStopPoint from './ModalAddStopPoint';
-import { createRoute, deleteRoute, deleteStopPoint, getStopPointsByBusRoute, updateRoute } from '../../../services/RouteService';
+import { deleteRoute, deleteStopPoint, getStopPointsByBusRoute, updateRoute } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
-import { error, loading, success } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message';
+import dayjs from 'dayjs';
 
 const InforRouteComponent = (props) => {
 
@@ -75,8 +76,8 @@ const InforRouteComponent = (props) => {
             render: (record) => {
                 return <>
                     <Popconfirm
-                        title={isPickUpPoint ? 'Xóa điểm đón' : 'Xóa điểm trả'}
-                        description={`Bạn có chắc chắn muốn xóa điểm ${isPickUpPoint ? 'đón' : 'trả'}`}
+                        title={`Bạn có chắc chắn muốn xóa điểm ${isPickUpPoint ? 'đón' : 'trả'}`}
+                        // description={`Bạn có chắc chắn muốn xóa điểm ${isPickUpPoint ? 'đón' : 'trả'}`}
                         onConfirm={() => onDeleteStopPoint(record)}
                         // onCancel={cancel}
                         okText="Đồng ý"
@@ -98,6 +99,7 @@ const InforRouteComponent = (props) => {
     const [provinceEnd, setProvinceEnd] = useState();
     const [districtStart, setDistrictStart] = useState();
     const [districtEnd, setDistrictEnd] = useState();
+    const [journeyTime, setJourneyTime] = useState();
 
     const [isCreatePoint, setIsCreatePoint] = useState(false)
     const [isPickUpPoint, setIsPickUpPoint] = useState(true)
@@ -105,17 +107,16 @@ const InforRouteComponent = (props) => {
     const [listDropOffPoint, setListDropOffPoint] = useState([])
     const [isDeletingRoute, setIsDeletingRoute] = useState(false)
 
-
     useEffect(() => {
         setProvinceStart(route?.provinceStart)
         setProvinceEnd(route?.provinceEnd)
         setDistrictStart(route?.districtStart)
         setDistrictEnd(route?.districtEnd)
-        const provinceStartId = listProvince.find(item => item?.label === route?.provinceStart)
-        getListDistrictStart(provinceStartId?.value)
-        const provinceEndId = listProvince.find(item => item?.label === route?.provinceEnd)
-        getListDistrictEnd(parseInt(provinceEndId?.value))
-
+        const provinceStartId = listProvince?.find(item => item?.label === route?.provinceStart)
+        if (provinceStartId) getListDistrictStart(provinceStartId?.value)
+        const provinceEndId = listProvince?.find(item => item?.label === route?.provinceEnd)
+        if (provinceEndId) getListDistrictEnd(parseInt(provinceEndId?.value))
+        setJourneyTime(route?.journeyTime)
     }, [route])
 
     //Get All Province
@@ -138,7 +139,7 @@ const InforRouteComponent = (props) => {
     const mutationStart = useMutation({
         mutationFn: async (data) => {
             const { provinceId } = data;
-            return await getDistrictByProvince(provinceId);
+            if (provinceId) return await getDistrictByProvince(provinceId);
         }
     });
 
@@ -178,7 +179,7 @@ const InforRouteComponent = (props) => {
     const mutationEnd = useMutation({
         mutationFn: async (data) => {
             const { provinceId } = data;
-            return await getDistrictByProvince(provinceId);
+            if (provinceId) return await getDistrictByProvince(provinceId);
         }
     });
 
@@ -215,7 +216,9 @@ const InforRouteComponent = (props) => {
     const filterOption = (input, option) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
-
+    const onchangeJourneyTime = (time, timeString) => {
+        setJourneyTime(timeString)
+    }
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
@@ -243,19 +246,19 @@ const InforRouteComponent = (props) => {
             return await updateRoute(id, access_token, rest);
         },
         onSuccess: (data) => {
-            if (data?.status === 'OK') {
-                success(data?.message)
-                refetchListRoute()
-            } else {
-                error(data?.message)
-            }
+            successMes(data?.message)
+            refetchListRoute()
+            setIsDeletingRoute(false)
+        },
+        onError: (data) => {
+            errorMes(data?.response?.data?.message)
             setIsDeletingRoute(false)
         }
     })
 
 
     const handleUpdateRoute = () => {
-        mutationUpdateRoute.mutate({ id: route._id, districtStart, provinceStart, districtEnd, provinceEnd, access_token: user?.access_token })
+        mutationUpdateRoute.mutate({ id: route._id, districtStart, provinceStart, districtEnd, provinceEnd, journeyTime, access_token: user?.access_token })
     }
 
     const mutationDeleteRoute = useMutation({
@@ -264,16 +267,13 @@ const InforRouteComponent = (props) => {
             return await deleteRoute(id, access_token);
         },
         onSuccess: (data) => {
-            if (data?.status === 'OK') {
-                success(data?.message)
-                refetchListRoute()
-            } else {
-                error(data?.message)
-            }
+            successMes(data?.message)
+            refetchListRoute()
             setIsDeletingRoute(false)
         },
         onError: (data) => {
-            console.log('err', data);
+            errorMes(data?.response?.data?.message)
+            setIsDeletingRoute(false)
         }
     })
 
@@ -288,15 +288,11 @@ const InforRouteComponent = (props) => {
             return await deleteStopPoint(id, access_token);
         },
         onSuccess: (data) => {
-            if (data?.status === 'OK') {
-                success(data?.message)
-                refetch()
-            } else {
-                error(data?.message)
-            }
+            successMes(data?.message)
+            refetch()
         },
         onError: (data) => {
-            console.log('err', data);
+            errorMes(data?.response?.data?.message)
         }
     })
 
@@ -330,7 +326,11 @@ const InforRouteComponent = (props) => {
                             value={districtStart}
                         />
                     </div>
-                    <ArrowRightOutlined></ArrowRightOutlined>
+                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                        <div style={{ marginBottom: '5px', fontWeight: '500' }}>Thời gian di chuyển</div>
+                        <TimePicker placeholder='Giờ phút' value={dayjs(journeyTime, 'HH:mm')} format='HH:mm' onChange={onchangeJourneyTime} />
+
+                    </div>
                     <div>
                         <div style={{ marginBottom: '5px', fontWeight: '500' }}>Chọn nơi đến</div>
                         <Select
@@ -406,7 +406,9 @@ const InforRouteComponent = (props) => {
                 onOk={() => handleDeleteRoute()}
                 cancelText='Hủy'
                 onCancel={() => { setIsDeletingRoute(false) }}
-            />
+            >
+                <div style={{ color: 'red' }}>! Lưu ý: Các chuyến sắp tới của tuyến xe này sẽ bị xóa. Bạn cần kiểm tra lại.</div>
+            </Modal>
 
 
 
