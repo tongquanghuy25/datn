@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { getDistrictByProvince } from '../../../services/PlaceService';
 import { addLocation, addStopPoint, getAllPlace } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
-import { errorMes, loadingMes, successMes } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message/Message';
 
 const ModalAddStopPoint = (props) => {
     const { listProvince, isCreatePoint, isPickUpPoint, handleCancel, filterOption, addDataToListPoint, route, refetch } = props
@@ -16,6 +16,7 @@ const ModalAddStopPoint = (props) => {
 
     const [listDistrict, setListDistrict] = useState([])
     const [listPlace, setListPlace] = useState([])
+    const [options, setOptions] = useState([]);
     const [district, setDistrict] = useState()
     const [province, setProvince] = useState()
     const [place, setPlace] = useState()
@@ -63,6 +64,7 @@ const ModalAddStopPoint = (props) => {
         },
         onSuccess: (data) => {
             setListPlace(data?.data)
+            setOptions(data?.data.map(option => ({ value: option })));
         }
     });
     const onChangeDistrict = (value) => {
@@ -132,7 +134,6 @@ const ModalAddStopPoint = (props) => {
         })
     }
     //////////
-    const [options, setOptions] = useState([]);
 
     const handleSearch = (value) => {
         const filteredOptions = listPlace.filter(option =>

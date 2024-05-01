@@ -8,7 +8,7 @@ const tripSchema = new mongoose.Schema(
         routeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
         departureDate: { type: String, required: true },
         departureTime: { type: String, required: true },
-        journeyTime: { type: String, required: true },
+        // journeyTime: { type: String, required: true },
         // endDate: { type: String, required: true },
         // endTime: { type: String, required: true },
         availableSeats: { type: Number, required: true },

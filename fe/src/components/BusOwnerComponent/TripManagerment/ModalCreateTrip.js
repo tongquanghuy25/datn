@@ -7,7 +7,7 @@ import { getBussByBusOwner } from '../../../services/BusService';
 import { getDriversByBusOwner } from '../../../services/DriverService';
 import dayjs from 'dayjs';
 import { createTrip } from '../../../services/TripService';
-import { errorMes, loadingMes, successMes } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message/Message';
 
 const ModalCreateTrip = (props) => {
     const { handleCancel, isCreateTrip, refetch, listRoute, listBus, listDriver, dataRoutes, dataBuss, filterOption } = props
@@ -39,7 +39,7 @@ const ModalCreateTrip = (props) => {
     }
 
     const onFinish = (values) => {
-        const journeyTime = dataRoutes?.data?.find(item => item._id === values?.route)?.journeyTime
+        // const journeyTime = dataRoutes?.data?.find(item => item._id === values?.route)?.journeyTime
         const availableSeats = dataBuss?.data?.find(item => item._id === values?.bus)?.numberSeat
         mutation.mutate({
             access_token: user?.access_token,
@@ -49,7 +49,7 @@ const ModalCreateTrip = (props) => {
             driverId: values?.driver,
             dates: listDate,
             departureTime: `${values.time?.hour()}:${values.time?.minute()}`,
-            journeyTime: journeyTime,
+            // journeyTime: journeyTime,
             ticketPrice: values?.ticketPrice,
             availableSeats: availableSeats,
         })
@@ -136,7 +136,7 @@ const ModalCreateTrip = (props) => {
                         <DatePicker
                             multiple
                             format='DD/MM/YYYY'
-                            minDate={dayjs()}
+                            // minDate={dayjs()}
                             // defaultValue={dayjs()}
                             onChange={onChangeDate}
                         />

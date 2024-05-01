@@ -5,13 +5,15 @@ const { authBusOwnerMiddleWare } = require("../middleware/authMiddleware");
 
 router.post('/add-location', authBusOwnerMiddleWare, RouteController.addLocation)
 router.post('/add-stop-point', authBusOwnerMiddleWare, RouteController.addStopPoint)
-router.post('/create-route', authBusOwnerMiddleWare, RouteController.createRoute)
-router.get('/get-route-by-busowner/:id', authBusOwnerMiddleWare, RouteController.getRoutesByBusOwner)
 router.get('/get-stop-point-by-route/:id', authBusOwnerMiddleWare, RouteController.getStopPointsByBusRoute)
 router.delete('/delete-stop-point/:id', authBusOwnerMiddleWare, RouteController.deleteStopPoint)
+router.post('/create-route', authBusOwnerMiddleWare, RouteController.createRoute)
+router.get('/get-route-by-busowner/:id', authBusOwnerMiddleWare, RouteController.getRoutesByBusOwner)
 router.delete('/delete-route/:id', authBusOwnerMiddleWare, RouteController.deleteRoute)
 router.put('/update-route/:id', authBusOwnerMiddleWare, RouteController.updateRoute)
 router.get('/get-all-place/:province/:district', authBusOwnerMiddleWare, RouteController.getAllPlace)
+router.get('/get-places-by-search-trip', RouteController.getPlacesBySearchTrip)
+
 
 
 // router.post('/sign-in', userController.loginUser)

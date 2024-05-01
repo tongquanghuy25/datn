@@ -49,10 +49,10 @@ const RouteManagerment = () => {
                 }}
                 style={{ cursor: 'pointer', fontSize: '20px', color: ' #333', backgroundColor: routeSelected._id === route._id ? '#c6e7f5' : '#f0f0f0', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}>
                 <div>
-                  <strong>{route.districtStart} - {route.provinceStart}</strong>
+                  <strong>{route?.districtStart} - {route?.provinceStart} ({route?.placeStart}) </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <ArrowRightOutlined style={{ marginRight: '10px' }} /> <strong>{route.districtEnd} - {route.provinceEnd}</strong>
+                  <ArrowRightOutlined style={{ marginRight: '10px' }} /> <strong>{route.districtEnd} - {route.provinceEnd} ({route?.placeEnd})</strong>
                 </div>
               </div>
             )}

@@ -30,7 +30,6 @@ const AcceptBusOwner = () => {
                 busOwnerNotAccept.map((data) =>
                     <BusOwnerCard key={data.id} data={data} access_token={user?.access_token} refetch={refetch}></BusOwnerCard>
 
-
                 )
             }
         </div>

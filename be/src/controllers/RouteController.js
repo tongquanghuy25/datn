@@ -44,11 +44,16 @@ const addStopPoint = async (req, res) => {
 
 const createRoute = async (req, res) => {
     try {
-        const { provinceStart, districtStart, provinceEnd, districtEnd, busOwnerId, journeyTime } = req.body
+        const { provinceStart, districtStart, provinceEnd, districtEnd, busOwnerId, journeyTime, placeStart, placeEnd } = req.body
 
         if (!provinceStart || !districtStart || !provinceEnd || !districtEnd || !busOwnerId || !journeyTime) {
             return res.status(400).json({
-                message: 'Thông tin nhập vào chưa đủ !'
+                message: 'Thông tin nhập vào chưa đủ!'
+            })
+        }
+        if (!placeStart || !placeEnd) {
+            return res.status(400).json({
+                message: 'Vui lòng nhập đầy đủ điểm đón, điểm trả!'
             })
         }
 
@@ -139,7 +144,7 @@ const deleteRoute = async (req, res) => {
 const updateRoute = async (req, res) => {
     try {
         const routeId = req.params.id
-        const { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime } = req.body
+        const { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime, placeStart, placeEnd } = req.body
 
         if (!provinceStart || !districtStart || !provinceEnd || !districtEnd || !journeyTime) {
             return res.status(400).json({
@@ -150,6 +155,12 @@ const updateRoute = async (req, res) => {
         if (!routeId) {
             return res.status(400).json({
                 message: 'Id tuyến đường không được bỏ trống !'
+            })
+        }
+
+        if (!placeStart || !placeEnd) {
+            return res.status(400).json({
+                message: 'Vui lòng nhập đầy đủ điểm đón, điểm trả!'
             })
         }
         const response = await RouteService.updateRoute(routeId, req.body)
@@ -175,6 +186,18 @@ const getAllPlace = async (req, res) => {
 }
 
 
+const getPlacesBySearchTrip = async (req, res) => {
+    try {
+        const data = req.query
+        const response = await RouteService.getPlacesBySearchTrip(data)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 
 module.exports = {
     addLocation,
@@ -185,5 +208,6 @@ module.exports = {
     deleteStopPoint,
     deleteRoute,
     updateRoute,
-    getAllPlace
+    getAllPlace,
+    getPlacesBySearchTrip
 }

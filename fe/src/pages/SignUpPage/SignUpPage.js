@@ -3,7 +3,7 @@ import { Form, Input, Button, Card } from "antd";
 import { LoginOutlined, HomeOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
-import { errorMes, successMes, loadingMes, destroyMes } from '../../components/Message';
+import { errorMes, successMes, loadingMes, destroyMes } from '../../components/Message/Message';
 import { useMutation } from '@tanstack/react-query';
 import { signupUser } from '../../services/UserService';
 
@@ -19,7 +19,7 @@ const SignUpPage = () => {
         {
             mutationFn: (data) => signupUser(data),
             onSuccess: (data) => {
-                successMes();
+                successMes(data?.message);
                 navigate('/sign-in')
             },
             onError: (data) => {
@@ -39,6 +39,7 @@ const SignUpPage = () => {
                 <Form
                     name="signin"
                     onFinish={onFinish}
+                    style={{ width: '400px' }}
                 >
                     <Title level={2} className="text-center">
                         Đăng ký
@@ -107,7 +108,7 @@ const SignUpPage = () => {
                         rules={[
                             {
                                 required: true,
-                                message: 'Nhập lại mật khẩu không được bỏ trống !',
+                                message: 'Nhập lại mật khẩu không bỏ trống !',
                             },
                             ({ getFieldValue }) => ({
                                 validator(_, value) {

@@ -2,7 +2,7 @@ import './style.css'
 import { Layout, Menu, Button } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
     UserOutlined,
     LogoutOutlined,
@@ -17,9 +17,12 @@ import AdminBusOwnerComponent from '../../components/Admin/AdminBusOwnerComponen
 import AdminTicketComponent from '../../components/Admin/AdminTicketComponent'
 import AdminDriverComponent from '../../components/Admin/AdminDriverComponent'
 import AcceptBusOwner from '../../components/Admin/AcceptBusOwner'
+import { logoutUser } from '../../services/UserService';
+import { resetUser } from '../../redux/slides/userSlide';
 
 const { Header, Content } = Layout;
 const AdminPage = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const [userName, setUserName] = useState('')
@@ -77,6 +80,13 @@ const AdminPage = () => {
         default:
             break;
     }
+
+    const handleLogout = async () => {
+        await logoutUser()
+        dispatch(resetUser());
+        localStorage.clear();
+        navigate('/sign-in')
+    }
     return (
         <div >
             <Header style={{ padding: '10px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -84,7 +94,7 @@ const AdminPage = () => {
                     <h1 style={{ color: 'white', margin: 0 }}>Trang Admin</h1>
                 </div>
                 <div>
-                    <Button type="primary" icon={<LogoutOutlined />}>
+                    <Button type="primary" icon={<LogoutOutlined />} onClick={handleLogout}>
                         Đăng xuất
                     </Button>
                 </div>

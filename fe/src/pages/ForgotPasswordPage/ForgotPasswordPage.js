@@ -3,7 +3,7 @@ import { Form, Input, Button, Card, Modal } from "antd";
 import { LoginOutlined, HomeOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
-import { error, success, loading, destroy } from '../../components/Message';
+import { error, success, loading, destroy } from '../../components/Message/Message';
 import { useMutation } from '@tanstack/react-query';
 
 

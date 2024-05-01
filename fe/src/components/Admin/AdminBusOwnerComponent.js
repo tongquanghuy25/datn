@@ -5,8 +5,9 @@ import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { Select } from 'antd';
-import { errorMes, successMes } from '../Message';
+import { errorMes, successMes } from '../Message/Message';
 import { deleteBusOwner, editBusOwner, getAllBusOwner } from '../../services/BusOwnerSevice';
+import { editUser } from '../../services/UserService';
 const { Option } = Select;
 
 const provinces = [
@@ -282,7 +283,8 @@ const AdminBusOwnerComponent = () => {
     }
     const mutationDeleted = useMutation({
         mutationFn: async (data) => {
-            const { id, token, ...rest } = data;
+            const { id, token, userId } = data;
+            await editUser(userId, token, { role: 'user' });
             return await deleteBusOwner(id, token);
         },
         onSuccess: (data) => {
@@ -305,7 +307,7 @@ const AdminBusOwnerComponent = () => {
     }
     const HandleDeleteBusOwner = () => {
         setConfirmLoading(true)
-        mutationDeleted.mutate({ id: busOwnerDeleting._id, token: user?.access_token })
+        mutationDeleted.mutate({ id: busOwnerDeleting._id, token: user?.access_token, userId: busOwnerDeleting?.userId._id })
     }
 
 

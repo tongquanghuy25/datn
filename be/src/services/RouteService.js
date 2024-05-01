@@ -110,8 +110,10 @@ const createRoute = (newRoute) => {
                 busOwnerId: newRoute.busOwnerId,
                 provinceStart: newRoute.provinceStart,
                 districtStart: newRoute.districtStart,
+                placeStart: newRoute.placeStart,
                 provinceEnd: newRoute.provinceEnd,
                 districtEnd: newRoute.districtEnd,
+                placeEnd: newRoute.placeEnd,
                 journeyTime: newRoute.journeyTime
             })
             if (createdRoute) {
@@ -283,7 +285,7 @@ const deleteRoute = (routeId) => {
 const updateRoute = (routeId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime } = data
+            const { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime, placeStart, placeEnd } = data
             const checkRoute = await Route.findOne({
                 _id: routeId
             })
@@ -295,7 +297,7 @@ const updateRoute = (routeId, data) => {
                 return;
             }
 
-            const updatedRoute = await Route.findByIdAndUpdate(routeId, { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime }, { new: true })
+            const updatedRoute = await Route.findByIdAndUpdate(routeId, { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime, placeStart, placeEnd }, { new: true })
             resolve({
                 status: 200,
                 message: 'Chỉnh sửa tuyến đường thành công!',
@@ -321,6 +323,49 @@ const getAllPlace = (province, district) => {
         }
     })
 }
+const getPlacesBySearchTrip = (data) => {
+    const formatArr = (arr) => {
+        const districtMap = {};
+
+        arr.forEach(location => {
+            const { _id, district, place } = location;
+
+            if (!districtMap[district]) {
+                districtMap[district] = [];
+            }
+
+            districtMap[district].push({ _id, place });
+        });
+
+        // Chuyển đổi đối tượng thành mảng
+        const districtArray = Object.entries(districtMap).map(([district, locations]) => ({ [district]: locations }));
+
+        return districtArray
+    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            let listPlaceStart, listPlaceEnd
+
+            if (data?.districtStart) listPlaceStart = await Location.find({ province: data?.provinceStart, district: data?.districtStart }).select('district place')
+            else listPlaceStart = await Location.find({ province: data?.provinceStart }).select('district place')
+
+            if (data?.districtEnd) listPlaceEnd = await Location.find({ province: data?.provinceEnd, district: data?.districtEnd }).select('district place')
+            else listPlaceEnd = await Location.find({ province: data?.provinceEnd }).select('district place')
+
+
+            listPlaceStart = formatArr(listPlaceStart)
+            listPlaceEnd = formatArr(listPlaceEnd)
+            resolve({
+                status: 200,
+                message: 'Lấy danh sách địa điểm thành công!',
+                data: { listPlaceStart, listPlaceEnd }
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
 
 
 
@@ -337,5 +382,6 @@ module.exports = {
     deleteStopPoint,
     deleteRoute,
     updateRoute,
-    getAllPlace
+    getAllPlace,
+    getPlacesBySearchTrip
 }

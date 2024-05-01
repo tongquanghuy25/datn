@@ -6,7 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { deleteTrip, getTripsByBusOwner } from '../../../services/TripService';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
-import { destroyMes, errorMes, loadingMes, successMes } from '../../Message';
+import { destroyMes, errorMes, loadingMes, successMes } from '../../Message/Message';
 import ModalUpdateTrip from './ModalUpdateTrip';
 import { getBussByBusOwner } from '../../../services/BusService';
 import { getDriversByBusOwner } from '../../../services/DriverService';
@@ -173,7 +173,7 @@ const TripManagerment = () => {
         console.log('dataRoutes', dataRoutes);
         const listData = dataRoutes?.data?.map((route) => ({
             value: route?._id,
-            label: `${route?.districtStart}-${route?.provinceStart} -> ${route?.districtEnd}-${route?.provinceEnd}`,
+            label: `${route?.districtStart}-${route?.provinceStart} (${route?.placeStart}) -> ${route?.districtEnd}-${route?.provinceEnd} (${route?.placeEnd})`,
         }));
         setListRoute(listData);
     }, [dataRoutes])

@@ -6,7 +6,7 @@ import { getAllProvince, getDistrictByProvince } from '../../../services/PlaceSe
 import ModalAddStopPoint from './ModalAddStopPoint';
 import { deleteRoute, deleteStopPoint, getStopPointsByBusRoute, updateRoute } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
-import { errorMes, loadingMes, successMes } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import dayjs from 'dayjs';
 
 const InforRouteComponent = (props) => {
@@ -106,6 +106,7 @@ const InforRouteComponent = (props) => {
     const [listPickUpPoint, setListPickUpPoint] = useState([])
     const [listDropOffPoint, setListDropOffPoint] = useState([])
     const [isDeletingRoute, setIsDeletingRoute] = useState(false)
+
 
     useEffect(() => {
         setProvinceStart(route?.provinceStart)
@@ -246,6 +247,7 @@ const InforRouteComponent = (props) => {
             return await updateRoute(id, access_token, rest);
         },
         onSuccess: (data) => {
+            console.log(data);
             successMes(data?.message)
             refetchListRoute()
             setIsDeletingRoute(false)
@@ -258,7 +260,10 @@ const InforRouteComponent = (props) => {
 
 
     const handleUpdateRoute = () => {
-        mutationUpdateRoute.mutate({ id: route._id, districtStart, provinceStart, districtEnd, provinceEnd, journeyTime, access_token: user?.access_token })
+        const placeStart = listPickUpPoint.length > 0 && listPickUpPoint[0].place
+        const placeEnd = listDropOffPoint.length > 0 && listDropOffPoint[listDropOffPoint.length - 1].place
+        console.log(placeStart, placeEnd);
+        mutationUpdateRoute.mutate({ id: route._id, districtStart, provinceStart, districtEnd, provinceEnd, journeyTime, placeStart, placeEnd, access_token: user?.access_token })
     }
 
     const mutationDeleteRoute = useMutation({

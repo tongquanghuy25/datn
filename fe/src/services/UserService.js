@@ -21,8 +21,10 @@ export const getDetailsUser = async (id, access_token) => {
     return res.data
 }
 
-export const deleteUser = async (id, access_token, data) => {
-    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/user/delete-user/${id}`, data, {
+export const deleteUser = async (id, access_token) => {
+    console.log('user1111', access_token);
+
+    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/user/delete-user/${id}`, {
         headers: {
             token: `Bearer ${access_token}`,
         }
@@ -62,7 +64,7 @@ export const logoutUser = async () => {
     return res.data
 }
 
-export const editUser = async (id, data, access_token) => {
+export const editUser = async (id, access_token, data) => {
     const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/user/edit-user/${id}`, data, {
         headers: {
             token: `Bearer ${access_token}`,

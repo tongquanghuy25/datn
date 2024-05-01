@@ -5,7 +5,7 @@ import { LoginOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
 import { getDetailsUser, loginUser } from '../../services/UserService';
-import { errorMes, loadingMes, successMes } from '../../components/Message';
+import { errorMes, loadingMes, successMes } from '../../components/Message/Message';
 import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux'
@@ -56,6 +56,7 @@ const SignInPage = () => {
     dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }))
   }
 
+
   const handleGetDetailBusOwner = async (id, token) => {
     const res = await getDetailBusOwnerByUserId(id, token)
     localStorage.setItem('bus_owner_id', JSON.stringify(res?.data?._id))
@@ -82,6 +83,7 @@ const SignInPage = () => {
             password: ""
           }}
           onFinish={onFinish}
+          style={{ width: '400px' }}
         >
           <Title level={2} className="text-center">
             Đăng nhập
@@ -125,7 +127,7 @@ const SignInPage = () => {
           </Form.Item>
 
           <Form.Item>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px' }}>
               <a onClick={() => navigate('/sign-up')}>
                 Tạo tài khoản mới
               </a>

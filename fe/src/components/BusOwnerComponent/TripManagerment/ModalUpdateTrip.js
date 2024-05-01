@@ -3,7 +3,7 @@ import { Form, Modal, Select } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { updateTrip } from '../../../services/TripService';
-import { errorMes, successMes } from '../../Message';
+import { errorMes, successMes } from '../../Message/Message';
 const ModalUpdateTrip = (props) => {
     const { trip, isUpdateTrip, handleCancel, refetch, listBus, listDriver, filterOption } = props
     const [form] = Form.useForm();

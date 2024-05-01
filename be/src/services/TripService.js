@@ -1,6 +1,8 @@
-const Bus = require("../models/BusModel");
+const Route = require("../models/RouteModel");
 const BusOwner = require("../models/BusOwnerModel");
 const Trip = require("../models/TripModel");
+const StopPoint = require("../models/StopPointModel");
+const Bus = require("../models/BusModel");
 
 
 const createTrip = (dates, newTrip) => {
@@ -60,6 +62,161 @@ const getAllByBusOwner = (busOwnerId, day) => {
     })
 }
 
+const getTripsBySearch = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { provinceStart, districtStart, provinceEnd, districtEnd, date } = data
+
+            const routeIds = await Route.find(data).select('_id')
+
+
+            const allTrip = await Trip.
+                find({
+                    departureDate: date,
+                    routeId: { $in: routeIds },
+                    // status: 'Chưa khởi hành'
+                })
+
+                .populate('busOwnerId', 'busOwnerName')
+                .populate({
+                    path: 'routeId',
+                    select: 'provinceStart districtStart provinceEnd districtEnd',
+                })
+                .populate('busId', 'avatar typeBus averageRating')
+                .limit(2)
+
+            // .where({
+            //     'routeId.provinceStart': 'Bắc Kạn',
+            //     'routeId.provinceEnd': 'Bà Rịa - Vũng Tàu'
+            // })
+            // .sort({ createdAt: -1, updatedAt: -1 })
+
+            resolve({
+                status: 200,
+                message: 'Success',
+                data: allTrip
+            })
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getTripsByFilter = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { provinceStart, districtStart, provinceEnd, districtEnd, date, order, placesEnd, placesStart, priceRange, isRecliningSeat, minRating } = data
+
+            const routeIds = await Route.find(data).select('_id')
+
+            let routeIdFinal
+            if (placesEnd?.length > 0 || placesStart?.length > 0) {
+                if (placesStart?.length > 0) {
+                    routeIdFinal = await StopPoint.
+                        find({
+                            routeId: { $in: routeIds },
+                            locationId: { $in: placesStart },
+                            isPickUp: true
+                        })
+                        .distinct('routeId')
+                }
+
+                if (placesStart?.length > 0) {
+                    let routes = await StopPoint.
+                        find({
+                            routeId: { $in: routeIds },
+                            locationId: { $in: placesEnd },
+                            isPickUp: false
+                        })
+                        .distinct('routeId')
+
+                    routeIdFinal.push(...routes)
+                }
+            } else routeIdFinal = routeIds
+
+
+            let filterBus = {}
+            if (isRecliningSeat === 'true' || isRecliningSeat === 'false') {
+                filterBus = { isRecliningSeat: JSON.parse(isRecliningSeat) }
+            }
+
+            if (minRating) {
+                filterBus = { ...filterBus, averageRating: { $gt: parseInt(minRating) } }
+            }
+
+            let busIds = []
+            if (JSON.stringify(filterBus) !== '{}') {
+                busIds = await Bus.find(filterBus).select('_id')
+
+            }
+
+
+            let filterTrip = {
+                departureDate: date,
+                routeId: { $in: routeIdFinal },
+                ticketPrice: { $gt: priceRange[0], $lt: priceRange[1] }
+                // status: 'Chưa khởi hành'
+
+            }
+            if (JSON.stringify(filterBus) !== '{}') filterTrip = { ...filterTrip, busId: { $in: busIds } }
+
+
+
+            let orderTrip = {}
+            if (order === 'price_asc') {
+                orderTrip = { ticketPrice: 1 }
+            } else if (order === 'price_desc') {
+                orderTrip = { ticketPrice: -1 }
+
+            } else if (order === 'time_asc') {
+                orderTrip = { departureTime: 1 }
+
+            } else if (order === 'time_desc') {
+                orderTrip = { departureTime: -1 }
+
+            }
+
+
+            const allTrip = await Trip.
+                find(filterTrip)
+                .populate('busId', 'avatar typeBus averageRating isRecliningSeat')
+                .populate('busOwnerId', 'busOwnerName')
+                .populate({
+                    path: 'routeId',
+                    select: 'provinceStart districtStart provinceEnd districtEnd',
+                })
+                .sort(orderTrip)
+
+            console.log('filterTrip', filterTrip);
+
+            // const allTrip = await Trip.
+            //     find({
+            //         departureDate: date,
+            //         routeId: { $in: routeIds },
+            //         // status: 'Chưa khởi hành'
+            //     })
+            //     .populate('busOwnerId', 'busOwnerName')
+            //     .populate({
+            //         path: 'routeId',
+            //         select: 'provinceStart districtStart provinceEnd districtEnd',
+            //     })
+            //     .populate('busId', 'avatar typeBus averageRating')
+            //     .limit(2)
+
+            resolve({
+                status: 200,
+                message: 'Success',
+                data: allTrip
+            })
+
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
 const updateTrip = (tripId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -88,7 +245,6 @@ const updateTrip = (tripId, data) => {
     })
 }
 
-
 const deleteTrip = (tripId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -107,5 +263,7 @@ module.exports = {
     createTrip,
     getAllByBusOwner,
     deleteTrip,
-    updateTrip
+    updateTrip,
+    getTripsBySearch,
+    getTripsByFilter
 }

@@ -6,7 +6,7 @@ import { getAllProvince, getDistrictByProvince } from '../../../services/PlaceSe
 import ModalAddStopPoint from './ModalAddStopPoint';
 import { createRoute } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
-import { errorMes, loadingMes, successMes } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message/Message';
 
 const AddRouteComponent = (props) => {
     const { refetch, closeCreateRoute } = props
@@ -199,8 +199,6 @@ const AddRouteComponent = (props) => {
     }
     //Table
 
-
-
     const addDataToListPoint = (data) => {
         if (isPickUpPoint) {
             setListPickUpPoint([...listPickUpPoint, data].sort((a, b) => a.timeFromStart - b.timeFromStart))
@@ -237,6 +235,9 @@ const AddRouteComponent = (props) => {
     });
 
     const handleCreateRoute = () => {
+        const placeStart = listPickUpPoint.length > 0 && listPickUpPoint[0].place
+        const placeEnd = listDropOffPoint.length > 0 && listDropOffPoint[listDropOffPoint.length - 1].place
+        console.log('locationStart', placeStart, placeEnd);
         mutation.mutate({
             access_token: user?.access_token,
             busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')),
@@ -245,6 +246,8 @@ const AddRouteComponent = (props) => {
             districtEnd,
             provinceEnd,
             journeyTime,
+            placeStart,
+            placeEnd,
             listPickUpPoint,
             listDropOffPoint
         })

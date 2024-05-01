@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, UploadOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space, Upload, Image, Flex, message, Modal } from 'antd';
+import { Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space, Upload, Image, Flex, message, Modal, Radio } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import { driverRegister } from '../../../services/DriverService';
 import { useSelector } from 'react-redux'
@@ -200,6 +200,8 @@ const DrawerCreateBus = (props) => {
         });
         const busOwnerId = JSON.parse(localStorage.getItem('bus_owner_id'))
         formData.append('busOwnerId', busOwnerId);
+        if (values?.typeSeat === 'seat') formData.append('isRecliningSeat', false)
+        else formData.append('isRecliningSeat', true)
         mutation.mutate({ formData, access_token: user.access_token })
     }
 
@@ -373,6 +375,21 @@ const DrawerCreateBus = (props) => {
                             options={optionconvinients}
                         />
                     </Form.Item>
+
+                    <Form.Item
+                        name="typeSeat"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Loại ghế không được bỏ trống !",
+                            }
+                        ]}>
+                        <Radio.Group >
+                            <Radio value="seat">Ghế ngồi</Radio>
+                            <Radio value="bed">Ghế giường nằm</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+
                     <Form.Item
                         // style={{ flex: 1 }}
                         name="images"

@@ -8,6 +8,7 @@ const createBus = async (req, res) => {
         const arrPath = req.files.map((file) => file?.path)
         let avatar
         let images = []
+        console.log('aaa0');
         if (req.files && req.files[0].fieldname === 'avatar') {
             avatar = arrPath[0]
             images = arrPath.slice(1)

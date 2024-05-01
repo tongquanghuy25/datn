@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { deleteUser, editUser, getAllUser, updateUser } from '../../services/UserService'
 import { Select } from 'antd';
-import { errorMes, successMes } from '../Message';
+import { errorMes, successMes } from '../Message/Message';
 const { Option } = Select;
 
 
@@ -139,8 +139,8 @@ const AdminUserComponent = () => {
 
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
-            const { id, token, user } = data;
-            return await editUser(id, user, token);
+            const { id, access_token, user } = data;
+            return await editUser(id, access_token, user);
         },
         onSuccess: (data) => {
             successMes(data.message)
@@ -158,8 +158,8 @@ const AdminUserComponent = () => {
     });
     const mutationDeleted = useMutation({
         mutationFn: async (data) => {
-            const { id, token, user } = data;
-            await deleteUser(id, user, token);
+            const { id, access_token, user } = data;
+            await deleteUser(id, access_token, user);
         },
         onSuccess: () => {
             setConfirmLoading(false)
@@ -179,7 +179,7 @@ const AdminUserComponent = () => {
     // const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const HandleEditUser = () => {
         setConfirmLoading(true)
-        mutationUpdate.mutate({ id: userEditing._id, user: userEditing, token: user?.access_token })
+        mutationUpdate.mutate({ id: userEditing._id, user: userEditing, access_token: user?.access_token })
     }
 
     const OnDeleteUser = (record) => {
@@ -188,7 +188,7 @@ const AdminUserComponent = () => {
     }
     const HandleDeleteUser = () => {
         setConfirmLoading(true)
-        mutationDeleted.mutate({ id: userDeleting._id, user: userDeleting, token: user?.access_token })
+        mutationDeleted.mutate({ id: userDeleting._id, user: userDeleting, access_token: user?.access_token })
     }
 
     return (

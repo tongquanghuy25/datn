@@ -5,7 +5,7 @@ import { LoadingOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/i
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import { errorMes, loadingMes, successMes } from '../../components/Message';
+import { errorMes, loadingMes, successMes } from '../../components/Message/Message';
 import { useSelector } from 'react-redux'
 import { busOwnerRegister } from '../../services/BusOwnerSevice';
 

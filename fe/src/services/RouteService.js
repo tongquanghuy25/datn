@@ -1,3 +1,4 @@
+import axios from "axios";
 import { axiosJWT } from "./UserService";
 
 
@@ -54,6 +55,12 @@ export const getAllPlace = async (access_token, province, district) => {
         headers: {
             token: `Bearer ${access_token}`,
         }
+    },)
+    return res.data
+}
+export const getPlacesBySearchTrip = async (data) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/route/get-places-by-search-trip`, {
+        params: data
     },)
     return res.data
 }

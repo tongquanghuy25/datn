@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Form, Input, Popconfirm, Select, Upload, Image } from 'antd'
+import { Button, Form, Input, Popconfirm, Select, Upload, Image, Radio } from 'antd'
 import { UploadOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
-import { errorMes, loadingMes, successMes } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import { deleteBus, updateBus } from '../../../services/BusService';
 
 const getBase64 = (img, callback) => {
@@ -125,7 +125,8 @@ const BusInformation = (props) => {
             licensePlate: bus?.licensePlate,
             color: bus?.color,
             convinients: bus?.convinients,
-            typeBus: bus?.typeBus
+            typeBus: bus?.typeBus,
+            typeSeat: bus?.isRecliningSeat ? 'bed' : 'seat'
         });
         setFileList(bus?.images.map((img, index) => {
             return {
@@ -175,6 +176,8 @@ const BusInformation = (props) => {
             }
             else data = { ...data, typeBus: values.typeBus }
         }
+        if (values?.typeBus === 'seat') data = { ...data, isRecliningSeat: false }
+        else data = { ...data, isRecliningSeat: true }
         if (avatarFile) data = { ...data, avatar: avatarFile }
         if (newImages.length > 0) { data = { ...data, images: images, newImages: newImages } }
         if (deleteImages.length > 0) { data = { ...data, images: images > 0 ? images : 'null', deleteImages: deleteImages } }
@@ -372,6 +375,14 @@ const BusInformation = (props) => {
                             options={optionconvinients}
                         />
                     </Form.Item>
+
+                    <Form.Item name="typeSeat">
+                        <Radio.Group>
+                            <Radio value="seat">Ghế ngồi</Radio>
+                            <Radio value="bed">Ghế giường nằm</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+
                     <Form.Item
                         // style={{ flex: 1 }}
                         name="images"

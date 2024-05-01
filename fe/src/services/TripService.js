@@ -1,3 +1,4 @@
+import axios from "axios"
 import { axiosJWT } from "./UserService";
 
 
@@ -33,6 +34,20 @@ export const updateTrip = async (id, access_token, data) => {
         headers: {
             token: `Bearer ${access_token}`,
         }
+    },)
+    return res.data
+}
+
+export const getTripsBySearch = async (data) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/trip/get-trips-by-search`, {
+        params: { data }
+    },)
+    return res.data
+}
+
+export const getTripsByFilter = async (data) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/trip/get-trips-by-filter`, {
+        params: { data }
     },)
     return res.data
 }

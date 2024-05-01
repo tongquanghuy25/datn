@@ -3,15 +3,15 @@ const TripService = require('../services/TripService');
 
 const createTrip = async (req, res) => {
     try {
-        let { routeId, busId, driverId, dates, departureTime, journeyTime, ticketPrice, availableSeats, busOwnerId } = req.body
-        if (!busOwnerId || !routeId || !busId || !driverId || !dates || !departureTime || !journeyTime || !ticketPrice || !availableSeats) {
+        let { routeId, busId, driverId, dates, departureTime, ticketPrice, availableSeats, busOwnerId } = req.body
+        if (!busOwnerId || !routeId || !busId || !driverId || !dates || !departureTime || !ticketPrice || !availableSeats) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         }
 
 
-        const response = await TripService.createTrip(dates, { busOwnerId, routeId, busId, driverId, departureTime, journeyTime, ticketPrice, availableSeats })
+        const response = await TripService.createTrip(dates, { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats })
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -30,6 +30,30 @@ const getAllByBusOwner = async (req, res) => {
             })
         }
         const response = await TripService.getAllByBusOwner(ownerId, day)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const getTripsBySearch = async (req, res) => {
+    try {
+        const data = req.query
+        const response = await TripService.getTripsBySearch(data.data)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const getTripsByFilter = async (req, res) => {
+    try {
+        const data = req.query
+        const response = await TripService.getTripsByFilter(data.data)
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -75,5 +99,7 @@ module.exports = {
     createTrip,
     getAllByBusOwner,
     deleteTrip,
-    updateTrip
+    updateTrip,
+    getTripsBySearch,
+    getTripsByFilter
 }

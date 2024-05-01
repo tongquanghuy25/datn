@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { updateUser as updateUserApi } from '../../services/UserService';
 import { Button, Card, Form, Input, Select, Upload } from 'antd';
 import Title from 'antd/es/typography/Title';
-import { errorMes, loadingMes, successMes } from '../../components/Message';
+import { errorMes, loadingMes, successMes } from '../../components/Message/Message';
 import { updateUser } from '../../redux/slides/userSlide';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';

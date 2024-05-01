@@ -3,7 +3,7 @@ import { Button, Form, Input, Popconfirm, Upload } from 'antd'
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { updateUser } from '../../../services/UserService';
-import { errorMes, loadingMes, successMes } from '../../Message';
+import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import { deleteDriver } from '../../../services/DriverService';
 
 
