@@ -1,4 +1,4 @@
-import TabSeatSelection from "../components/BusCard/TabContent/TabSeat/TabSeatSelection";
+import TabBookTicket from "../components/BusCard/TabContent/TabBookTicket/TabBookTicket";
 import AdminPage from "../pages/AdminPage/AdminPage";
 import BusOwnerPage from "../pages/BusOwnerPage/BusOwnerPage";
 import BusOwnerRegistration from "../pages/BusOwnerRegistration/BusOwnerRegistration";
@@ -61,7 +61,7 @@ export const routes = [
     //Test
     {
         path: '/test',
-        page: TabSeatSelection,
+        page: TabBookTicket,
         isShowHeader: false
     }
 ]

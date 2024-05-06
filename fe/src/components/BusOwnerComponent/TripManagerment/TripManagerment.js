@@ -160,7 +160,7 @@ const TripManagerment = () => {
     const [listRoute, setListRoute] = useState([])
     const [listBus, setListBus] = useState([])
     const [listDriver, setListDriver] = useState([])
-
+    console.log('listTrip', listTrip);
     //Get all routes
     const { data: dataRoutes } = useQuery(
         {

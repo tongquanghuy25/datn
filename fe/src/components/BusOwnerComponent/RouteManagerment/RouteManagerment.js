@@ -18,9 +18,8 @@ const RouteManagerment = () => {
     {
       queryKey: ['routes'],
       queryFn: () => getRouteByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token),
-      staleTime: Infinity,
     });
-
+  console.log('listRoute', listRoute);
   useEffect(() => {
     if (isSuccess) {
       setListRoute(data?.data)

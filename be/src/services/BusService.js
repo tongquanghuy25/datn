@@ -30,7 +30,6 @@ const createBus = (newBus) => {
                 })
             }
         } catch (e) {
-
             reject(e)
         }
     })
@@ -56,8 +55,6 @@ const getBussByBusOwner = (busOwnerId) => {
 const updateBus = (busId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-
-
             const checkBus = await Bus.findOne({
                 _id: busId
             })
@@ -68,13 +65,14 @@ const updateBus = (busId, data) => {
                 })
                 return;
             }
-
             const updatedBus = await Bus.findByIdAndUpdate(busId, { ...data }, { new: true })
             if (updatedBus && data.deleteImages?.length > 0) {
                 for (const img of data.deleteImages) {
                     await deleteImgCloud({ path: img })
                 }
             }
+
+            console.log('updatedBus', updatedBus);
             resolve({
                 status: 200,
                 message: 'Cập nhật thông tin xe thành công!',

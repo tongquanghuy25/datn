@@ -5,7 +5,7 @@ const { authBusOwnerMiddleWare } = require("../middleware/authMiddleware");
 
 router.post('/add-location', authBusOwnerMiddleWare, RouteController.addLocation)
 router.post('/add-stop-point', authBusOwnerMiddleWare, RouteController.addStopPoint)
-router.get('/get-stop-point-by-route/:id', authBusOwnerMiddleWare, RouteController.getStopPointsByBusRoute)
+router.get('/get-stop-point-by-route/:id', RouteController.getStopPointsByBusRoute)
 router.delete('/delete-stop-point/:id', authBusOwnerMiddleWare, RouteController.deleteStopPoint)
 router.post('/create-route', authBusOwnerMiddleWare, RouteController.createRoute)
 router.get('/get-route-by-busowner/:id', authBusOwnerMiddleWare, RouteController.getRoutesByBusOwner)

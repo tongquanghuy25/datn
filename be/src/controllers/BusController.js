@@ -4,18 +4,17 @@ const { deleteImgCloud } = require('../utils');
 
 const createBus = async (req, res) => {
     try {
-        let { licensePlate, typeBus, type, numberSeat, color, convinients, busOwnerId } = req.body
+        let { licensePlate, typeBus, type, numberSeat, color, convinients, busOwnerId, floorNumber } = req.body
         const arrPath = req.files.map((file) => file?.path)
         let avatar
         let images = []
-        console.log('aaa0');
-        if (req.files && req.files[0].fieldname === 'avatar') {
+        if (req.files && req.files[0]?.fieldname === 'avatar') {
             avatar = arrPath[0]
             images = arrPath.slice(1)
         } else {
             images = arrPath
         }
-        if (!licensePlate || !typeBus || !color || !busOwnerId) {
+        if (!licensePlate || !typeBus || !color || !busOwnerId || !floorNumber) {
             if (req.file && req.file?.public_id) await deleteImgCloud({ files: req.files })
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
@@ -33,7 +32,7 @@ const createBus = async (req, res) => {
         convinients = convinients?.split(",")
 
 
-        const response = await BusService.createBus({ licensePlate, typeBus, numberSeat, color, convinients, busOwnerId, images, avatar })
+        const response = await BusService.createBus({ licensePlate, typeBus, numberSeat, color, convinients, busOwnerId, images, avatar, floorNumber })
         if (response.status !== 200) {
             if (req.files) await deleteImgCloud({ files: req.files })
             return res.status(response.status).json(response)

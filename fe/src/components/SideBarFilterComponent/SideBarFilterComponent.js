@@ -40,9 +40,40 @@ const { SHOW_PARENT } = TreeSelect;
 //         ],
 //     },
 // ];
+
+function calculateArrivalTime(startTime, duration) {
+    // Chuyển đổi chuỗi 'hh:mm' thành giờ và phút
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [durationHour, durationMinute] = duration.split(':').map(Number);
+
+    // Tính toán thời gian đến
+    let arrivalHour = startHour + durationHour;
+    let arrivalMinute = startMinute + durationMinute;
+
+    // Xử lý trường hợp khi phút vượt quá 60
+    if (arrivalMinute >= 60) {
+        arrivalHour += Math.floor(arrivalMinute / 60);
+        arrivalMinute %= 60;
+    }
+
+    if (arrivalMinute > 24) {
+        arrivalMinute = arrivalMinute % 24
+    }
+
+    // Định dạng thời gian đến
+    const formattedArrivalMinute = arrivalMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
+    const arrivalTime = `${arrivalHour} giờ ${formattedArrivalMinute}`;
+
+    // Định dạng thời gian xuất phát
+    const formattedStartMinute = startMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
+    const departureTime = `${startHour} giờ ${formattedStartMinute}`;
+
+    return { departureTime, arrivalTime };
+}
+
 const SideBarFilterComponent = (props) => {
 
-    const { listPlace, data } = props
+    const { listPlace, data, setListTrip, handleCancelFilter } = props
 
     const [order, setOrder] = useState();
     const [priceRange, setPriceRange] = useState([1000, 2000000]);
@@ -150,7 +181,6 @@ const SideBarFilterComponent = (props) => {
                 newResult.push(val);
             }
         });
-        console.log('newResult', newResult);
         return newResult;
     }
 
@@ -161,11 +191,31 @@ const SideBarFilterComponent = (props) => {
             return await getTripsByFilter(data);
         },
         onSuccess: (data) => {
-            console.log('data', data);
-            // successMes(data.message)
-            // console.log('data', data);
-            // setListPlace(data?.data)
-
+            console.log('da', data?.data);
+            const listData = data.data?.map(trip => {
+                const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
+                return {
+                    _id: trip._id,
+                    busOwnerName: trip.busOwnerId.busOwnerName,
+                    avatar: trip.busId.avatar,
+                    rating: trip.busId.averageRating,
+                    reviewCount: trip.busId.reviewCount,
+                    images: trip.busId.images,
+                    convinients: trip.busId.convinients,
+                    typeBus: trip.busId.typeBus,
+                    availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+                    routeId: trip.routeId._id,
+                    departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
+                    arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
+                    ticketPrice: trip.ticketPrice,
+                    paymentRequire: trip.paymentRequire,
+                    prebooking: trip.prebooking,
+                    departureDate: trip.departureDate,
+                    arrivalTime: arrivalTime,
+                    departureTime: departureTime,
+                }
+            })
+            setListTrip(listData)
         }
     });
 
@@ -184,11 +234,13 @@ const SideBarFilterComponent = (props) => {
         result.placesStart = handleGetResultPlace(placesStart, listPlace?.listPlaceStart)
         result.placesEnd = handleGetResultPlace(placesEnd, listPlace?.listPlaceEnd)
 
-        console.log('result', result);
         mutation.mutate(result)
     }
 
+
+
     const handleClearFilter = () => {
+        handleCancelFilter(data)
         setOrder()
         setPriceRange([1000, 2000000])
         setSeatOption([])
@@ -198,7 +250,7 @@ const SideBarFilterComponent = (props) => {
     }
 
     return (
-        <Col span={6} style={{ height: '100vh' }}>
+        <Col span={6}>
             <div style={{ marginLeft: '20px' }}>
                 <h2>Sắp xếp</h2>
                 <Radio.Group value={order}>

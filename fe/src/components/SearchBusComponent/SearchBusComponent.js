@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import background from '../../acess/background.jpg'
+import banner from '../../acess/banner1.jpg'
 import { Button, DatePicker, Select } from 'antd'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getAllProvince, getDistrictByProvince } from '../../services/PlaceService'
@@ -135,10 +135,15 @@ const SearchBusComponent = (props) => {
     }
 
     return (
-        <div style={{ backgroundImage: `url(${background})`, backgroundRepeat: 'no-repeat', objectFit: 'cover', height: '50vh', width: '80%' }}>
+        <div
+            style={{
+                background: 'linear-gradient(135deg, #3494e6, #ec6ead)', /* Gradient màu từ xanh dương đến hồng */
+                padding: '20px' /* Thêm padding cho nội dung bên trong */
+            }}
+        >
             <div style={{ width: '50%', margin: 'auto' }}>
-                <div style={{ marginBottom: '20px' }}>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px', marginBottom: '10px' }}>Nơi đi</div>
+                <div style={{ marginBottom: '10px' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>Nơi đi</div>
                     <Select style={{ width: '40%' }}
                         showSearch
                         placeholder="Chọn tỉnh"
@@ -154,7 +159,7 @@ const SearchBusComponent = (props) => {
                         options={listDistrictStart}
                     />
                 </div>
-                <div style={{ marginBottom: '20px' }}>
+                <div style={{ marginBottom: '10px' }}>
                     <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>Nơi đến</div>
                     <Select style={{ width: '40%' }}
                         showSearch

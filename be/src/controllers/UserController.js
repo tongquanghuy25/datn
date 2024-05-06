@@ -4,6 +4,10 @@ const uploadCloud = require('../middleware/uploader');
 const { deleteImgCloud } = require('../utils');
 const cloudinary = require('cloudinary').v2;
 
+const Bus = require("../models/BusModel");
+const Trip = require('../models/TripModel');
+
+
 
 
 const createUser = async (req, res) => {
@@ -188,6 +192,15 @@ const refreshToken = async (req, res) => {
 
 const logoutUser = async (req, res) => {
     try {
+
+        // Trip.updateMany({}, { $set: { prebooking: true } }, (err, result) => {
+        //     if (err) {
+        //         console.error(err);
+        //     } else {
+        //         console.log(result);
+        //     }
+        // });
+
         res.clearCookie('refresh_token')
         return res.status(200).json({
             message: 'Logout successfully'

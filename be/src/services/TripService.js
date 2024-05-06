@@ -76,14 +76,17 @@ const getTripsBySearch = (data) => {
                     routeId: { $in: routeIds },
                     // status: 'Chưa khởi hành'
                 })
+                .populate('busOwnerId')
+                .populate('routeId')
+                .populate('busId')
 
-                .populate('busOwnerId', 'busOwnerName')
-                .populate({
-                    path: 'routeId',
-                    select: 'provinceStart districtStart provinceEnd districtEnd',
-                })
-                .populate('busId', 'avatar typeBus averageRating')
-                .limit(2)
+            // .populate('busOwnerId', 'busOwnerName')
+            // .populate({
+            //     path: 'routeId',
+            //     select: 'provinceStart districtStart provinceEnd districtEnd journeyTime',
+            // })
+            // .populate('busId', 'avatar typeBus averageRating reviewCount')
+            // .limit(2)
 
             // .where({
             //     'routeId.provinceStart': 'Bắc Kạn',
@@ -110,7 +113,8 @@ const getTripsByFilter = (data) => {
 
             const routeIds = await Route.find(data).select('_id')
 
-            let routeIdFinal
+            let routeIdFinal = []
+
             if (placesEnd?.length > 0 || placesStart?.length > 0) {
                 if (placesStart?.length > 0) {
                     routeIdFinal = await StopPoint.
@@ -122,7 +126,9 @@ const getTripsByFilter = (data) => {
                         .distinct('routeId')
                 }
 
-                if (placesStart?.length > 0) {
+                if (placesEnd?.length > 0) {
+
+
                     let routes = await StopPoint.
                         find({
                             routeId: { $in: routeIds },
@@ -131,7 +137,9 @@ const getTripsByFilter = (data) => {
                         })
                         .distinct('routeId')
 
-                    routeIdFinal.push(...routes)
+                    const routesString = routes.map(route => route.toString());
+                    routeIdFinal = routeIdFinal.filter(item => routesString.includes(item.toString()))
+
                 }
             } else routeIdFinal = routeIds
 
@@ -180,15 +188,14 @@ const getTripsByFilter = (data) => {
 
             const allTrip = await Trip.
                 find(filterTrip)
-                .populate('busId', 'avatar typeBus averageRating isRecliningSeat')
-                .populate('busOwnerId', 'busOwnerName')
+                .populate('busId')
+                .populate('busOwnerId')
                 .populate({
-                    path: 'routeId',
-                    select: 'provinceStart districtStart provinceEnd districtEnd',
+                    path: 'routeId'
                 })
                 .sort(orderTrip)
 
-            console.log('filterTrip', filterTrip);
+            // console.log('filterTrip', filterTrip);
 
             // const allTrip = await Trip.
             //     find({

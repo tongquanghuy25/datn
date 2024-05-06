@@ -1,18 +1,8 @@
 import React, { useState } from 'react'
 import './style.css'
 
-const SeatSelector = ({ seats, onSelectSeat, isSelected }) => {
-    const [selectedSeat, setSelectedSeat] = useState(null);
+const SeatSelector = ({ seats, handleSeatSelect, isSelected }) => {
 
-    const handleSeatSelect = (seat) => {
-        if (selectedSeat?.id === seat?.id) {
-            setSelectedSeat(null);
-            onSelectSeat(null);
-        } else {
-            onSelectSeat(seat);
-            setSelectedSeat(seat);
-        }
-    };
 
     const renderItems = (seat) => {
         if (seat?.isDriver) return <div className='driver'>Tài xế</div>

@@ -3,15 +3,15 @@ const TripService = require('../services/TripService');
 
 const createTrip = async (req, res) => {
     try {
-        let { routeId, busId, driverId, dates, departureTime, ticketPrice, availableSeats, busOwnerId } = req.body
-        if (!busOwnerId || !routeId || !busId || !driverId || !dates || !departureTime || !ticketPrice || !availableSeats) {
+        let { routeId, busId, driverId, dates, departureTime, ticketPrice, availableSeats, busOwnerId, paymentRequire, prebooking } = req.body
+        if (!busOwnerId || !routeId || !busId || !driverId || !dates || !departureTime || !ticketPrice || !availableSeats || !paymentRequire || !prebooking) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         }
 
 
-        const response = await TripService.createTrip(dates, { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats })
+        const response = await TripService.createTrip(dates, { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking })
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({

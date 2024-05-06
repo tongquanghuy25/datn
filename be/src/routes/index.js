@@ -5,10 +5,10 @@ const BusRouter = require('./BusRouter')
 const PlaceRouter = require('./PlaceRouter')
 const RouteRouter = require('./RouteRouter')
 const TripRouter = require('./TripRouter')
+const OrderRouter = require('./OrderRouter')
 
 
 const ProductRouter = require('./ProductRouter')
-const OrderRouter = require('./OrderRouter')
 const PaymentRouter = require('./PaymentRouter')
 
 const routes = (app) => {
@@ -19,11 +19,11 @@ const routes = (app) => {
     app.use('/api/place', PlaceRouter)
     app.use('/api/route', RouteRouter)
     app.use('/api/trip', TripRouter)
+    app.use('/api/order', OrderRouter)
 
 
 
     app.use('/api/product', ProductRouter)
-    app.use('/api/order', OrderRouter)
     app.use('/api/payment', PaymentRouter)
 }
 

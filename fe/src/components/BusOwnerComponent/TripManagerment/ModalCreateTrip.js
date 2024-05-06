@@ -1,4 +1,4 @@
-import { DatePicker, Form, InputNumber, Modal, Select, TimePicker } from 'antd'
+import { DatePicker, Form, InputNumber, Modal, Radio, Select, TimePicker } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { getRouteByBusOwner } from '../../../services/RouteService';
@@ -15,6 +15,7 @@ const ModalCreateTrip = (props) => {
     const formRef = useRef(null);
     const user = useSelector((state) => state.user)
     const [listDate, setListDate] = useState()
+    const [departureTime, setDepartureTime] = useState()
 
 
 
@@ -48,8 +49,11 @@ const ModalCreateTrip = (props) => {
             busId: values?.bus,
             driverId: values?.driver,
             dates: listDate,
-            departureTime: `${values.time?.hour()}:${values.time?.minute()}`,
+            departureTime: departureTime,
+            // departureTime: `${values.time?.hour()}:${values.time?.minute()}`,
             // journeyTime: journeyTime,
+            paymentRequire: values?.paymentRequire === 'true' ? true : false,
+            prebooking: values?.prebooking === 'true' ? true : false,
             ticketPrice: values?.ticketPrice,
             availableSeats: availableSeats,
         })
@@ -59,6 +63,10 @@ const ModalCreateTrip = (props) => {
     const onCancel = () => {
         form.resetFields()
         handleCancel()
+    }
+
+    const onchangeDepartureTime = (time, timeString) => {
+        setDepartureTime(timeString)
     }
     return (
         <div>
@@ -97,6 +105,7 @@ const ModalCreateTrip = (props) => {
                             options={listRoute}
                         />
                     </Form.Item>
+
                     <Form.Item
                         name="bus"
                         label="Xe"
@@ -110,6 +119,7 @@ const ModalCreateTrip = (props) => {
                             options={listBus}
                         />
                     </Form.Item>
+
                     <Form.Item
                         name="driver"
                         label="Tài xế"
@@ -123,6 +133,7 @@ const ModalCreateTrip = (props) => {
                             options={listDriver}
                         />
                     </Form.Item>
+
                     <Form.Item
                         name="dates"
                         label="Chọn ngày xuất phát"
@@ -142,33 +153,70 @@ const ModalCreateTrip = (props) => {
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        name="time"
-                        label="Chọn giờ xuất phát"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Tuyến đường không được bỏ trống !",
-                            }
-                        ]}
-                    >
-                        <TimePicker
-                            placeholder="Chọn giờ phút"
-                            format='HH:mm' />
-                    </Form.Item>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Form.Item
+                            name="time"
+                            label="Chọn giờ xuất phát"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Tuyến đường không được bỏ trống !",
+                                }
+                            ]}
+                        >
+                            <TimePicker
+                                placeholder="Chọn giờ phút"
+                                format='HH:mm'
+                                onChange={onchangeDepartureTime} />
+                        </Form.Item>
 
-                    <Form.Item
-                        name="ticketPrice"
-                        label="Giá vé"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Tuyến đường không được bỏ trống !",
-                            }
-                        ]}
-                    >
-                        <InputNumber suffix="VNĐ" style={{ width: '200px' }} />
-                    </Form.Item>
+                        <Form.Item
+                            name="ticketPrice"
+                            label="Giá vé"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Tuyến đường không được bỏ trống !",
+                                }
+                            ]}
+                        >
+                            <InputNumber suffix="VNĐ" style={{ width: '200px' }} />
+                        </Form.Item>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Form.Item
+                            name="paymentRequire"
+                            label="Yêu cầu thanh toán trước"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Không được bỏ trống !",
+                                }
+                            ]}>
+                            <Radio.Group >
+                                <Radio value="true">Có</Radio>
+                                <Radio value="fale">Không</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="prebooking"
+                            label="Cho phép chọn ghế"
+                            style={{ marginRight: '40px' }}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Không được bỏ trống !",
+                                }
+                            ]}>
+                            <Radio.Group >
+                                <Radio value="true">Có</Radio>
+                                <Radio value="fale">Không</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                    </div>
+
                 </Form>
             </Modal>
         </div>

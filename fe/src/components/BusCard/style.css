@@ -1,12 +1,12 @@
 /* styles.css */
 
-.card-container {
+.card-trip-container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.card {
+.card-trip {
     width: 80%;
     margin-bottom: 20px;
     border-radius: 10px;
@@ -14,49 +14,52 @@
     transition: box-shadow 0.3s ease;
 }
 
-.card:hover {
+.card-trip:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.card-content {
+.card-trip-content {
     display: flex;
-    padding: 20px;
+    padding: 10px;
 }
 
-.card-avatar {
-    flex: 1;
+.card-trip-avatar {
+    flex: 2;
     padding-right: 20px;
+
 }
 
-.card-avatar img {
+.card-trip-avatar img {
     width: 100%;
-    height: auto;
+    height: 100%;
     border-radius: 10px;
+    object-fit: cover;
 }
 
-.card-info {
+.card-trip-info {
     flex: 3;
 }
 
-.card-info h2 {
+.card-trip-info .name {
     font-size: 1.5rem;
-    margin-bottom: 10px;
+    font-weight: bold;
+    /* margin-bottom: 10px; */
 }
 
-.card-info p {
+.card-trip-info p {
     margin-bottom: 5px;
 }
 
-.card-info .price {
+.card-trip-info .price {
     font-weight: bold;
 }
 
-.card-actions {
+.card-trip-actions {
     display: flex;
     justify-content: flex-end;
     margin-top: 10px;
 }
 
-.card-actions button {
+.card-trip-actions button {
     margin-left: 10px;
 }

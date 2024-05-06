@@ -14,7 +14,9 @@ const tripSchema = new mongoose.Schema(
         availableSeats: { type: Number, required: true },
         ticketsSold: { type: Number, default: 0 },
         status: { type: String, required: true, default: 'Chưa khởi hành' },
-        ticketPrice: { type: Number, required: true }
+        ticketPrice: { type: Number, required: true },
+        paymentRequire: { type: Boolean, required: true, default: true },
+        prebooking: { type: Boolean, required: true, default: false }
     }
 );
 const Trip = mongoose.model('Trip', tripSchema);

@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { driverRegister } from '../../../services/DriverService';
 import { useSelector } from 'react-redux'
 import { busRegister } from '../../../services/BusService';
+import { optionconvinients, typeOfBus } from '../../../utils/TypeBus';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -12,103 +13,9 @@ const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 };
 
-const typeOfBus = [
-    {
-        value: 'xe limousine 7',
-        label: 'Xe limousine 7 chỗ',
-    },
-    {
-        value: 'xe limousine 9',
-        label: 'Xe limousine 9 chỗ',
-    },
-    {
-        value: 'xe limousine 12',
-        label: 'Xe limousine 12 chỗ',
-    },
-    {
-        value: 'xe limousine 17',
-        label: 'Xe limousine 17 chỗ',
-    },
-    {
-        value: 'xe limousine 19',
-        label: 'Xe limousine 19 chỗ',
-    },
-    {
-        value: 'xe khách 16',
-        label: 'Xe khách 16 chỗ',
-    },
-    {
-        value: 'xe khách 29',
-        label: 'Xe khách 29 chỗ',
-    },
-    {
-        value: 'xe khách 35',
-        label: 'Xe khách 35 chỗ',
-    },
-    {
-        value: 'xe khách 45',
-        label: 'Xe khách 45 chỗ',
-    },
-    {
-        value: 'xe giường nằm 22',
-        label: 'Xe giường nằm 22 chỗ',
-    },
-    {
-        value: 'xe giường nằm 34',
-        label: 'Xe giường nằm 34 chỗ',
-    },
-    {
-        value: 'xe giường nằm 40',
-        label: 'Xe giường nằm 40 chỗ',
-    },
-    {
-        value: 'Khác',
-        label: 'Khác',
-    },
-]
+// const typeOfBus = typeOfBus
 
-const optionconvinients = [
-    {
-        value: 'Wifi',
-        label: 'Wifi',
-    },
-    {
-        value: 'Điều hòa',
-        label: 'Điều hòa',
-    },
-    {
-        value: 'Cổng sạc USB',
-        label: 'Cổng sạc USB',
-    },
-    {
-        value: 'Khăn lạnh',
-        label: 'Khăn lạnh',
-    },
-    {
-        value: 'Nước uống',
-        label: 'Nước uống',
-    },
-    {
-        value: 'Màn hình TV',
-        label: 'Màn hình TV',
-    },
-    {
-        value: 'Nhà vệ sinh',
-        label: 'Nhà vệ sinh',
-    },
-    {
-        value: 'Ghế massage',
-        label: 'Ghế massage',
-    },
-    {
-        value: 'Đèn Led đọc sách',
-        label: 'Đèn Led đọc sách',
-    },
-    {
-        value: 'Chăn gối',
-        label: 'Chăn gối',
-    },
-];
+// const optionconvinients = optionconvinients
 
 const DrawerCreateBus = (props) => {
     const { open, onClose, refetch } = props
@@ -200,8 +107,10 @@ const DrawerCreateBus = (props) => {
         });
         const busOwnerId = JSON.parse(localStorage.getItem('bus_owner_id'))
         formData.append('busOwnerId', busOwnerId);
-        if (values?.typeSeat === 'seat') formData.append('isRecliningSeat', false)
+        if (values?.typeSeat === 'seat') { formData.append('isRecliningSeat', false) }
         else formData.append('isRecliningSeat', true)
+        if (values?.floorNumber === '1') formData.append('floorNumber', 1)
+        else formData.append('floorNumber', 2)
         mutation.mutate({ formData, access_token: user.access_token })
     }
 
@@ -362,6 +271,32 @@ const DrawerCreateBus = (props) => {
                     </div>
 
                     <Form.Item
+                        name="typeSeat"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Loại ghế không được bỏ trống !",
+                            }
+                        ]}>
+                        <Radio.Group >
+                            <Radio value="seat">Ghế ngồi</Radio>
+                            <Radio value="bed">Ghế giường nằm</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    <Form.Item
+                        name="floorNumber"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Số tầng không được bỏ trống !",
+                            }
+                        ]}>
+                        <Radio.Group >
+                            <Radio value="1">1 tầng</Radio>
+                            <Radio value="2">2 tầng</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    <Form.Item
                         // style={{ flex: 1 }}
                         name="convinients"
                         label="Tiện ích"
@@ -376,19 +311,6 @@ const DrawerCreateBus = (props) => {
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        name="typeSeat"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Loại ghế không được bỏ trống !",
-                            }
-                        ]}>
-                        <Radio.Group >
-                            <Radio value="seat">Ghế ngồi</Radio>
-                            <Radio value="bed">Ghế giường nằm</Radio>
-                        </Radio.Group>
-                    </Form.Item>
 
                     <Form.Item
                         // style={{ flex: 1 }}

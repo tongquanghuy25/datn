@@ -4,6 +4,7 @@ import { UploadOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import { deleteBus, updateBus } from '../../../services/BusService';
+import { optionconvinients, typeOfBus } from '../../../utils/TypeBus';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -11,103 +12,7 @@ const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 };
 
-const typeOfBus = [
-    {
-        value: 'xe limousine 7',
-        label: 'Xe limousine 7 chỗ',
-    },
-    {
-        value: 'xe limousine 9',
-        label: 'Xe limousine 9 chỗ',
-    },
-    {
-        value: 'xe limousine 12',
-        label: 'Xe limousine 12 chỗ',
-    },
-    {
-        value: 'xe limousine 17',
-        label: 'Xe limousine 17 chỗ',
-    },
-    {
-        value: 'xe limousine 19',
-        label: 'Xe limousine 19 chỗ',
-    },
-    {
-        value: 'xe khách 16',
-        label: 'Xe khách 16 chỗ',
-    },
-    {
-        value: 'xe khách 29',
-        label: 'Xe khách 29 chỗ',
-    },
-    {
-        value: 'xe khách 35',
-        label: 'Xe khách 35 chỗ',
-    },
-    {
-        value: 'xe khách 45',
-        label: 'Xe khách 45 chỗ',
-    },
-    {
-        value: 'xe giường nằm 22',
-        label: 'Xe giường nằm 22 chỗ',
-    },
-    {
-        value: 'xe giường nằm 34',
-        label: 'Xe giường nằm 34 chỗ',
-    },
-    {
-        value: 'xe giường nằm 40',
-        label: 'Xe giường nằm 40 chỗ',
-    },
-    {
-        value: 'Khác',
-        label: 'Khác',
-    },
-]
 
-const optionconvinients = [
-    {
-        value: 'Wifi',
-        label: 'Wifi',
-    },
-    {
-        value: 'Điều hòa',
-        label: 'Điều hòa',
-    },
-    {
-        value: 'Cổng sạc USB',
-        label: 'Cổng sạc USB',
-    },
-    {
-        value: 'Khăn lạnh',
-        label: 'Khăn lạnh',
-    },
-    {
-        value: 'Nước uống',
-        label: 'Nước uống',
-    },
-    {
-        value: 'Màn hình TV',
-        label: 'Màn hình TV',
-    },
-    {
-        value: 'Nhà vệ sinh',
-        label: 'Nhà vệ sinh',
-    },
-    {
-        value: 'Ghế massage',
-        label: 'Ghế massage',
-    },
-    {
-        value: 'Đèn Led đọc sách',
-        label: 'Đèn Led đọc sách',
-    },
-    {
-        value: 'Chăn gối',
-        label: 'Chăn gối',
-    },
-];
 const BusInformation = (props) => {
     const { bus, access_token, refetch } = props
     const [form] = Form.useForm();
@@ -126,7 +31,8 @@ const BusInformation = (props) => {
             color: bus?.color,
             convinients: bus?.convinients,
             typeBus: bus?.typeBus,
-            typeSeat: bus?.isRecliningSeat ? 'bed' : 'seat'
+            typeSeat: bus?.isRecliningSeat ? 'bed' : 'seat',
+            floorNumber: bus?.floorNumber === 1 ? '1' : '2'
         });
         setFileList(bus?.images.map((img, index) => {
             return {
@@ -174,10 +80,12 @@ const BusInformation = (props) => {
                 data = { ...data, typeBus: `${values.type} ${values.numberSeat}` }
                 data = { ...data, numberSeat: values.numberSeat }
             }
-            else data = { ...data, typeBus: values.typeBus }
+            else data = { ...data, typeBus: values.typeBus, numberSeat: parseInt(values.typeBus.split(" ").pop()) }
         }
-        if (values?.typeBus === 'seat') data = { ...data, isRecliningSeat: false }
+        if (values?.typeSeat === 'seat') data = { ...data, isRecliningSeat: false }
         else data = { ...data, isRecliningSeat: true }
+        if (values?.floorNumber === '1') data = { ...data, floorNumber: 1 }
+        else data = { ...data, floorNumber: 2 }
         if (avatarFile) data = { ...data, avatar: avatarFile }
         if (newImages.length > 0) { data = { ...data, images: images, newImages: newImages } }
         if (deleteImages.length > 0) { data = { ...data, images: images > 0 ? images : 'null', deleteImages: deleteImages } }
@@ -380,6 +288,15 @@ const BusInformation = (props) => {
                         <Radio.Group>
                             <Radio value="seat">Ghế ngồi</Radio>
                             <Radio value="bed">Ghế giường nằm</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+
+                    <Form.Item
+                        name="floorNumber"
+                    >
+                        <Radio.Group >
+                            <Radio value="1">1 tầng</Radio>
+                            <Radio value="2">2 tầng</Radio>
                         </Radio.Group>
                     </Form.Item>
 

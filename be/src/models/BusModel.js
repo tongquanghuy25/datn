@@ -7,6 +7,7 @@ const busSchema = new mongoose.Schema(
         color: { type: String, required: true },
         typeBus: { type: String, required: true },
         numberSeat: { type: Number, required: true },
+        floorNumber: { type: Number, required: true },
         reviewCount: { type: Number, default: 0 },
         averageRating: { type: Number, default: 0.0 },
         convinients: [{ type: String }],
