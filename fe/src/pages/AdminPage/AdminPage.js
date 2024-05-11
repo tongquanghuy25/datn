@@ -1,7 +1,6 @@
 import './style.css'
 import { Layout, Menu, Button } from 'antd';
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     UserOutlined,
@@ -17,36 +16,17 @@ import AdminBusOwnerComponent from '../../components/Admin/AdminBusOwnerComponen
 import AdminTicketComponent from '../../components/Admin/AdminTicketComponent'
 import AdminDriverComponent from '../../components/Admin/AdminDriverComponent'
 import AcceptBusOwner from '../../components/Admin/AcceptBusOwner'
-import { logoutUser } from '../../services/UserService';
-import { resetUser } from '../../redux/slides/userSlide';
+import { useHandleLogout } from '../../utils/Action/HandleLogOut';
 
 const { Header, Content } = Layout;
 const AdminPage = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const [userName, setUserName] = useState('')
     const [userAvatar, setUserAvatar] = useState('')
     const [selectedKeys, setSelectedKeys] = useState("admin");
 
-    ///
 
 
-    // const mutation = useMutation(
-    //     { mutationFn: (data) => getAllUser(data) }
-    // )
-    // useEffect(() => {
-    //     mutation.mutate(user?.access_token);
-    // }, [])
-    // const getAllUsers = 
-
-
-
-
-    // useEffect(()=>{
-    //     setUsers(data?.data)
-    //     log
-    // },[data])
 
     ///
     useEffect(() => {
@@ -81,12 +61,8 @@ const AdminPage = () => {
             break;
     }
 
-    const handleLogout = async () => {
-        await logoutUser()
-        dispatch(resetUser());
-        localStorage.clear();
-        navigate('/sign-in')
-    }
+    const handleLogOut = useHandleLogout()
+
     return (
         <div >
             <Header style={{ padding: '10px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -94,7 +70,7 @@ const AdminPage = () => {
                     <h1 style={{ color: 'white', margin: 0 }}>Trang Admin</h1>
                 </div>
                 <div>
-                    <Button type="primary" icon={<LogoutOutlined />} onClick={handleLogout}>
+                    <Button type="primary" icon={<LogoutOutlined />} onClick={() => { handleLogOut() }}>
                         Đăng xuất
                     </Button>
                 </div>

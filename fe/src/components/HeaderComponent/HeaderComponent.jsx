@@ -9,27 +9,19 @@ import {
     UsergroupAddOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { logoutUser } from '../../services/UserService';
-import { resetUser } from '../../redux/slides/userSlide';
 import logo from '../../acess/logo.png';
-import { QueryCache } from '@tanstack/react-query'
+import { useHandleLogout } from '../../utils/Action/HandleLogOut';
 
 const HeaderComponent = () => {
-    const queryCache = new QueryCache();
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const [userName, setUserName] = useState('')
     const [userAvatar, setUserAvatar] = useState('')
-    const dispatch = useDispatch();
     const [isOpenPopup, setIsOpenPopup] = useState(false)
 
-    const handleLogout = async () => {
-        await logoutUser()
-        dispatch(resetUser());
-        localStorage.clear();
-    }
+    const handleLogOut = useHandleLogout()
 
     useEffect(() => {
         setUserName(user?.name)
@@ -48,7 +40,7 @@ const HeaderComponent = () => {
 
                 <p onClick={() => { }}>Quản lí hệ thống</p>
             )} */}
-            <p className='popover-item' onClick={() => handleLogout()}>Đăng xuất</p>
+            <p className='popover-item' onClick={() => handleLogOut()}>Đăng xuất</p>
         </div>
     );
 

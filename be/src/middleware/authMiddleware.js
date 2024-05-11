@@ -32,7 +32,7 @@ const authUserMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'user' || user?.role === 'busowner') {
+        if (user?.role === 'admin' || user?.role === 'user' || user?.role === 'busowner' || user?.role === 'driver') {
             next()
         } else {
             return res.status(401).json({
@@ -42,6 +42,8 @@ const authUserMiddleWare = (req, res, next) => {
         }
     });
 }
+
+
 
 const authBusOwnerMiddleWare = (req, res, next) => {
     const token = req.headers.token.split(' ')[1]
@@ -72,7 +74,7 @@ const authDriverMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'driver') {
+        if (user?.role === 'admin' || user?.role === 'busowner' || user?.role === 'driver') {
             next()
         } else {
             return res.status(401).json({

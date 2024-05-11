@@ -84,6 +84,7 @@ export const getRouteByBusOwner = async (id, access_token) => {
 }
 
 export const getStopPointsByBusRoute = async (id, access_token) => {
+    console.log('get');
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/route/get-stop-point-by-route/${id}`, {
         headers: {
             token: `Bearer ${access_token}`,

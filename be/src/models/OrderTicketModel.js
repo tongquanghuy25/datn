@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 
-const orderSchema = new mongoose.Schema({
+const orderTicketSchema = new mongoose.Schema({
 
     tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
+    userOrder: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     email: { type: String, required: true },
     phone: { type: String, required: true },
     departureDate: { type: String, required: true },
@@ -30,11 +31,13 @@ const orderSchema = new mongoose.Schema({
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
 
-    status: { type: String },
+    isCancel: { type: Boolean, default: false },
+    status: { type: String, default: 'Chưa lên xe' },
+    isFinish: { type: Boolean, default: false },
 },
     {
         timestamps: true,
     }
 );
-const Order = mongoose.model('Order', orderSchema);
-module.exports = Order
+const OrderTicket = mongoose.model('OrderTicket', orderTicketSchema);
+module.exports = OrderTicket

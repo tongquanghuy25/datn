@@ -215,7 +215,7 @@ const TripManagerment = () => {
     }
 
 
-
+    //Get all trip
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: ['trips', day],

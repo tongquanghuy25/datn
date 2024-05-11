@@ -10,6 +10,15 @@ export const driverRegister = async (access_token, data) => {
     return res.data
 }
 
+export const getDetailDriverByUserId = async (id, access_token) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/driver/get-detail-by-user-id/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
 export const getDriversByBusOwner = async (access_token, id) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/driver/get-driver-by-busowner/${id}`, {
         headers: {

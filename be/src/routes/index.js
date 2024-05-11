@@ -19,7 +19,7 @@ const routes = (app) => {
     app.use('/api/place', PlaceRouter)
     app.use('/api/route', RouteRouter)
     app.use('/api/trip', TripRouter)
-    app.use('/api/order', OrderRouter)
+    app.use('/api/ticket-order', OrderRouter)
 
 
 

@@ -3,6 +3,7 @@ const BusOwner = require("../models/BusOwnerModel");
 const Trip = require("../models/TripModel");
 const StopPoint = require("../models/StopPointModel");
 const Bus = require("../models/BusModel");
+const OrderTicket = require("../models/OrderTicketModel");
 
 
 const createTrip = (dates, newTrip) => {
@@ -32,7 +33,6 @@ const createTrip = (dates, newTrip) => {
     })
 }
 
-
 const getAllByBusOwner = (busOwnerId, day) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -54,6 +54,48 @@ const getAllByBusOwner = (busOwnerId, day) => {
                 status: 200,
                 message: 'Success',
                 data: allTrip
+            })
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getAllByDriver = (driverId, day) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allTrip = await Trip.
+                find({ driverId: driverId, departureDate: day })
+                .populate('routeId')
+                .populate('busId')
+                .sort({ departureTime: -1 })
+
+            resolve({
+                status: 200,
+                message: 'Success',
+                data: allTrip
+            })
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getRunningByDriver = (driverId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const trip = await Trip.
+                findOne({ driverId: driverId, status: 'Đã khởi hành' })
+                .populate('routeId')
+                .populate('busId')
+
+            const listOrder = await OrderTicket.find({ tripId: trip._id })
+            resolve({
+                status: 200,
+                message: 'Success',
+                data: { trip, listOrder }
             })
 
         } catch (e) {
@@ -228,6 +270,18 @@ const updateTrip = (tripId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
 
+            const { status, driverId } = data
+            if (status === 'Đã khởi hành') {
+                const trip = await Trip.findOne({ status: status, driverId: driverId })
+                console.log('trip', trip);
+                if (trip !== null) {
+                    resolve({
+                        status: 400,
+                        message: 'Tài xế đang có chuyến chưa hoàn thành!'
+                    })
+                    return;
+                }
+            }
 
             const checkTrip = await Trip.findOne({
                 _id: tripId
@@ -245,6 +299,7 @@ const updateTrip = (tripId, data) => {
             resolve({
                 status: 200,
                 message: 'Cập nhật thông tin chuyến thành công!',
+                data: updatedTrip
             })
         } catch (e) {
             reject(e)
@@ -272,5 +327,7 @@ module.exports = {
     deleteTrip,
     updateTrip,
     getTripsBySearch,
-    getTripsByFilter
+    getTripsByFilter,
+    getAllByDriver,
+    getRunningByDriver
 }

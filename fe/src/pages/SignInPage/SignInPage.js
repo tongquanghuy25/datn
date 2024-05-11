@@ -11,6 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUser } from '../../redux/slides/userSlide';
 import { getDetailBusOwnerByUserId } from '../../services/BusOwnerSevice';
+import { getDetailDriverByUserId } from '../../services/DriverService';
 
 
 
@@ -39,6 +40,10 @@ const SignInPage = () => {
           } else if (decoded?.role === 'busowner') {
             handleGetDetailBusOwner(decoded?.id, data?.access_token)
             navigate('/bus-owner')
+          } else if (decoded?.role === 'driver') {
+            console.log('2222', data?.access_token);
+            handleGetDetailDriver(decoded?.id, data?.access_token)
+            navigate('/driver')
           } else navigate('/')
         }
 
@@ -61,6 +66,11 @@ const SignInPage = () => {
     const res = await getDetailBusOwnerByUserId(id, token)
     localStorage.setItem('bus_owner_id', JSON.stringify(res?.data?._id))
     localStorage.setItem('bus_owner_name', JSON.stringify(res?.data?.name))
+  }
+
+  const handleGetDetailDriver = async (id, token) => {
+    const res = await getDetailDriverByUserId(id, token)
+    localStorage.setItem('driver_id', JSON.stringify(res?.data?._id))
   }
 
   const onFinish = (values) => {

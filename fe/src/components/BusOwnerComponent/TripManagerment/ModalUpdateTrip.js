@@ -52,7 +52,7 @@ const ModalUpdateTrip = (props) => {
     });
 
     const handleUpdate = () => {
-        mutation.mutate({ id: trip?._id, access_token: user?.access_token, bus: bus, driver: driver, status: status })
+        mutation.mutate({ id: trip?._id, access_token: user?.access_token, busId: bus, driverId: driver, status: status })
     }
     return (
         <div>

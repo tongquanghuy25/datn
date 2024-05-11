@@ -55,6 +55,20 @@ const getDriversByBusOwner = (busOwnerId) => {
     })
 }
 
+const getDriversByUserId = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const driver = await Driver.findOne({ userId: userId })
+            resolve({
+                status: 200,
+                message: 'Success',
+                data: driver
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 const deleteDriver = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -115,6 +129,7 @@ module.exports = {
     createDriver,
     getAllDriver,
     getDriversByBusOwner,
-    deleteDriver
+    deleteDriver,
+    getDriversByUserId
 
 }

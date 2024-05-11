@@ -26,7 +26,7 @@ const createDriver = async (req, res) => {
                 message: 'Nhập lại mật khẩu không đúng'
             })
         }
-        let responseUser = await UserService.createUser({ ...req.body, avatar })
+        let responseUser = await UserService.createUser({ email, name, password, confirmPassword, role: 'driver', avatar })
         if (responseUser.status !== 200) {
             if (req.file && req.file?.filename) await deleteImgCloud({ file: req.file })
             return res.status(responseUser.status).json(responseUser)
@@ -65,6 +65,23 @@ const getDriversByBusOwner = async (req, res) => {
     }
 }
 
+const getDriversByUserId = async (req, res) => {
+    try {
+        const userId = req.params.id
+        if (!userId) {
+            return res.status(400).json({
+                message: 'Id người dùng không được bỏ trống!'
+            })
+        }
+        const response = await DriverService.getDriversByUserId(userId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 const deleteDriver = async (req, res) => {
     try {
         const userId = req.params.id
@@ -86,5 +103,6 @@ const deleteDriver = async (req, res) => {
 module.exports = {
     createDriver,
     getDriversByBusOwner,
+    getDriversByUserId,
     deleteDriver
 }

@@ -4,6 +4,8 @@ import { Card, Button, Tabs, Rate } from 'antd';
 import './style.css'; // Liên kết file CSS của bạn
 import TabPane from 'antd/es/tabs/TabPane';
 import TabBookTicket from './TabContent/TabBookTicket/TabBookTicket';
+import TabImagesComponent from './TabContent/TabImages/TabImagesComponent';
+import TabJourneysComponent from './TabContent/TabJourneys/TabJourneysComponent';
 
 const BusCard = ({ trip }) => {
 
@@ -53,11 +55,19 @@ const BusCard = ({ trip }) => {
 
                 {showDetails && (
                     <Tabs activeKey={activeTab} onChange={handleTabChange}>
-                        <TabPane tab="Đánh giá" key="1">
+                        <TabPane tab="Hình ảnh" key="1">
+                            <TabImagesComponent images={trip.images}></TabImagesComponent>
+                        </TabPane>
+                        <TabPane tab="Đánh giá" key="2">
                             Nội dung đánh giá
                         </TabPane>
-
-                        <TabPane tab="Hành trình" key="3">
+                        <TabPane tab="Tiện ích" key="3">
+                            Nội dung Tiện ích
+                        </TabPane>
+                        <TabPane tab="Hành trình" key="4">
+                            <TabJourneysComponent departureTime={trip.departureTime} routeId={trip.routeId}></TabJourneysComponent>
+                        </TabPane>
+                        <TabPane tab="Chính sách" key="5">
                             Nội dung hành trình
                         </TabPane>
                     </Tabs>

@@ -2,6 +2,7 @@ import TabBookTicket from "../components/BusCard/TabContent/TabBookTicket/TabBoo
 import AdminPage from "../pages/AdminPage/AdminPage";
 import BusOwnerPage from "../pages/BusOwnerPage/BusOwnerPage";
 import BusOwnerRegistration from "../pages/BusOwnerRegistration/BusOwnerRegistration";
+import DriverPage from "../pages/DriverPage/DriverPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import HomePage from "../pages/HomePage/HomePage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
@@ -43,6 +44,7 @@ export const routes = [
 
 
 
+
     //Admin
 
     {
@@ -55,6 +57,13 @@ export const routes = [
     {
         path: '/bus-owner',
         page: BusOwnerPage,
+        isShowHeader: false
+    },
+
+    //Driver
+    {
+        path: '/driver',
+        page: DriverPage,
         isShowHeader: false
     },
 

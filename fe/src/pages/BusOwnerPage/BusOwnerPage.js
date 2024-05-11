@@ -4,18 +4,15 @@ import { LogoutOutlined } from '@ant-design/icons';
 import DriverManagement from '../../components/BusOwnerComponent/DriverManagerment/DriverManagement';
 import LoadingComponent from '../../components/Loading/LoadingComponent';
 import BusManagerment from '../../components/BusOwnerComponent/BusManagerment/BusManagerment';
-import { logoutUser } from '../../services/UserService';
-import { useDispatch } from 'react-redux';
-import { resetUser } from '../../redux/slides/userSlide';
 import { useNavigate } from 'react-router-dom';
 import RouteManagerment from '../../components/BusOwnerComponent/RouteManagerment/RouteManagerment';
 import TripManagerment from '../../components/BusOwnerComponent/TripManagerment/TripManagerment';
+import { useHandleLogout } from '../../utils/Action/HandleLogOut';
 
 
 const { Header, Content } = Layout;
 const BusOwnerPage = () => {
     const [selectedTab, setSelectedTab] = useState('tab1');
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
 
@@ -23,12 +20,9 @@ const BusOwnerPage = () => {
         setSelectedTab(key);
     };
 
-    const handleLogout = async () => {
-        await logoutUser()
-        dispatch(resetUser());
-        localStorage.clear();
-        navigate('/sign-in')
-    }
+
+    const handleLogOut = useHandleLogout()
+
     return (
         <Layout style={{ backgroundColor: '#fff' }}>
             <Header style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -45,7 +39,7 @@ const BusOwnerPage = () => {
                     </Menu>
                 </div>
                 <div>
-                    <Button type="primary" icon={<LogoutOutlined />} onClick={handleLogout}>
+                    <Button type="primary" icon={<LogoutOutlined />} onClick={() => { handleLogOut() }}>
                         Đăng xuất
                     </Button>
                 </div>

@@ -51,3 +51,21 @@ export const getTripsByFilter = async (data) => {
     },)
     return res.data
 }
+
+export const getTripsByDriver = async (id, access_token, day) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/trip/get-all-by-driver/${id}?day=${day}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
+
+export const getTripRunningByDriver = async (id, access_token) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/trip/get-running-by-driver/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}

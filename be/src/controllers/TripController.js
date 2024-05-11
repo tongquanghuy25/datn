@@ -38,6 +38,41 @@ const getAllByBusOwner = async (req, res) => {
     }
 }
 
+const getAllByDriver = async (req, res) => {
+    try {
+        const driverId = req.params.id
+        const day = req.query.day
+        if (!driverId) {
+            return res.status(400).json({
+                message: 'Id nhà xe không được bỏ trống!'
+            })
+        }
+        const response = await TripService.getAllByDriver(driverId, day)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const getRunningByDriver = async (req, res) => {
+    try {
+        const driverId = req.params.id
+        if (!driverId) {
+            return res.status(400).json({
+                message: 'Id nhà xe không được bỏ trống!'
+            })
+        }
+        const response = await TripService.getRunningByDriver(driverId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 const getTripsBySearch = async (req, res) => {
     try {
         const data = req.query
@@ -65,7 +100,7 @@ const getTripsByFilter = async (req, res) => {
 const updateTrip = async (req, res) => {
     try {
         const tripId = req.params.id
-        const { driver: driverId, bus: busId, status: status } = req.body
+        const { driverId, busId, status } = req.body
         const response = await TripService.updateTrip(tripId, { driverId, busId, status })
         return res.status(response.status).json(response)
 
@@ -101,5 +136,7 @@ module.exports = {
     deleteTrip,
     updateTrip,
     getTripsBySearch,
-    getTripsByFilter
+    getTripsByFilter,
+    getAllByDriver,
+    getRunningByDriver
 }

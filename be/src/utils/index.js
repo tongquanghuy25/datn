@@ -66,7 +66,7 @@ async function checkTransactionStatus(transactionId) {
         const transactionStatus = response.data.status;
         // console.log("Transaction Status:", transactionStatus);
         if (transactionStatus === 'COMPLETED') {
-            console.log('dda');
+            console.log('check transaction complete');
             return true
         }
         else return false
