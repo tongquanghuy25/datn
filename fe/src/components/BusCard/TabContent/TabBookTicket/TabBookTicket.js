@@ -1,4 +1,4 @@
-import { Button, Col, Input, InputNumber, Radio, Result, Row, Steps } from 'antd';
+import { Button, Col, Input, InputNumber, Radio, Result, Row, Space, Steps } from 'antd';
 import { initArraySeat } from '../../../../utils/SeatDiagram';
 import SeatSelector from './SeatSelector';
 import './style.css'
@@ -27,12 +27,16 @@ function calculateTime(startTime, minutes) {
 }
 
 function calculateArrivalDateAndTime(departureDate, departureTime, durationInMinutes) {
+    console.log('departureDate, departureTime, pickUpPoint.timeFromStart', departureDate, departureTime, durationInMinutes);
+
     // Chia chuỗi ngày đi thành các thành phần ngày, tháng và năm
     const [day, month, year] = departureDate.split('/').map(Number);
 
     // Tách giờ và phút từ chuỗi giờ đi
-    const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/).map(Number);
+    const [hours, minutes] = departureTime.split(':')?.map(Number);
+    // const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/).map(Number);
 
+    console.log('hours, minutes', hours, minutes);
     // Kiểm tra xem các thành phần đã chuyển đổi thành số hợp lệ chưa
     if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
         console.log("Ngày hoặc giờ đi không hợp lệ");
@@ -53,11 +57,14 @@ function calculateArrivalDateAndTime(departureDate, departureTime, durationInMin
     return { arrivalDate, arrivalTime };
 }
 const TabSeatSelection = (props) => {
-    const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, routeName, busOwnerName } = props
+    const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, routeName, busOwnerName, isAgent, handleOrderSuccess } = props
     const user = useSelector((state) => state.user);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [seatCount, setSeatCount] = useState(0);
     const [totalPrice, setTotalPricet] = useState(0);
+    const [isPaidAgent, setIsPaidAgent] = useState(false);
+    const [message, setMessage] = useState('');
+
 
     const [listPickUpPoint, setListPickUpPoint] = useState([])
     const [listDropOffPoint, setListDropOffPoint] = useState([])
@@ -89,7 +96,9 @@ const TabSeatSelection = (props) => {
     const [currentStep, setCurrentStep] = useState(0);
 
     const nextStep0 = () => {
-        if (seatCount <= 0) errorMes('Vui lòng chọn ghế!')
+        if (seatCount <= 0)
+            if (isAgent) handleMessage('Vui lòng chọn ghế!')
+            else errorMes('Vui lòng chọn ghế!')
         else setCurrentStep(currentStep + 1);
     };
 
@@ -97,6 +106,7 @@ const TabSeatSelection = (props) => {
     const nextStep1 = () => {
         if (pickUpPoint && dropOffPoint)
             setCurrentStep(currentStep + 1);
+        else if (isAgent) handleMessage('Vui lòng chọn điểm đón trả!')
         else errorMes('Vui lòng chọn điểm đón trả!')
     };
 
@@ -108,8 +118,11 @@ const TabSeatSelection = (props) => {
         setCurrentStep(currentStep - 1);
     };
 
-    const nextStep = () => {
-        setCurrentStep(currentStep + 1);
+    const nextStep2 = () => {
+        if (!email || !phone)
+            if (isAgent) handleMessage('Vui lòng điển đầy đủ thông tin!')
+            else errorMes('Vui lòng điển đầy đủ thông tin!')
+        else setCurrentStep(currentStep + 1);
     };
 
     const prevStep = () => {
@@ -133,7 +146,7 @@ const TabSeatSelection = (props) => {
         }
     };
 
-    const { seatss: seats, seatss2: seats2, numCol, numFloor } = useMemo(() => initArraySeat(typeBus, listTicketSold), [listTicketSold]);
+    const { seatss: seats, seatss2: seats2, numCol, numFloor } = useMemo(() => initArraySeat(typeBus, listTicketSold), [typeBus, listTicketSold]);
 
     const handleSeatSelect = (seat) => {
         if (selectedSeats.find(item => item === seat.id)) {
@@ -194,16 +207,25 @@ const TabSeatSelection = (props) => {
     }
 
     //Finish
+    const handleMessage = (mes) => {
+        setMessage(mes)
+        setTimeout(() => {
+            setMessage('')
+        }, 3000)
+    }
     const mutation = useMutation(
         {
             mutationFn: (data) => {
                 return createTicketOrder(data)
             },
             onSuccess: (data) => {
-                successMes('Đặt vé thành công')
+                if (isAgent) {
+                    handleOrderSuccess()
+                }
+                else successMes('Đặt vé thành công')
             },
             onError: (data) => {
-                console.log('data', data);
+                if (isAgent) handleMessage(data?.response?.data?.message)
                 errorMes(data?.response?.data?.message)
             }
         }
@@ -211,42 +233,46 @@ const TabSeatSelection = (props) => {
     const handleFinish = (paymentMethod, isPaid, paidAt, transactionId) => {
         const { arrivalDate, arrivalTime } = calculateArrivalDateAndTime(departureDate, departureTime, pickUpPoint.timeFromStart)
         const { arrivalDate: endDate, arrivalTime: endTime } = calculateArrivalDateAndTime(departureDate, departureTime, dropOffPoint.timeFromStart)
-        const data = {
-            tripId,
-            email,
-            phone,
-            busOwnerName,
-            routeName,
-            departureTime,
-            departureDate,
+        if ((paymentRequire && isAgent && isPaidAgent === false)) { handleMessage('Chuyến xe yêu cầu thanh toán trước!') }
+        else {
+            console.log('paymentRequire && isAgent && isPaidAgent', paymentRequire, isAgent, isPaidAgent, paymentRequire && isAgent && isPaidAgent === false, typeof isPaidAgent);
+            const data = {
+                tripId,
+                email,
+                phone,
+                userOrder: user?.id,
+                busOwnerName,
+                routeName,
+                departureTime,
+                departureDate,
 
-            pickUp: pickUpPoint.place,
-            notePickUp,
-            timePickUp: arrivalTime,
-            datePickUp: arrivalDate,
+                pickUp: pickUpPoint.place,
+                notePickUp,
+                timePickUp: arrivalTime,
+                datePickUp: arrivalDate,
 
-            dropOff: dropOffPoint.place,
-            noteDropOff,
-            timeDropOff: endTime,
-            dateDropOff: endDate,
+                dropOff: dropOffPoint.place,
+                noteDropOff,
+                timeDropOff: endTime,
+                dateDropOff: endDate,
 
-            seats: selectedSeats,
-            seatCount: seatCount,
+                seats: selectedSeats,
+                seatCount: seatCount,
 
-            ticketPrice,
-            extraCosts: ((pickUpPoint?.extracost || 0) + (dropOffPoint?.extracost || 0)) * seatCount,
-            totalPrice,
+                ticketPrice,
+                extraCosts: ((pickUpPoint?.extracost || 0) + (dropOffPoint?.extracost || 0)) * seatCount,
+                totalPrice,
 
-            payer: user?.id,
-            paymentMethod,
-            transactionId,
-            paidAt,
-            isPaid,
+                payee: isPaid || isPaidAgent ? user?.id : '',
+                paymentMethod,
+                transactionId,
+                paidAt,
+                isPaid: isAgent ? isPaidAgent : isPaid,
 
 
+            }
+            mutation.mutate(data)
         }
-        mutation.mutate(data)
-
     };
 
 
@@ -493,9 +519,11 @@ const TabSeatSelection = (props) => {
                                     Tổng số tiền :
                                     <span style={{ color: 'red', marginLeft: '10px' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</span>
                                 </div>
-                                <Button type="primary" onClick={nextStep}>
+
+                                <Button type="primary" onClick={nextStep2}>
                                     Tiếp tục
                                 </Button>
+
                             </div>
                         </Row>
                     </div>
@@ -504,8 +532,27 @@ const TabSeatSelection = (props) => {
                     <div>
                         {/* Phần thanh toán */}
                         <Row justify={'center'} align="middle" style={{ minHeight: '300px' }}>
-                            <Paypal amount={totalPrice} handleFinish={handleFinish}></Paypal>
-
+                            {
+                                !isAgent ?
+                                    <div>
+                                        <Paypal amount={totalPrice} handleFinish={handleFinish}></Paypal>
+                                        {
+                                            paymentRequire && <div style={{ color: 'red', fontSize: '18px' }}>Chuyến xe này yêu cầu thanh toán trước!</div>
+                                        }
+                                    </div>
+                                    :
+                                    <div>
+                                        <Radio.Group >
+                                            <Space direction="vertical"
+                                                onChange={(e) => { setIsPaidAgent(e.target.value === 'true' ? true : false); }}
+                                            >
+                                                <Radio value={false}><h3>Chưa thanh toán</h3></Radio>
+                                                <Radio value={true}><h3>Đã thanh toán</h3></Radio>
+                                            </Space>
+                                        </Radio.Group>
+                                        {paymentRequire && <div style={{ color: 'red', fontSize: '18px' }}>Chuyến xe này yêu cầu thanh toán trước!</div>}
+                                    </div>
+                            }
                         </Row>
                         <Row style={{ borderTop: '1px solid #333', paddingTop: '20px', marginTop: '20px' }} justify={'space-between'}>
                             <Button style={{ marginRight: '10px' }} onClick={prevStep}>
@@ -516,14 +563,22 @@ const TabSeatSelection = (props) => {
                                     Tổng số tiền :
                                     <span style={{ color: 'red', marginLeft: '10px' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</span>
                                 </div>
+                                {
+                                    isAgent ?
+                                        <Button type="primary" onClick={() => { handleFinish() }}>Đặt vé</Button>
+                                        :
+                                        (
 
+                                            !paymentRequire && <Button type="primary" onClick={() => { handleFinish() }}>Đặt vé</Button>
+                                        )
+                                }
                             </div>
                         </Row>
                     </div>
                 )}
             </div>
+            <Row justify={'end'} style={{ color: 'red', marginTop: '5px', height: '1rem' }}>{message}</Row>
         </div>
-
     )
 }
 

@@ -18,7 +18,7 @@ const createTicketOrder = (newOrder) => {
             // Kiểm tra số lượng ghế trống trong chuyến đi
 
             const { tripId, email, phone, busOwnerName, routeName, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
-                seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payer, paymentMethod, paidAt, isPaid } = newOrder
+                seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payee, paymentMethod, paidAt, isPaid } = newOrder
 
             const trip = await Trip.findOneAndUpdate(
                 {
@@ -85,7 +85,7 @@ const createTicketOrder = (newOrder) => {
                     discount: discount,
                     totalPrice: totalPrice,
 
-                    payer: payer,
+                    payee: payee,
                     paymentMethod: paymentMethod,
                     isPaid: isPaid,
                     paidAt: paidAt
@@ -114,8 +114,6 @@ const createTicketOrder = (newOrder) => {
     })
 }
 
-
-
 const getSeatsBookedByTrip = (tripId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -129,11 +127,34 @@ const getSeatsBookedByTrip = (tripId) => {
             }
             const allSeats = await OrderTicket.distinct('seats', { tripId: tripId });
 
-            console.log('orders', allSeats);
             resolve({
                 status: 200,
                 message: 'SUCESSS',
                 data: allSeats
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getTicketOrderByTrip = (tripId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const trip = await Trip.findById(tripId)
+            if (trip === null) {
+                resolve({
+                    status: 404,
+                    message: 'Không tìm thấy chuyến xe!'
+                })
+            }
+            const orders = await OrderTicket.find({ tripId: tripId });
+
+            resolve({
+                status: 200,
+                message: 'SUCESSS',
+                data: orders
             })
         } catch (e) {
             reject(e)
@@ -472,6 +493,7 @@ const updateStatusGoodsOrder = (id, status) => {
 
 module.exports = {
     createTicketOrder,
+    getTicketOrderByTrip,
     createGoodsOrder,
     updateGoodsOrder,
     deleteGoodsOrder,

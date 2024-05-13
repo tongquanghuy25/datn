@@ -4,10 +4,11 @@ const { checkTransactionStatus, cancelTransaction } = require('../utils')
 const createTicketOrder = async (req, res) => {
     try {
         const { tripId, email, phone, busOwnerName, routeName, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
-            seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payer, paymentMethod, transactionId, paidAt, isPaid } = req.body
+            seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payee, paymentMethod, transactionId, paidAt, isPaid } = req.body
+
 
         if (!tripId || !busOwnerName || !routeName || !departureTime || !email || !phone || !departureDate || !pickUp || !timePickUp || !datePickUp || !dropOff || !timeDropOff || !dateDropOff
-            || !seats || !seatCount || !ticketPrice || !totalPrice || !payer || !paymentMethod
+            || !seats || !seatCount || !ticketPrice || !totalPrice || !payee
         ) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
@@ -23,7 +24,7 @@ const createTicketOrder = async (req, res) => {
         }
         const response = await OrderService.createTicketOrder({
             tripId, email, phone, busOwnerName, routeName, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
-            seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payer, paymentMethod, paidAt, isPaid
+            seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payee, paymentMethod, paidAt, isPaid
         })
 
         // if (response.status !== 200) cancelTransaction(transactionId)
@@ -77,6 +78,25 @@ const updateStatusTicketOrder = async (req, res) => {
     }
 }
 
+const getTicketOrderByTrip = async (req, res) => {
+    try {
+        const tripId = req.params.id
+        if (!tripId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Id chuyến xe không được bỏ trống!'
+            })
+        }
+        const response = await OrderService.getTicketOrderByTrip(tripId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+//
 const getDetailsOrder = async (req, res) => {
     try {
         const orderId = req.params.id
@@ -250,6 +270,7 @@ const updateStatusGoodsOrder = async (req, res) => {
 }
 module.exports = {
     createTicketOrder,
+    getTicketOrderByTrip,
     createGoodsOrder,
     updateGoodsOrder,
     deleteGoodsOrder,

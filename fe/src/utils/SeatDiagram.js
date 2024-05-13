@@ -31,7 +31,6 @@ export const initArraySeat = (type, listTicketSold) => {
 
 }
 
-
 const limo7 = (listTicketSold) => {
     const seats = Array.from({ length: 7 }, (_, index) => ({
         id: `A${index + 1}`,

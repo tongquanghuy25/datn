@@ -41,9 +41,11 @@ const SignInPage = () => {
             handleGetDetailBusOwner(decoded?.id, data?.access_token)
             navigate('/bus-owner')
           } else if (decoded?.role === 'driver') {
-            console.log('2222', data?.access_token);
             handleGetDetailDriver(decoded?.id, data?.access_token)
             navigate('/driver')
+          } else if (decoded?.role === 'agent') {
+            // handleGetDetailDriver(decoded?.id, data?.access_token)
+            navigate('/agent')
           } else navigate('/')
         }
 

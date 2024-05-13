@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const orderTicketSchema = new mongoose.Schema({
 
     tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
-    userOrder: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userOrder: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     email: { type: String, required: true },
     phone: { type: String, required: true },
     departureDate: { type: String, required: true },

@@ -18,7 +18,7 @@ const HomePage = () => {
 
     const [listTrip, setListTrip] = useState([])
     const [listPlace, setListPlace] = useState({})
-    const [data, setData] = useState()
+    const [dataSearch, setDataSearch] = useState()
     const [isSearch, setIsSearch] = useState(false)
 
 
@@ -43,11 +43,11 @@ const HomePage = () => {
 
         // Định dạng thời gian đến
         const formattedArrivalMinute = arrivalMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-        const arrivalTime = `${arrivalHour} giờ ${formattedArrivalMinute}`;
+        const arrivalTime = `${arrivalHour}:${formattedArrivalMinute}`;
 
         // Định dạng thời gian xuất phát
         const formattedStartMinute = startMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-        const departureTime = `${startHour} giờ ${formattedStartMinute}`;
+        const departureTime = `${startHour}:${formattedStartMinute}`;
 
         return { departureTime, arrivalTime };
     }
@@ -102,7 +102,7 @@ const HomePage = () => {
     const handleSearch = (data) => {
         mutationGetList.mutate(data)
         mutationGetInforFilter.mutate(data)
-        setData(data)
+        setDataSearch(data)
         setIsSearch(true)
     }
 
@@ -119,7 +119,7 @@ const HomePage = () => {
 
                     {isSearch &&
                         <Row style={{ marginBottom: '20px' }}>
-                            <SideBarFilterComponent data={data} listPlace={listPlace} setListTrip={setListTrip} handleCancelFilter={handleCancelFilter}></SideBarFilterComponent>
+                            <SideBarFilterComponent dataSearch={dataSearch} listPlace={listPlace} setListTrip={setListTrip} handleCancelFilter={handleCancelFilter}></SideBarFilterComponent>
                             {
                                 listTrip.length > 0 ?
                                     <Col span={18} style={{}}>

@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import { Avatar, Button, Layout, Menu, theme } from 'antd';
 import GoodsManagerment from './BusOwnerHomeTabs/GoodManagerment/GoodsManagerment';
+import TicketManagerment from './BusOwnerHomeTabs/TicketManagerment/TicketManagerment';
 const { Header, Sider, Content } = Layout;
 
 
@@ -48,13 +49,11 @@ const BusOwnerHome = () => {
 
     useEffect(() => {
         switch (selectedKeys) {
-            case '1':
-                // setContent(<RunningTripComponent></RunningTripComponent>);
-                // content = <Component1 />;
+            case '2':
+                setContent(<TicketManagerment></TicketManagerment>);
                 break;
             case '3':
                 setContent(<GoodsManagerment></GoodsManagerment>);
-                // content = <Component2 />;
                 break;
             default:
                 // setContent(<GoodsManagerment></GoodsManagerment>);

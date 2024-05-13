@@ -12,6 +12,17 @@ export const getSeatsBookedByTrip = async (tripId) => {
     return res.data
 }
 
+export const getTicketOrderByTrip = async (access_token, tripId) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-ticket-order-by-trip/${tripId}`,
+        {
+            headers: {
+                token: `Bearer ${access_token}`,
+            }
+        }
+    )
+    return res.data
+}
+
 export const updateStatusTicketOrder = async (id, access_token, data) => {
     const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/update-status-ticket/${id}`, data,
         {

@@ -73,7 +73,7 @@ function calculateArrivalTime(startTime, duration) {
 
 const SideBarFilterComponent = (props) => {
 
-    const { listPlace, data, setListTrip, handleCancelFilter } = props
+    const { listPlace, dataSearch, setListTrip, handleCancelFilter } = props
 
     const [order, setOrder] = useState();
     const [priceRange, setPriceRange] = useState([1000, 2000000]);
@@ -220,7 +220,7 @@ const SideBarFilterComponent = (props) => {
     });
 
     const handleConfirmFilter = () => {
-        let result = { ...data }
+        let result = { ...dataSearch }
 
         result.order = order
         result.priceRange = priceRange
@@ -240,7 +240,7 @@ const SideBarFilterComponent = (props) => {
 
 
     const handleClearFilter = () => {
-        handleCancelFilter(data)
+        handleCancelFilter(dataSearch)
         setOrder()
         setPriceRange([1000, 2000000])
         setSeatOption([])

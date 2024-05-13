@@ -40,7 +40,7 @@ const getAllByBusOwner = (busOwnerId, day) => {
             const allTrip = await Trip.
                 find({ busOwnerId: busOwnerId, departureDate: day })
                 .populate('routeId')
-                .populate('busId', 'licensePlate')
+                .populate('busId', 'licensePlate typeBus')
                 .populate({
                     path: 'driverId',
                     populate: {
@@ -120,9 +120,15 @@ const getTripsBySearch = (data) => {
                     routeId: { $in: routeIds },
                     // status: 'Chưa khởi hành'
                 })
-                .populate('busOwnerId')
+                .populate({
+                    path: 'busOwnerId',
+                    populate: {
+                        path: 'userId',
+                    }
+                })
                 .populate('routeId')
                 .populate('busId')
+
 
             // .populate('busOwnerId', 'busOwnerName')
             // .populate({

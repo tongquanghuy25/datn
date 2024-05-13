@@ -1,8 +1,57 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { Layout, Menu, Button } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
+import DriverManagement from '../../components/BusOwnerComponent/DriverManagerment/DriverManagement';
+import LoadingComponent from '../../components/Loading/LoadingComponent';
+import BusManagerment from '../../components/BusOwnerComponent/BusManagerment/BusManagerment';
+import { useNavigate } from 'react-router-dom';
+import RouteManagerment from '../../components/BusOwnerComponent/RouteManagerment/RouteManagerment';
+import TripManagerment from '../../components/BusOwnerComponent/TripManagerment/TripManagerment';
+import { useHandleLogout } from '../../utils/Action/HandleLogOut';
+import BusOwnerHome from '../../components/BusOwnerComponent/BusOwnerHome/BusOwnerHome';
+import TicketSales from '../../components/AgentComponent/TicketSales/TicketSales';
+
+const { Header, Content } = Layout;
+
 
 const TicketAgentPage = () => {
+    const [selectedTab, setSelectedTab] = useState('ticketSales');
+
+
+    const handleTabChange = ({ key }) => {
+        setSelectedTab(key);
+    };
+
+
+    const handleLogOut = useHandleLogout()
     return (
-        <div>TicketAgentPage</div>
+        <Layout >
+            <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                    <h1 style={{ color: 'white', margin: 0 }}>Trang đại lý</h1>
+                </div>
+                <div style={{ flex: 1, marginLeft: '80px' }}>
+                    <Menu theme="dark" mode="horizontal" selectedKeys={[selectedTab]} onClick={handleTabChange}>
+                        <Menu.Item key="ticketSales">Bán vé</Menu.Item>
+                        <Menu.Item key="trip">Vé đã bán</Menu.Item>
+                        <Menu.Item key="route">Quản lý tài chính</Menu.Item>
+                    </Menu>
+                </div>
+                <div>
+                    <Button type="primary" icon={<LogoutOutlined />} onClick={() => { handleLogOut() }}>
+                        Đăng xuất
+                    </Button>
+                </div>
+            </Header>
+            <Content >
+                {/*  <LoadingComponent></LoadingComponent> */}
+                {selectedTab === 'ticketSales' && <TicketSales></TicketSales>}
+                {selectedTab === 'driver' && 'dd'}
+                {selectedTab === 'trip' && 'dđss'}
+                {selectedTab === 'route' && 'b'}
+                {selectedTab === 'bus' && 'a'}
+            </Content>
+        </Layout>
     )
 }
 

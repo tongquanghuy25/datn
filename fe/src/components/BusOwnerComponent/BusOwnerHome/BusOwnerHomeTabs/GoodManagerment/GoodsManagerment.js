@@ -26,7 +26,9 @@ const GoodsManagerment = () => {
     const [goodsOrder, setGoodsOrder] = useState()
 
 
-
+    const onChangeDate = (time, timeString) => {
+        setDay(timeString)
+    }
 
     //Get all trip
     const { data, isSuccess, isError } = useQuery(
@@ -44,11 +46,8 @@ const GoodsManagerment = () => {
 
     }, [isSuccess, isError, data])
 
-    const onChangeDate = (time, timeString) => {
-        setDay(timeString)
-    }
 
-
+    //Get goods by trip
     const mutation = useMutation({
         mutationFn: async (data) => {
             const { tripId, token } = data;

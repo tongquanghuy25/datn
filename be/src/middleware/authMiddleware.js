@@ -32,7 +32,7 @@ const authUserMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'user' || user?.role === 'busowner' || user?.role === 'driver') {
+        if (user?.role === 'admin' || user?.role === 'user' || user?.role === 'busowner' || user?.role === 'driver' || user?.role === 'agent') {
             next()
         } else {
             return res.status(401).json({
@@ -75,7 +75,28 @@ const authDriverMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'busowner' || user?.role === 'driver') {
+        if (user?.role === 'admin' || user?.role === 'busowner' || user?.role === 'driver' || user?.role === 'agent') {
+            next()
+        } else {
+            return res.status(401).json({
+                message: 'The authemtication',
+                status: 'ERROR'
+            })
+        }
+    });
+}
+
+const authAgentMiddleWare = (req, res, next) => {
+
+    const token = req.headers.token?.split(' ')[1]
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+        if (err) {
+            return res.status(401).json({
+                message: 'The authemtication',
+                status: 'ERROR'
+            })
+        }
+        if (user?.role === 'admin' || user?.role === 'busowner' || user?.role === 'agent') {
             next()
         } else {
             return res.status(401).json({
@@ -90,5 +111,6 @@ module.exports = {
     authAdminMiddleWare,
     authUserMiddleWare,
     authBusOwnerMiddleWare,
-    authDriverMiddleWare
+    authDriverMiddleWare,
+    authAgentMiddleWare
 }
