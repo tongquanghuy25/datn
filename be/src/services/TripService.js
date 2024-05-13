@@ -4,6 +4,7 @@ const Trip = require("../models/TripModel");
 const StopPoint = require("../models/StopPointModel");
 const Bus = require("../models/BusModel");
 const OrderTicket = require("../models/OrderTicketModel");
+const OrderGoods = require("../models/OrderGoodsMode;");
 
 
 const createTrip = (dates, newTrip) => {
@@ -91,11 +92,12 @@ const getRunningByDriver = (driverId) => {
                 .populate('routeId')
                 .populate('busId')
 
-            const listOrder = await OrderTicket.find({ tripId: trip._id })
+            const listTicketOrder = await OrderTicket.find({ tripId: trip._id })
+            const listGoodsOrder = await OrderGoods.find({ tripId: trip._id })
             resolve({
                 status: 200,
                 message: 'Success',
-                data: { trip, listOrder }
+                data: { trip, listTicketOrder, listGoodsOrder }
             })
 
         } catch (e) {
@@ -307,6 +309,34 @@ const updateTrip = (tripId, data) => {
     })
 }
 
+const updateFinishTrip = (tripId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const checkTrip = await Trip.findOne({
+                _id: tripId
+            })
+            if (checkTrip === null) {
+                resolve({
+                    status: 404,
+                    message: 'Chuyến xe không tồn tại!'
+                })
+                return;
+            }
+            //6631f6867b09020fcdd9815d
+            const updatedTrip = await Trip.findByIdAndUpdate(tripId, { status: 'Đã kết thúc' }, { new: true })
+
+            resolve({
+                status: 200,
+                message: 'Kết thúc chuyến xe thành công!',
+                data: updatedTrip
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 const deleteTrip = (tripId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -329,5 +359,6 @@ module.exports = {
     getTripsBySearch,
     getTripsByFilter,
     getAllByDriver,
-    getRunningByDriver
+    getRunningByDriver,
+    updateFinishTrip
 }

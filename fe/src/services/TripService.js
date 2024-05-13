@@ -12,6 +12,7 @@ export const createTrip = async (access_token, data) => {
 }
 
 export const getTripsByBusOwner = async (id, access_token, day) => {
+    console.log('get data');
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/trip/get-all-by-bus-owner/${id}?day=${day}`, {
         headers: {
             token: `Bearer ${access_token}`,
@@ -63,6 +64,15 @@ export const getTripsByDriver = async (id, access_token, day) => {
 
 export const getTripRunningByDriver = async (id, access_token) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/trip/get-running-by-driver/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
+
+export const updateFinishTrip = async (id, access_token) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/trip/update-finish-trip/${id}`, {
         headers: {
             token: `Bearer ${access_token}`,
         }

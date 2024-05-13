@@ -44,7 +44,7 @@ const getSeatsBookedByTrip = async (req, res) => {
         if (!tripId) {
             return res.status(400).json({
                 status: 'ERR',
-                message: 'Id người chuyến xe không được bỏ trống!'
+                message: 'Id chuyến xe không được bỏ trống!'
             })
         }
         const response = await OrderService.getSeatsBookedByTrip(tripId)
@@ -125,8 +125,137 @@ const getAllOrder = async (req, res) => {
     }
 }
 
+// GOODS
+const createGoodsOrder = async (req, res) => {
+    try {
+        const { tripId, departureDate, nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
+            noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid } = req.body
+
+
+        if (!tripId || !departureDate || !nameSender || !emailSender || !phoneSender || !nameReceiver || !emailReceiver || !phoneReceiver || !sendPlace || !timeSend || !dateSend || !receivePlace
+            || !timeReceive || !dateReceive || !goodsName || !goodsDescription || !price
+        ) {
+            return res.status(400).json({
+                message: 'Thông tin nhập vào chưa đủ !'
+            })
+        }
+
+
+        const response = await OrderService.createGoodsOrder({
+            tripId, departureDate, nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
+            noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid
+        })
+
+        return res.status(response.status).json(response)
+
+    } catch (e) {
+        console.log(e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const updateGoodsOrder = async (req, res) => {
+    try {
+        const goodsOrederId = req.params.id
+        const { nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
+            noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid } = req.body
+
+
+        if (!goodsOrederId || !nameSender || !emailSender || !phoneSender || !nameReceiver || !emailReceiver || !phoneReceiver || !sendPlace || !timeSend || !dateSend || !receivePlace
+            || !timeReceive || !dateReceive || !goodsName || !goodsDescription || !price
+        ) {
+            return res.status(400).json({
+                message: 'Thông tin nhập vào chưa đủ !'
+            })
+        }
+
+
+        const response = await OrderService.updateGoodsOrder({
+            goodsOrederId, nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
+            noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid
+        })
+
+        return res.status(response.status).json(response)
+
+    } catch (e) {
+        console.log(e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const deleteGoodsOrder = async (req, res) => {
+    try {
+        const goodsOrederId = req.params.id
+
+
+        if (!goodsOrederId) {
+            return res.status(400).json({
+                message: 'Thông tin nhập vào chưa đủ !'
+            })
+        }
+
+
+        const response = await OrderService.deleteGoodsOrder(goodsOrederId)
+
+        return res.status(response.status).json(response)
+
+    } catch (e) {
+        console.log(e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const getGoodsOrderByTrip = async (req, res) => {
+    try {
+        const tripId = req.params.id
+        if (!tripId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Id chuyến xe không được bỏ trống!'
+            })
+        }
+        const response = await OrderService.getGoodsOrderByTrip(tripId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const updateStatusGoodsOrder = async (req, res) => {
+    try {
+        const status = req.body.status
+        const goodsOrderId = req.params.id
+        if (!goodsOrderId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Id của đơn gửi hàng bị trống!'
+            })
+        }
+        const response = await OrderService.updateStatusGoodsOrder(goodsOrderId, status)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        console.log('e', e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
 module.exports = {
     createTicketOrder,
+    createGoodsOrder,
+    updateGoodsOrder,
+    deleteGoodsOrder,
+    getGoodsOrderByTrip,
+    updateStatusGoodsOrder,
+
     getSeatsBookedByTrip,
     updateStatusTicketOrder,
     getDetailsOrder,

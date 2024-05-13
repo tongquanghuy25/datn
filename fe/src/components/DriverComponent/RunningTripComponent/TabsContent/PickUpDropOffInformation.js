@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button, Col, Row } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { getStopPointsByBusRoute } from '../../../../services/RouteService';
-import { updateStatusTicketOrder } from '../../../../services/OrderService';
+import { updateStatusGoodsOrder, updateStatusTicketOrder } from '../../../../services/OrderService';
 import { errorMes, successMes } from '../../../Message/Message';
 import { useSelector } from 'react-redux'
 
@@ -37,7 +37,7 @@ function calculateArrivalTime(startTime, duration) {
     return arrivalTime;
 }
 
-const PickUpDropOffInformation = ({ listOrder, handleUpdateStatusSeat, departureTime, routeId }) => {
+const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdateStatusSeat, departureTime, routeId, handleUpdateStatusGoods }) => {
 
     const user = useSelector((state) => state.user);
     const [listData, setListData] = useState([])
@@ -76,7 +76,7 @@ const PickUpDropOffInformation = ({ listOrder, handleUpdateStatusSeat, departure
 
     useEffect(() => {
         let data = listStopPoint.map(item => {
-            const orders = listOrder.filter(elemet => elemet.pickUp === item.name || elemet.dropOff === item.name).map(it => {
+            const ordersTicket = listTicketOrder.filter(elemet => elemet.pickUp === item.name || elemet.dropOff === item.name).map(it => {
                 return {
                     id: it._id,
                     phone: it.phone,
@@ -88,9 +88,22 @@ const PickUpDropOffInformation = ({ listOrder, handleUpdateStatusSeat, departure
                     status: it.status
                 }
             })
+
+            const ordersGoods = listGoodsOrder.filter(elemet => elemet.sendPlace === item.name || elemet.receivePlace === item.name).map(it => {
+                return {
+                    id: it._id,
+                    goodsName: it.goodsName,
+                    goodsDescription: it.goodsDescription,
+                    isPaid: it.isPaid,
+                    status: it.status,
+                    price: it.price,
+                    phone: it.sendPlace === item.name ? it.phoneSender : it.phoneReceiver,
+                    isSend: it.sendPlace === item.name,
+                }
+            })
             return {
                 placeName: item.name,
-                data: orders
+                data: { ordersTicket, ordersGoods }
             }
         })
         setListData(data)
@@ -99,8 +112,7 @@ const PickUpDropOffInformation = ({ listOrder, handleUpdateStatusSeat, departure
             setPlaceSelectedData(data?.find(it => it?.placeName === data[0].placeName)?.data)
         }
 
-    }, [listOrder, listStopPoint])
-
+    }, [listTicketOrder, listStopPoint])
 
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
@@ -110,10 +122,28 @@ const PickUpDropOffInformation = ({ listOrder, handleUpdateStatusSeat, departure
         onSuccess: (data) => {
 
             const listData = placeSelectedData
-            const index = listData?.findIndex(item => item.id === data.data._id)
-            listData[index].status = data.data.status
+            const index = listData?.ordersTicket?.findIndex(item => item.id === data.data._id)
+            listData.ordersTicket[index].status = data.data.status
             setPlaceSelectedData(listData)
-            handleUpdateStatusSeat(data.data._id)
+            handleUpdateStatusSeat(data.data._id, data.data.status)
+        },
+        onError: (data) => {
+            errorMes(data?.response?.data?.message)
+        }
+    });
+
+    const mutationUpdateGoods = useMutation({
+        mutationFn: async (data) => {
+            const { id, token, status } = data;
+            return await updateStatusGoodsOrder(id, token, { status: status });
+        },
+        onSuccess: (data) => {
+
+            const listData = placeSelectedData
+            const index = listData?.ordersGoods?.findIndex(item => item.id === data.data._id)
+            listData.ordersGoods[index].status = data.data.status
+            setPlaceSelectedData(listData)
+            handleUpdateStatusGoods(data.data._id, data.data.status)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
@@ -139,52 +169,116 @@ const PickUpDropOffInformation = ({ listOrder, handleUpdateStatusSeat, departure
                 </Col>
                 <Col offset={2} span={15} style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', border: '1px solid #333', padding: '20px' }}>
                     {
-                        placeSelectedData && placeSelectedData.length ? (
-                            placeSelectedData.map(item =>
-                                <>
-                                    <Row
-                                        style={{ height: '80px', marginLeft: 10, padding: 10, border: '1px solid #333', marginBottom: '10px', borderRadius: '10px', backgroundColor: '#dcf7ec' }}>
-                                        <Col span={9} style={{ fontSize: '16px' }}>
-                                            <div><strong>Số lượng hành khách: </strong>{item.seatCount}</div>
-                                            <div><strong>Vị trí ghế: </strong>{item.seats.toString()}</div>
-                                        </Col>
+                        placeSelectedData?.ordersTicket?.length > 0 || placeSelectedData?.ordersGoods?.length ? (
 
-                                        <Col span={10} style={{ fontSize: '16px' }}>
-                                            <div><strong>Số điện thoại: </strong>{item.phone}</div>
-                                            <div><strong>Tổng số tiền: </strong>{item.totalPrice}</div>
-                                        </Col>
+                            <>
+                                {
+                                    placeSelectedData?.ordersTicket?.map(item =>
+                                        <>
+                                            <Row
+                                                style={{ height: '80px', marginLeft: 10, padding: 10, border: '1px solid #333', marginBottom: '10px', borderRadius: '10px', backgroundColor: '#dcf7ec' }}>
+                                                <Col span={9} style={{ fontSize: '16px' }}>
+                                                    <div><strong>Số lượng hành khách: </strong>{item.seatCount}</div>
+                                                    <div><strong>Vị trí ghế: </strong>{item.seats.toString()}</div>
+                                                </Col>
 
-                                        <Col span={5} align="middle" style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                                            {
-                                                item?.isPickUp ? (
-                                                    item?.status === 'Đã lên xe' ?
-                                                        <div
-                                                            key={item._id}
-                                                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#4169e1', color: '#ffffff', fontSize: '16px', fontWeight: 'bold' }}
-                                                        >
-                                                            Đã đón khách
-                                                        </div>
-                                                        :
-                                                        <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã lên xe' }) }} type='primary' danger>Xác nhận đón</Button>
-                                                )
-                                                    :
-                                                    (
-                                                        item?.status === 'Đã hoàn thành' ?
-                                                            <div
-                                                                key={item._id}
-                                                                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#008000', color: 'white', fontSize: '16px', fontWeight: 'bold' }}
-                                                            >
-                                                                Đã trả khách
-                                                            </div>
+                                                <Col span={10} style={{ fontSize: '16px' }}>
+                                                    <div><strong>Số điện thoại: </strong>{item.phone}</div>
+                                                    <div><strong>Tổng số tiền: </strong>{item.totalPrice}</div>
+                                                </Col>
+
+                                                <Col span={5} align="middle" style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                                    {
+                                                        item?.isPickUp ? (
+                                                            item?.status === 'Đã lên xe' ?
+                                                                <div
+                                                                    key={item._id}
+                                                                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#4169e1', color: '#ffffff', fontSize: '16px', fontWeight: 'bold' }}
+                                                                >
+                                                                    Đã đón khách
+                                                                </div>
+                                                                :
+                                                                <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã lên xe' }) }} type='primary' danger>Xác nhận đón</Button>
+                                                        )
                                                             :
-                                                            <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã hoàn thành' }) }} type='primary'>Xác nhận trả</Button>
-                                                    )
-                                            }
-                                        </Col>
-                                    </Row >
-                                </>
+                                                            (
+                                                                item?.status === 'Đã hoàn thành' ?
+                                                                    <div
+                                                                        key={item._id}
+                                                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#008000', color: 'white', fontSize: '16px', fontWeight: 'bold' }}
+                                                                    >
+                                                                        Đã trả khách
+                                                                    </div>
+                                                                    :
+                                                                    <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã hoàn thành' }) }} type='primary'>Xác nhận trả</Button>
+                                                            )
+                                                    }
+                                                </Col>
+                                            </Row >
+                                        </>
 
-                            )
+                                    )
+                                }
+
+                                {/* id: it._id,
+                    goodsName: it.goodsName,
+                    goodsDescription: it.goodsDescription,
+                    isPaid: it.isPaid,
+                    status: it.status,
+                    price: it.price,
+                    phone: it.sendPlace === item.name ? it.phoneSender : it.phoneReceiver,
+                    isSend: it.sendPlace === item.name, */}
+
+                                {
+                                    placeSelectedData?.ordersGoods?.map(item =>
+                                        <>
+                                            <Row
+                                                gutter={[8, 8]}
+                                                style={{ height: '80px', marginLeft: 10, padding: 10, border: '1px solid #333', marginBottom: '10px', borderRadius: '10px', backgroundColor: '#f5eacb' }}>
+                                                <Col span={10} style={{ fontSize: '16px' }}>
+                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}><strong>Hàng hóa: </strong>{item.goodsName} asdfjbdf jhsabd m dfkbskjfkn sdkfbskjdbfksd fkjsdbjk</div>
+                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}><strong>Mô tả: </strong>{item.goodsDescription}</div>
+                                                </Col>
+
+                                                <Col span={9} style={{ fontSize: '16px' }}>
+                                                    <div><strong>Số điện thoại: </strong>{item.phone}</div>
+                                                    <div><strong>Tổng số tiền: </strong>{item.price}</div>
+                                                </Col>
+
+                                                <Col span={5} align="middle" style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                                    {
+                                                        item?.isSend ? (
+                                                            item?.status === 'Đã nhận hàng' ?
+                                                                <div
+                                                                    key={item._id}
+                                                                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#4169e1', color: '#ffffff', fontSize: '16px', fontWeight: 'bold' }}
+                                                                >
+                                                                    Đã nhận hàng
+                                                                </div>
+                                                                :
+                                                                <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã nhận hàng' }) }} type='primary' danger>Nhận hàng</Button>
+                                                        )
+                                                            :
+                                                            (
+                                                                item?.status === 'Đã trả hàng' ?
+                                                                    <div
+                                                                        key={item._id}
+                                                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#008000', color: 'white', fontSize: '16px', fontWeight: 'bold' }}
+                                                                    >
+                                                                        Đã trả hàng
+                                                                    </div>
+                                                                    :
+                                                                    <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã trả hàng' }) }} type='primary'>Trả hàng</Button>
+                                                            )
+                                                    }
+                                                </Col>
+                                            </Row >
+                                        </>
+
+                                    )
+                                }
+                            </>
+
                         )
                             : <div style={{ fontSize: '20px', fontWeight: 'bold' }}>Không có dữ liệu</div>
                     }

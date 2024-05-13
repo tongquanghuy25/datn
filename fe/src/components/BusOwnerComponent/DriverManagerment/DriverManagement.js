@@ -46,7 +46,7 @@ const DriverManagement = () => {
 
 
     return (
-        <div>
+        <div style={{ marginTop: '20px', padding: '0 20px' }}>
             <Row justify="space-between">
                 <div>
                 </div>

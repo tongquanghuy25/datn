@@ -160,7 +160,6 @@ const TripManagerment = () => {
     const [listRoute, setListRoute] = useState([])
     const [listBus, setListBus] = useState([])
     const [listDriver, setListDriver] = useState([])
-    console.log('listTrip', listTrip);
     //Get all routes
     const { data: dataRoutes } = useQuery(
         {
@@ -218,7 +217,7 @@ const TripManagerment = () => {
     //Get all trip
     const { data, isSuccess, isError, refetch } = useQuery(
         {
-            queryKey: ['trips', day],
+            queryKey: [`trips`, day],
             queryFn: () => getTripsByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token, day ? day : dayjs().format('DD/MM/YY')),
         });
 
@@ -264,7 +263,7 @@ const TripManagerment = () => {
         setIsUpdateTrip(false)
     }
     return (
-        <div>
+        <div style={{ marginTop: '20px', padding: '0 20px' }}>
             <Row justify='space-between'>
                 <div>
                     <DatePicker

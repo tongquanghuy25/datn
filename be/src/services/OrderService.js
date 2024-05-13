@@ -1,4 +1,5 @@
 const OrderTicket = require("../models/OrderTicketModel")
+const OrderGoods = require("../models/OrderGoodsMode;")
 const Trip = require("../models/TripModel")
 const EmailService = require("../services/EmailService")
 
@@ -113,19 +114,7 @@ const createTicketOrder = (newOrder) => {
     })
 }
 
-// const deleteManyProduct = (ids) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             await Product.deleteMany({ _id: ids })
-//             resolve({
-//                 status: 'OK',
-//                 message: 'Delete product success',
-//             })
-//         } catch (e) {
-//             reject(e)
-//         }
-//     })
-// }
+
 
 const getSeatsBookedByTrip = (tripId) => {
     return new Promise(async (resolve, reject) => {
@@ -175,30 +164,30 @@ const updateStatusTicketOrder = (id, status) => {
         }
     })
 }
-const
-    getTicketOrderDetails = (id) => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const order = await OrderTicket.findById({
-                    _id: id
-                })
-                if (order === null) {
-                    resolve({
-                        status: 'ERR',
-                        message: 'The order is not defined'
-                    })
-                }
 
+const getTicketOrderDetails = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const order = await OrderTicket.findById({
+                _id: id
+            })
+            if (order === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'SUCESSS',
-                    data: order
+                    status: 'ERR',
+                    message: 'The order is not defined'
                 })
-            } catch (e) {
-                reject(e)
             }
-        })
-    }
+
+            resolve({
+                status: 'OK',
+                message: 'SUCESSS',
+                data: order
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 const cancelTicketOrderDetails = (id, data) => {
     return new Promise(async (resolve, reject) => {
@@ -269,8 +258,226 @@ const getAllTicketOrder = () => {
     })
 }
 
+
+//GOODS
+const createGoodsOrder = (newOrder) => {
+    return new Promise(async (resolve, reject) => {
+
+
+        try {
+
+            const { tripId, departureDate, nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
+                noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid } = newOrder
+
+            const trip = await Trip.findById(tripId);
+
+            if (!trip) {
+                resolve({
+                    status: 400,
+                    message: 'Chuyến đi không tồn tại!'
+                })
+                return
+            }
+
+            // Kiểm tra các ghế đã được đặt hay chưa
+
+            const createdOrder = await OrderGoods.create(
+                {
+                    tripId,
+                    departureDate,
+
+                    nameSender,
+                    emailSender,
+                    phoneSender,
+                    nameReceiver,
+                    emailReceiver,
+                    phoneReceiver,
+
+                    sendPlace,
+                    noteSend,
+                    timeSend,
+                    dateSend,
+                    receivePlace,
+                    noteReceive,
+                    timeReceive,
+                    dateReceive,
+
+                    goodsName,
+                    goodsDescription,
+                    price,
+
+                    Payee,
+                    paymentMethod,
+                    isPaid
+                }
+            );
+
+            console.log(createdOrder);
+            if (createdOrder) {
+                resolve({
+                    status: 200,
+                    message: 'Tạo đơn đặt vé thành công!',
+                    data: createdOrder
+                })
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const updateGoodsOrder = (Order) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { goodsOrederId, nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
+                noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid } = Order
+
+            const orderGoods = await OrderGoods.findById(goodsOrederId);
+
+            if (!orderGoods) {
+                resolve({
+                    status: 400,
+                    message: 'Đơn gửi hàng không tồn tại!'
+                })
+                return
+            }
+
+            // Kiểm tra các ghế đã được đặt hay chưa
+
+            const updateOrder = await OrderGoods.findByIdAndUpdate(goodsOrederId, {
+                nameSender,
+                emailSender,
+                phoneSender,
+                nameReceiver,
+                emailReceiver,
+                phoneReceiver,
+
+                sendPlace,
+                noteSend,
+                timeSend,
+                dateSend,
+                receivePlace,
+                noteReceive,
+                timeReceive,
+                dateReceive,
+
+                goodsName,
+                goodsDescription,
+                price,
+
+                Payee,
+                paymentMethod,
+                isPaid
+            });
+
+            if (updateOrder) {
+                resolve({
+                    status: 200,
+                    message: 'Cập nhật đơn gửi hàng thành công!',
+                    data: updateOrder
+                })
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const deleteGoodsOrder = (goodsOrederId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+
+            const orderGoods = await OrderGoods.findById(goodsOrederId);
+
+            if (!orderGoods) {
+                resolve({
+                    status: 400,
+                    message: 'Đơn gửi hàng không tồn tại!'
+                })
+                return
+            }
+
+            // Kiểm tra các ghế đã được đặt hay chưa
+
+            // await OrderGoods.updateMany({}, { tripId: '6631f6867b09020fcdd9815d' })
+            // resolve({
+            //     status: 200,
+            //     message: 'Xóa đơn gửi hàng thành công!',
+            // })
+            const deleteOrder = await OrderGoods.findByIdAndDelete(goodsOrederId);
+
+            if (deleteOrder) {
+                resolve({
+                    status: 200,
+                    message: 'Xóa đơn gửi hàng thành công!',
+                    data: deleteOrder
+                })
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getGoodsOrderByTrip = (tripId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const trip = await Trip.findById(tripId)
+            if (trip === null) {
+                resolve({
+                    status: 404,
+                    message: 'Không tìm thấy chuyến xe!'
+                })
+            }
+            const allGoodsOrder = await OrderGoods.find({ tripId: tripId }).sort({ createdAt: 1, updatedAt: 1 });
+
+            resolve({
+                status: 200,
+                message: 'SUCESSS',
+                data: allGoodsOrder
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const updateStatusGoodsOrder = (id, status) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const goodsOrder = await OrderGoods.findByIdAndUpdate(id, { status: status }, { new: true })
+            if (goodsOrder === null) {
+                resolve({
+                    status: 404,
+                    message: 'Đơn gửi hàng không tồn tại!'
+                })
+                return
+            }
+            resolve({
+                status: 200,
+                message: 'Cập nhật trạng thái đơn vé thành công!',
+                data: goodsOrder
+            })
+        } catch (e) {
+            console.log('e', e);
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     createTicketOrder,
+    createGoodsOrder,
+    updateGoodsOrder,
+    deleteGoodsOrder,
+    getGoodsOrderByTrip,
+    updateStatusGoodsOrder,
+
     getSeatsBookedByTrip,
     updateStatusTicketOrder,
     getTicketOrderDetails,

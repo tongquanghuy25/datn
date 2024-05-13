@@ -111,6 +111,19 @@ const updateTrip = async (req, res) => {
     }
 }
 
+const updateFinishTrip = async (req, res) => {
+    try {
+        const tripId = req.params.id
+        const response = await TripService.updateFinishTrip(tripId)
+        return res.status(response.status).json(response)
+
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 const deleteTrip = async (req, res) => {
     try {
         const tripId = req.params.id
@@ -138,5 +151,6 @@ module.exports = {
     getTripsBySearch,
     getTripsByFilter,
     getAllByDriver,
-    getRunningByDriver
+    getRunningByDriver,
+    updateFinishTrip
 }

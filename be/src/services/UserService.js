@@ -83,6 +83,7 @@ const loginUser = (userLogin) => {
         }
     })
 }
+
 const editUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -118,6 +119,7 @@ const editUser = (id, data) => {
         }
     })
 }
+
 const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {

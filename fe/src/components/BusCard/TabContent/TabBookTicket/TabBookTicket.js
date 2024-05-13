@@ -9,7 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { getStopPointsByBusRoute } from '../../../../services/RouteService';
 import TextArea from 'antd/es/input/TextArea';
 import Paypal from './paypal';
-import { createOrder, getSeatsBookedByTrip } from '../../../../services/OrderService';
+import { createTicketOrder, getSeatsBookedByTrip } from '../../../../services/OrderService';
 const { Step } = Steps;
 
 
@@ -197,7 +197,7 @@ const TabSeatSelection = (props) => {
     const mutation = useMutation(
         {
             mutationFn: (data) => {
-                return createOrder(data)
+                return createTicketOrder(data)
             },
             onSuccess: (data) => {
                 successMes('Đặt vé thành công')
@@ -248,6 +248,8 @@ const TabSeatSelection = (props) => {
         mutation.mutate(data)
 
     };
+
+
     return (
         <div style={{ marginTop: '20px' }}>
             <Steps current={currentStep}>

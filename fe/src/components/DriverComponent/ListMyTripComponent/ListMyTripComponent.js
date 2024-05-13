@@ -81,7 +81,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
             <Row style={{ flex: 1, overflowY: 'auto' }}>
                 {
                     listTrip.map(trip => (
-                        <Card style={{ width: 'calc(100% - 32px)', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: 20 }}>
+                        <Card style={{ width: 'calc(100% - 64px)', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: 20, backgroundColor: '#faf3de' }}>
                             <Row style={{ display: 'flex', alignItems: 'center' }}>
                                 <Col span={4} style={{ fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{trip.departureTime}</Col>
                                 <Col span={6} style={{ fontSize: '16px', color: '#666', textAlign: 'left' }}>
@@ -104,7 +104,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
                                 </Col>
                                 <Col span={4} style={{ fontSize: '16px', color: '#666' }}>
                                     <Button onClick={() => onClickDetail(trip)} style={{ marginBottom: '16px' }} >Chi tiết</Button>
-                                    <Button onClick={() => handleStartTrip(trip)} type="primary" >Bắt đầu chuyến</Button>
+                                    {trip.status === 'Chưa khởi hành' && <Button onClick={() => handleStartTrip(trip)} type="primary" >Bắt đầu chuyến</Button>}
                                 </Col>
                             </Row>
                         </Card>

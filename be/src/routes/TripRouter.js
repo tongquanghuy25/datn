@@ -11,6 +11,7 @@ router.get('/get-trips-by-search', TripController.getTripsBySearch)
 router.get('/get-trips-by-filter', TripController.getTripsByFilter)
 router.get('/get-all-by-driver/:id', authDriverMiddleWare, TripController.getAllByDriver)
 router.get('/get-running-by-driver/:id', authDriverMiddleWare, TripController.getRunningByDriver)
+router.put('/update-finish-trip/:id', authDriverMiddleWare, TripController.updateFinishTrip)
 
 // router.put('/update/:id', uploadCloud.any(), authBusOwnerMiddleWare, BusController.updateBus)
 // router.delete('/delete/:id', authBusOwnerMiddleWare, BusController.deleteBus)

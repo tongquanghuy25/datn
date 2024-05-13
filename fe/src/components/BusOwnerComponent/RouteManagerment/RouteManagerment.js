@@ -34,7 +34,7 @@ const RouteManagerment = () => {
   }
 
   return (
-    <div>
+    <div style={{ marginTop: '20px', padding: '0 20px' }}>
       <Row justify="space-around" style={{ height: '85vh' }}>
         <Col span={7} style={{ maxHeight: '100%' }}>
           <div style={{ fontSize: '16px', fontWeight: '450', marginBottom: '5px' }}>Danh sách tuyến đường</div>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import RouteManagerment from '../../components/BusOwnerComponent/RouteManagerment/RouteManagerment';
 import TripManagerment from '../../components/BusOwnerComponent/TripManagerment/TripManagerment';
 import { useHandleLogout } from '../../utils/Action/HandleLogOut';
+import BusOwnerHome from '../../components/BusOwnerComponent/BusOwnerHome/BusOwnerHome';
 
 
 const { Header, Content } = Layout;
@@ -25,7 +26,7 @@ const BusOwnerPage = () => {
 
     return (
         <Layout style={{ backgroundColor: '#fff' }}>
-            <Header style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                     <h1 style={{ color: 'white', margin: 0 }}>Trang nhà xe</h1>
                 </div>
@@ -44,8 +45,9 @@ const BusOwnerPage = () => {
                     </Button>
                 </div>
             </Header>
-            <Content style={{ padding: '0 20px' }}>
-                {selectedTab === 'home' && <LoadingComponent></LoadingComponent>}
+            <Content >
+                {/*  <LoadingComponent></LoadingComponent> */}
+                {selectedTab === 'home' && <BusOwnerHome></BusOwnerHome>}
                 {selectedTab === 'driver' && <DriverManagement></DriverManagement>}
                 {selectedTab === 'trip' && <TripManagerment></TripManagerment>}
                 {selectedTab === 'route' && <RouteManagerment></RouteManagerment>}

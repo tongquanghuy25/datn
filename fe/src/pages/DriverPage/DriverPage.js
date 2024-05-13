@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    UploadOutlined,
+
     UserOutlined,
-    VideoCameraOutlined,
     DesktopOutlined,
-    FileOutlined,
     PieChartOutlined,
-    TeamOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Layout, Menu, theme } from 'antd';
 import { Footer } from 'antd/es/layout/layout';
 import RunningTripComponent from '../../components/DriverComponent/RunningTripComponent/RunningTripComponent';
 import ListMyTripComponent from '../../components/DriverComponent/ListMyTripComponent/ListMyTripComponent';
+import StatisticComponent from '../../components/DriverComponent/StatisticComponent/StatisticComponent';
+import { useHandleLogout } from '../../utils/Action/HandleLogOut';
 const { Header, Sider, Content } = Layout;
 
 
@@ -32,14 +30,6 @@ const items = [
     getItem('Thống kê', '3', <DesktopOutlined />),
     getItem('Thông tin tài khoản', '4', <DesktopOutlined />),
     getItem('Đổi mật khẩu', '5', <DesktopOutlined />),
-    // getItem('Chuyến đang chạy', '3', <DesktopOutlined />),
-    // getItem('User', 'sub1', <UserOutlined />, [
-    //     getItem('Tom', '3'),
-    //     getItem('Bill', '4'),
-    //     getItem('Alex', '5'),
-    // ]),
-    // getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-    // getItem('Files', '9', <FileOutlined />),
 ];
 
 
@@ -61,17 +51,19 @@ const DriverPage = () => {
         switch (selectedKeys) {
             case '1':
                 setContent(<RunningTripComponent></RunningTripComponent>);
-                // content = <Component1 />;
                 break;
             case '2':
                 setContent(<ListMyTripComponent setSelectedKeys={setSelectedKeys}></ListMyTripComponent>);
-                // content = <Component2 />;
+                break;
+            case '3':
+                setContent(<StatisticComponent></StatisticComponent>);
                 break;
             default:
                 break;
         }
     }, [selectedKeys])
 
+    const handleLogOut = useHandleLogout()
     return (
         <Layout
             style={{
@@ -97,6 +89,11 @@ const DriverPage = () => {
                     selectedKeys={selectedKeys}
 
                 />
+                <div style={{ display: 'flex', height: '280px', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                    <Button type="primary" icon={<LogoutOutlined />} danger onClick={() => { handleLogOut() }}>
+                        Đăng xuất
+                    </Button>
+                </div>
             </Sider>
             <Layout>
                 {/* <Header

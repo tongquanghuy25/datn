@@ -26,8 +26,8 @@ const orderTicketSchema = new mongoose.Schema({
     discount: { type: Number },
     totalPrice: { type: Number, required: true },
 
-    payer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    paymentMethod: { type: String, required: true },
+    payee: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    paymentMethod: { type: String },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
 

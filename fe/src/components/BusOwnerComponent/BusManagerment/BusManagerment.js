@@ -44,7 +44,7 @@ const BusManagerment = () => {
         setOpen(false);
     };
     return (
-        <div>
+        <div style={{ marginTop: '20px', padding: '0 20px' }}>
             <Row justify="space-between">
 
             </Row>

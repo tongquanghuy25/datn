@@ -402,10 +402,8 @@ const AdminBusOwnerComponent = () => {
                 }}
                 confirmLoading={confirmLoading}
 
-            >
+            />
 
-
-            </Modal>
         </>
     )
 }
