@@ -98,7 +98,6 @@ const ModalUpdateGoodsOrder = (props) => {
         setIsUpdateGoods(false)
     }
 
-    console.log('trip', trip);
 
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(

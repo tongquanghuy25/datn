@@ -3,14 +3,15 @@ import { Button, DatePicker, Input, Popconfirm, Row, Table } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, ProfileOutlined } from '@ant-design/icons';
 import ModalCreateTrip from './ModalCreateTrip';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { deleteTrip, getTripsByBusOwner } from '../../../services/TripService';
+import { deleteTrip, getTripsByBusOwner } from '../../../../../services/TripService';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
-import { destroyMes, errorMes, loadingMes, successMes } from '../../Message/Message';
+import { destroyMes, errorMes, loadingMes, successMes } from '../../../../Message/Message';
 import ModalUpdateTrip from './ModalUpdateTrip';
-import { getBussByBusOwner } from '../../../services/BusService';
-import { getDriversByBusOwner } from '../../../services/DriverService';
-import { getRouteByBusOwner } from '../../../services/RouteService';
+import { getBussByBusOwner } from '../../../../../services/BusService';
+import { getDriversByBusOwner } from '../../../../../services/DriverService';
+import { getRouteByBusOwner } from '../../../../../services/RouteService';
+import { getVnCurrency } from '../../../../../utils';
 
 const TripManagerment = () => {
 
@@ -21,7 +22,7 @@ const TripManagerment = () => {
             title: "Tuyến đường",
             dataIndex: 'routeId',
             key: 'route',
-            width: 400,
+            width: 350,
             align: 'center',
             render: (routeId) => `${routeId.districtStart}-${routeId.provinceStart} -> ${routeId.districtEnd}-${routeId.provinceEnd}`
 
@@ -42,10 +43,10 @@ const TripManagerment = () => {
             render: (driverId) => driverId?.userId?.name
         },
         {
-            title: "Giờ xuất phát",
+            title: "Giờ",
             dataIndex: 'departureTime',
             key: 'departureTime',
-            width: 120,
+            width: 100,
             align: 'center',
             render: (departureTime) => {
                 var timeParts = departureTime.split(":");
@@ -86,11 +87,11 @@ const TripManagerment = () => {
             },
         },
         {
-            title: "Vé đã bán",
+            title: "Đã bán",
             dataIndex: 'ticketsSold',
             align: 'center',
             key: 'timeStart',
-            width: 100,
+            width: 80,
         },
         {
             title: "Giá vé",
@@ -99,41 +100,44 @@ const TripManagerment = () => {
             align: 'center',
             width: 100,
             render: (record) => {
-                const num = record ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(record) : null
+                const num = record ? getVnCurrency(record) : null
                 return <span style={{ color: '#2ec429   ', fontWeight: '500' }}>
                     {num ? num : null}
                 </span>
             }
         },
+        // {
+        //     title: "Chi tiết",
+        //     key: 'detail',
+        //     width: 80,
+        //     align: 'center',
+        //     render: (record) => {
+        //         return <>
+        //             <ProfileOutlined onClick={() => { }} style={{ color: 'blue', fontSize: '16px' }} />
+        //         </>
+        //     }
+        // },
+        // {
+        //     title: "Sửa",
+        //     key: 'update',
+        //     width: 60,
+        //     align: 'center',
+        //     render: (record) => {
+        //         return <>
+        //             <EditOutlined onClick={() => { setIsUpdateTrip(true); setTripUpdate(record) }} style={{ color: 'green', fontSize: '16px' }} />
+        //         </>
+        //     }
+        // },
         {
-            title: "Chi tiết",
-            key: 'detail',
-            width: 80,
+            title: "Hành động",
+            key: 'action',
+            width: 120,
             align: 'center',
             render: (record) => {
-                return <>
+                return <Row justify={'space-between'}>
                     <ProfileOutlined onClick={() => { }} style={{ color: 'blue', fontSize: '16px' }} />
-                </>
-            }
-        },
-        {
-            title: "Sửa",
-            key: 'update',
-            width: 60,
-            align: 'center',
-            render: (record) => {
-                return <>
                     <EditOutlined onClick={() => { setIsUpdateTrip(true); setTripUpdate(record) }} style={{ color: 'green', fontSize: '16px' }} />
-                </>
-            }
-        },
-        {
-            title: "Xóa",
-            key: 'delete',
-            width: 60,
-            align: 'center',
-            render: (record) => {
-                return <>
+
                     <Popconfirm
                         title="Bạn có chắc chắn muốn xóa chuyến"
                         onConfirm={() => onDelete(record)}
@@ -144,7 +148,7 @@ const TripManagerment = () => {
 
                     </Popconfirm>
 
-                </>
+                </Row>
             }
         }
 

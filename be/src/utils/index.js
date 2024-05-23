@@ -100,11 +100,46 @@ const cancelTransaction = async (transactionId) => {
         // throw error;
     }
 };
+
+const generateRandomCode = (length) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
+function getCurrentDateString() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0'); // Lấy ngày và thêm số 0 ở đầu nếu cần
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Lấy tháng và thêm số 0 ở đầu nếu cần (tháng bắt đầu từ 0)
+    const year = String(today.getFullYear()).slice(-2); // Lấy 2 chữ số cuối của năm
+
+    return `${day}/${month}/${year}`;
+}
+
+const parseDate = (str) => {
+    const [day, month, year] = str.split('-').map(Number);
+    // Giả sử năm là 20xx nếu yy < 50, và 19xx nếu yy >= 50
+    return new Date(year, month - 1, day); // Tháng trong JavaScript bắt đầu từ 0
+}
+
+function isDateInRange(startDateStr, endDateStr) {
+    const currentDate = new Date();
+    const startDate = parseDate(startDateStr);
+    const endDate = parseDate(endDateStr);
+
+    return currentDate >= startDate && currentDate <= endDate;
+}
+
 module.exports = {
     getPublicIdFromUrl,
     deleteImgCloud,
     checkTransactionStatus,
-    cancelTransaction
+    cancelTransaction,
+    generateRandomCode,
+    isDateInRange
 };
 
 

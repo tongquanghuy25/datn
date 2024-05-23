@@ -10,6 +10,8 @@ import { getStopPointsByBusRoute } from '../../../../services/RouteService';
 import TextArea from 'antd/es/input/TextArea';
 import Paypal from './paypal';
 import { createTicketOrder, getSeatsBookedByTrip } from '../../../../services/OrderService';
+import { checkDiscount } from '../../../../services/DiscountService';
+import { getVnCurrency } from '../../../../utils';
 const { Step } = Steps;
 
 
@@ -27,7 +29,6 @@ function calculateTime(startTime, minutes) {
 }
 
 function calculateArrivalDateAndTime(departureDate, departureTime, durationInMinutes) {
-    console.log('departureDate, departureTime, pickUpPoint.timeFromStart', departureDate, departureTime, durationInMinutes);
 
     // Chia chuỗi ngày đi thành các thành phần ngày, tháng và năm
     const [day, month, year] = departureDate.split('/').map(Number);
@@ -36,7 +37,6 @@ function calculateArrivalDateAndTime(departureDate, departureTime, durationInMin
     const [hours, minutes] = departureTime.split(':')?.map(Number);
     // const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/).map(Number);
 
-    console.log('hours, minutes', hours, minutes);
     // Kiểm tra xem các thành phần đã chuyển đổi thành số hợp lệ chưa
     if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
         console.log("Ngày hoặc giờ đi không hợp lệ");
@@ -57,13 +57,15 @@ function calculateArrivalDateAndTime(departureDate, departureTime, durationInMin
     return { arrivalDate, arrivalTime };
 }
 const TabSeatSelection = (props) => {
-    const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, routeName, busOwnerName, isAgent, handleOrderSuccess } = props
+    const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, routeName, busOwnerName, isAgent, handleOrderSuccess, busOwnerId } = props
     const user = useSelector((state) => state.user);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [seatCount, setSeatCount] = useState(0);
     const [totalPrice, setTotalPricet] = useState(0);
     const [isPaidAgent, setIsPaidAgent] = useState(false);
     const [message, setMessage] = useState('');
+    const [codeDiscount, setCodeDiscount] = useState('');
+    const [isDiscounted, setIsDiscounted] = useState(false);
 
 
     const [listPickUpPoint, setListPickUpPoint] = useState([])
@@ -119,7 +121,7 @@ const TabSeatSelection = (props) => {
     };
 
     const nextStep2 = () => {
-        if (!email || !phone)
+        if (!name || !email || !phone)
             if (isAgent) handleMessage('Vui lòng điển đầy đủ thông tin!')
             else errorMes('Vui lòng điển đầy đủ thông tin!')
         else setCurrentStep(currentStep + 1);
@@ -166,10 +168,12 @@ const TabSeatSelection = (props) => {
 
 
     //Information
+    const [name, setName] = useState();
     const [email, setEmail] = useState();
     const [phone, setPhone] = useState();
 
     useEffect(() => {
+        setName(user?.name)
         setEmail(user?.email)
         setPhone(user?.phone)
     }, [user])
@@ -189,8 +193,8 @@ const TabSeatSelection = (props) => {
     const onChangePickUpPoint = (e) => {
         let price = totalPrice
         const point = listPickUpPoint.find(item => item.id === e.target.value)
-        if (pickUpPoint?.extracost) price = price - (pickUpPoint?.extracost * seatCount)
-        if (point?.extracost) price = price + (point?.extracost * seatCount)
+        if (pickUpPoint?.extracost) price = price - (pickUpPoint?.extracost)
+        if (point?.extracost) price = price + (point?.extracost)
 
         setTotalPricet(price)
         setPickUpPoint(point)
@@ -199,8 +203,8 @@ const TabSeatSelection = (props) => {
     const onChangeDropOffPoint = (e) => {
         let price = totalPrice
         const point = listDropOffPoint.find(item => item.id === e.target.value)
-        if (dropOffPoint?.extracost) price = price - (dropOffPoint?.extracost * seatCount)
-        if (point?.extracost) price = price + (point?.extracost * seatCount)
+        if (dropOffPoint?.extracost) price = price - (dropOffPoint?.extracost)
+        if (point?.extracost) price = price + (point?.extracost)
 
         setTotalPricet(price)
         setDropOffPoint(point)
@@ -235,14 +239,12 @@ const TabSeatSelection = (props) => {
         const { arrivalDate: endDate, arrivalTime: endTime } = calculateArrivalDateAndTime(departureDate, departureTime, dropOffPoint.timeFromStart)
         if ((paymentRequire && isAgent && isPaidAgent === false)) { handleMessage('Chuyến xe yêu cầu thanh toán trước!') }
         else {
-            console.log('paymentRequire && isAgent && isPaidAgent', paymentRequire, isAgent, isPaidAgent, paymentRequire && isAgent && isPaidAgent === false, typeof isPaidAgent);
             const data = {
                 tripId,
+                userOrder: user?.id,
+                name,
                 email,
                 phone,
-                userOrder: user?.id,
-                busOwnerName,
-                routeName,
                 departureTime,
                 departureDate,
 
@@ -260,10 +262,10 @@ const TabSeatSelection = (props) => {
                 seatCount: seatCount,
 
                 ticketPrice,
-                extraCosts: ((pickUpPoint?.extracost || 0) + (dropOffPoint?.extracost || 0)) * seatCount,
+                extraCosts: ((pickUpPoint?.extracost || 0) + (dropOffPoint?.extracost || 0)),
                 totalPrice,
 
-                payee: isPaid || isPaidAgent ? user?.id : '',
+                payee: isPaid || isPaidAgent ? user?.id : null,
                 paymentMethod,
                 transactionId,
                 paidAt,
@@ -275,6 +277,30 @@ const TabSeatSelection = (props) => {
         }
     };
 
+
+    const mutationCheckDiscount = useMutation(
+        {
+            mutationFn: (data) => {
+                return checkDiscount(data)
+            },
+            onSuccess: (data) => {
+                if (data?.data.discountType === 'percent') {
+                    const newPrice = totalPrice * (100 - data?.data.discountValue) / 100
+                    setTotalPricet(newPrice)
+                } else if (data?.data.discountType === 'fixed') {
+                    setTotalPricet(totalPrice - data?.data.discountValue)
+                }
+                setIsDiscounted(true)
+            },
+            onError: (data) => {
+                errorMes(data?.response?.data?.message)
+            }
+        }
+    )
+
+    const handleApplyDiscount = () => {
+        mutationCheckDiscount.mutate({ code: codeDiscount, busOwnerId: busOwnerId })
+    }
 
     return (
         <div style={{ marginTop: '20px' }}>
@@ -358,7 +384,7 @@ const TabSeatSelection = (props) => {
                         <Row style={{ borderTop: '1px solid #333', paddingTop: '20px' }} justify={'end'}>
                             <div style={{ fontSize: '20px', fontWeight: 'bold', marginRight: '30px' }}>
                                 Tổng số tiền :
-                                <span style={{ color: 'red', marginLeft: '10px' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</span>
+                                <span style={{ color: 'red', marginLeft: '10px' }}>{getVnCurrency(totalPrice)}</span>
                             </div>
                             <Button type="primary" onClick={nextStep0} >Tiếp tục</Button>
                         </Row>
@@ -376,7 +402,7 @@ const TabSeatSelection = (props) => {
                                         {listPickUpPoint.map((item) => (
                                             <Radio style={{ display: 'block', marginBottom: '10px' }} key={item.id} value={item.id}>
                                                 {`${calculateTime(departureTime, item.timeFromStart)} - ${item.place}`}
-                                                {item?.extracost && <span style={{ color: 'red', display: 'block', height: '0px', marginLeft: '20px' }}>{item?.extracost > 0 ? '+' : '-'}{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.extracost)} /1 ghế</span>}
+                                                {item?.extracost && <span style={{ color: 'red', display: 'block', height: '0px', marginLeft: '20px' }}>{item?.extracost > 0 ? '+' : '-'}{getVnCurrency(item?.extracost)} /1 ghế</span>}
                                             </Radio>
                                         ))}
                                     </Radio.Group>
@@ -395,7 +421,7 @@ const TabSeatSelection = (props) => {
                                         {listDropOffPoint.map((item) => (
                                             <Radio style={{ display: 'block', marginBottom: '10px' }} key={item.id} value={item.id}>
                                                 {`${calculateTime(departureTime, item.timeFromStart)} - ${item.place}`}
-                                                {item?.extracost && <span style={{ color: 'red', display: 'block', height: '0px', marginLeft: '20px' }}>{item?.extracost > 0 ? '+' : '-'}{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.extracost)} /1 ghế</span>}
+                                                {item?.extracost && <span style={{ color: 'red', display: 'block', height: '0px', marginLeft: '20px' }}>{item?.extracost > 0 ? '+' : '-'}{getVnCurrency(item?.extracost)} /1 ghế</span>}
                                             </Radio>
                                         ))}
                                     </Radio.Group>
@@ -417,7 +443,7 @@ const TabSeatSelection = (props) => {
                             <div style={{ display: 'flex' }}>
                                 <div style={{ fontSize: '20px', fontWeight: 'bold', marginRight: '30px' }}>
                                     Tổng số tiền :
-                                    <span style={{ color: 'red', marginLeft: '10px' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</span>
+                                    <span style={{ color: 'red', marginLeft: '10px' }}>{getVnCurrency(totalPrice)}</span>
                                 </div>
                                 <Button type="primary" onClick={nextStep1}>
                                     Tiếp tục
@@ -429,43 +455,18 @@ const TabSeatSelection = (props) => {
                 )}
                 {currentStep === 2 && (
                     <div>
-                        {/* Phần điền thông tin */}
-                        {/* <div>
-                            <Row justify={'center'}>
-                                <h2>Thông tin vé</h2>
-
-                            </Row>
-                            <Row justify={'space-between'}>
-                                <div style={{ width: '45%' }}>
-                                    <label>Email:</label>
-                                    <Input
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Nhập email"
-                                    />
-                                </div>
-
-                                <div style={{ width: '45%' }} >
-                                    <label>Số điện thoại:</label>
-                                    <Input
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
-                                        placeholder="Nhập số điện thoại"
-                                    />
-                                </div>
-
-                            </Row>
-
-                            <div>Số lượng vé: {prebooking ? selectedSeats.length : seatCount}</div>
-                            {prebooking && <div>Vị trí ghế: {selectedSeats?.map(seat => (<b>{seat}, </b>))}</div>}
-                            <div>Điểm đón: {`${calculateTime(departureTime, pickUpPoint.timeFromStart)} - ${pickUpPoint.place} ${pickUpPoint.extracost ? `(Phụ phí: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(pickUpPoint.extracost)})` : ''} `}</div>
-                            <div>Điểm trả: {`${calculateTime(departureTime, dropOffPoint.timeFromStart)} - ${dropOffPoint.place} ${dropOffPoint.extracost ? `(Phụ phí: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(dropOffPoint.extracost)})` : ''} `}</div>
-
-                        </div> */}
                         <div className="ticket-info">
                             <Row justify={'center'}>
                                 <h2>Thông tin vé</h2>
                             </Row>
+                            <div style={{ width: '45%', marginBottom: '10px' }}>
+                                <label>Tên:</label>
+                                <Input
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Nhập tên"
+                                />
+                            </div>
                             <Row justify={'space-between'}>
                                 <div style={{ width: '45%' }}>
                                     <label>Email:</label>
@@ -494,7 +495,7 @@ const TabSeatSelection = (props) => {
                                 </Col>
                                 <Col style={{ marginLeft: '10px' }}>
                                     <span style={{ fontSize: '16px', color: 'black' }}>{` ${calculateTime(departureTime, pickUpPoint.timeFromStart)} - ${pickUpPoint.place}  `}</span>
-                                    <div style={{ color: 'red' }}>{pickUpPoint.extracost ? `Phụ phí: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(pickUpPoint.extracost)} / người` : ''}</div>
+                                    <div style={{ color: 'red' }}>{pickUpPoint.extracost ? `Phụ phí: ${getVnCurrency(pickUpPoint.extracost)} / người` : ''}</div>
                                     {notePickUp && <span style={{ color: '#105fde' }}>{`Ghi chú: ${notePickUp}`}</span>}
                                 </Col>
                             </Row>
@@ -504,7 +505,7 @@ const TabSeatSelection = (props) => {
                                 </Col>
                                 <Col style={{ marginLeft: '10px' }}>
                                     <span style={{ fontSize: '16px', color: 'black' }}>{` ${calculateTime(departureTime, dropOffPoint.timeFromStart)} - ${dropOffPoint.place}  `}</span>
-                                    <div style={{ color: 'red' }}>{dropOffPoint.extracost ? `Phụ phí: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(dropOffPoint.extracost)} / người` : ''}</div>
+                                    <div style={{ color: 'red' }}>{dropOffPoint.extracost ? `Phụ phí: ${getVnCurrency(dropOffPoint.extracost)} / người` : ''}</div>
                                     {noteDropOff && <span style={{ color: '#105fde' }}>{`Ghi chú: ${noteDropOff}`}</span>}
                                 </Col>
                             </Row>
@@ -517,7 +518,7 @@ const TabSeatSelection = (props) => {
                             <div style={{ display: 'flex' }}>
                                 <div style={{ fontSize: '20px', fontWeight: 'bold', marginRight: '30px' }}>
                                     Tổng số tiền :
-                                    <span style={{ color: 'red', marginLeft: '10px' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</span>
+                                    <span style={{ color: 'red', marginLeft: '10px' }}>{getVnCurrency(totalPrice)}</span>
                                 </div>
 
                                 <Button type="primary" onClick={nextStep2}>
@@ -553,15 +554,28 @@ const TabSeatSelection = (props) => {
                                         {paymentRequire && <div style={{ color: 'red', fontSize: '18px' }}>Chuyến xe này yêu cầu thanh toán trước!</div>}
                                     </div>
                             }
+
+                        </Row>
+                        <Row justify={'end'}>
+                            <span>Nhập mã giảm giá</span>
+                            <Input
+                                placeholder="Nhập mã giảm giá"
+                                value={codeDiscount}
+                                onChange={e => setCodeDiscount(e.target.value)}
+                                style={{ width: '150px', marginLeft: '10px' }} />
+                            <Button disabled={isDiscounted} style={{ marginLeft: '10px' }} onClick={handleApplyDiscount}>
+                                Áp dụng
+                            </Button>
                         </Row>
                         <Row style={{ borderTop: '1px solid #333', paddingTop: '20px', marginTop: '20px' }} justify={'space-between'}>
                             <Button style={{ marginRight: '10px' }} onClick={prevStep}>
                                 Quay lại
                             </Button>
+
                             <div style={{ display: 'flex' }}>
                                 <div style={{ fontSize: '20px', fontWeight: 'bold', marginRight: '30px' }}>
                                     Tổng số tiền :
-                                    <span style={{ color: 'red', marginLeft: '10px' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</span>
+                                    <span style={{ color: 'red', marginLeft: '10px' }}>{getVnCurrency(totalPrice)}</span>
                                 </div>
                                 {
                                     isAgent ?

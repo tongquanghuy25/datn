@@ -6,6 +6,8 @@ import TabPane from 'antd/es/tabs/TabPane';
 import TabBookTicket from './TabContent/TabBookTicket/TabBookTicket';
 import TabImagesComponent from './TabContent/TabImages/TabImagesComponent';
 import TabJourneysComponent from './TabContent/TabJourneys/TabJourneysComponent';
+import { getVnCurrency } from '../../utils';
+import TabReview from './TabContent/TabReview/TabReview';
 
 const BusCard = ({ trip }) => {
 
@@ -39,7 +41,7 @@ const BusCard = ({ trip }) => {
                     <div className="card-trip-info">
                         <p className='name'>{trip.busOwnerName}</p>
                         <p>Đánh giá: {trip.rating} <Rate disabled defaultValue={1} count={1} /> ({trip.rating})</p>
-                        <p className="price">Giá vé: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.ticketPrice)}</p>
+                        <p className="price">Giá vé: {getVnCurrency(trip.ticketPrice)}</p>
                         <p>Số chỗ còn trống: {trip.availableSeats}</p>
                     </div>
                     <div>
@@ -59,7 +61,7 @@ const BusCard = ({ trip }) => {
                             <TabImagesComponent images={trip.images}></TabImagesComponent>
                         </TabPane>
                         <TabPane tab="Đánh giá" key="2">
-                            Nội dung đánh giá
+                            <TabReview />
                         </TabPane>
                         <TabPane tab="Tiện ích" key="3">
                             Nội dung Tiện ích
@@ -83,6 +85,7 @@ const BusCard = ({ trip }) => {
                         departureTime={trip.departureTime}
                         tripId={trip._id}
                         departureDate={trip.departureDate}
+                        busOwnerId={trip.busOwnerId}
                         busOwnerName={trip.busOwnerName}
                         routeName={`${trip.departureLocation} - ${trip.arrivalLocation}`}
                     />

@@ -62,6 +62,7 @@ const HomePage = () => {
                 const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
                 return {
                     _id: trip._id,
+                    busOwnerId: trip.busOwnerId._id,
                     busOwnerName: trip.busOwnerId.busOwnerName,
                     avatar: trip.busId.avatar,
                     rating: trip.busId.averageRating,

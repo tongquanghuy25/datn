@@ -5,7 +5,11 @@ const { authUserMiddleWare, authAdminMiddleWare, authDriverMiddleWare, authBusOw
 
 router.post('/create-ticket', OrderController.createTicketOrder)
 router.get('/get-seats-booked-by-trip/:id', OrderController.getSeatsBookedByTrip)
-router.put('/update-status-ticket/:id', authDriverMiddleWare, OrderController.updateStatusTicketOrder)
+router.get('/get-tickets-by-user/:id', authUserMiddleWare, OrderController.getTicketsByUser)
+router.delete('/delete-ticket/:id', authBusOwnerMiddleWare, OrderController.deleteTicketOrder)
+router.put('/change-seat/:id', authBusOwnerMiddleWare, OrderController.changeSeat)
+router.put('/delete-seat', authBusOwnerMiddleWare, OrderController.deleteSeat)
+router.put('/update-ticket/:id', authDriverMiddleWare, OrderController.updateTicketOrder)
 router.get('/get-ticket-order-by-trip/:id', authBusOwnerMiddleWare, OrderController.getTicketOrderByTrip)
 
 

@@ -60,7 +60,7 @@ const HeaderComponent = () => {
 
                 </Col>
                 <Col span={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <div onClick={() => { console.log('huyhuy'); }} className='header-items'>
+                    <div onClick={() => { navigate('/booked-tickets') }} className='header-items'>
                         <ContainerOutlined style={{ marginRight: '10px' }} />
                         Xem vé đã mua
                     </div>

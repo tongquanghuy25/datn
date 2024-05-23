@@ -3,12 +3,12 @@ const { checkTransactionStatus, cancelTransaction } = require('../utils')
 
 const createTicketOrder = async (req, res) => {
     try {
-        const { tripId, email, phone, busOwnerName, routeName, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
+        const { tripId, userOrder, name, email, phone, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
             seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payee, paymentMethod, transactionId, paidAt, isPaid } = req.body
 
 
-        if (!tripId || !busOwnerName || !routeName || !departureTime || !email || !phone || !departureDate || !pickUp || !timePickUp || !datePickUp || !dropOff || !timeDropOff || !dateDropOff
-            || !seats || !seatCount || !ticketPrice || !totalPrice || !payee
+        if (!tripId || !departureTime || !name || !email || !phone || !departureDate || !pickUp || !timePickUp || !datePickUp || !dropOff || !timeDropOff || !dateDropOff
+            || !seatCount || !ticketPrice || !totalPrice
         ) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
@@ -23,10 +23,9 @@ const createTicketOrder = async (req, res) => {
             }
         }
         const response = await OrderService.createTicketOrder({
-            tripId, email, phone, busOwnerName, routeName, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
+            tripId, userOrder, name, email, phone, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
             seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payee, paymentMethod, paidAt, isPaid
         })
-
         // if (response.status !== 200) cancelTransaction(transactionId)
         return res.status(response.status).json(response)
 
@@ -57,18 +56,104 @@ const getSeatsBookedByTrip = async (req, res) => {
     }
 }
 
-const updateStatusTicketOrder = async (req, res) => {
+const getTicketsByUser = async (req, res) => {
     try {
-        const status = req.body.status
+        const useId = req.params.id
+        if (!useId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Id người dùng không được bỏ trống!'
+            })
+        }
+        const response = await OrderService.getTicketsByUser(useId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const deleteTicketOrder = async (req, res) => {
+    try {
+        const { isOnTimeAllow, isPaid } = req.query.data
+        const ticketOrederId = req.params.id
+
+        if (!ticketOrederId) {
+            return res.status(400).json({
+                message: 'Thông tin nhập vào chưa đủ !'
+            })
+        }
+
+
+        const response = await OrderService.deleteTicketOrder(ticketOrederId, isOnTimeAllow, isPaid)
+
+        return res.status(response.status).json(response)
+
+    } catch (e) {
+        console.log(e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const changeSeat = async (req, res) => {
+    try {
+        const { tripId, seats, seatSwap, destinationSeat } = req.body
         const ticketOrderId = req.params.id
-        console.log(status, ticketOrderId);
         if (!ticketOrderId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Id của đơn vé bị trống!'
             })
         }
-        const response = await OrderService.updateStatusTicketOrder(ticketOrderId, status)
+        const response = await OrderService.changeSeat(ticketOrderId, tripId, seats, seatSwap, destinationSeat)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        console.log('e', e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const deleteSeat = async (req, res) => {
+    try {
+        const { ticketOrder, seatDelete, isOnTimeAllow } = req.body
+        if (!ticketOrder) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Đơn vé bị trống!'
+            })
+        }
+        const response = await OrderService.deleteSeat(ticketOrder, seatDelete, isOnTimeAllow)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const updateTicketOrder = async (req, res) => {
+    try {
+        const { name, email, phone, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
+            seats, ticketPrice, extraCosts, discount, totalPrice, payee, paidAt, isPaid, paymentMethod, status } = req.body
+
+        const ticketOrderId = req.params.id
+        if (!ticketOrderId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Id của đơn vé bị trống!'
+            })
+        }
+        const response = await OrderService.updateTicketOrder(ticketOrderId,
+            {
+                name, email, phone, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
+                seats, ticketPrice, extraCosts, discount, totalPrice, payee, paidAt, isPaid, paymentMethod, status
+            }
+        )
         return res.status(response.status).json(response)
     } catch (e) {
         console.log('e', e);
@@ -271,14 +356,18 @@ const updateStatusGoodsOrder = async (req, res) => {
 module.exports = {
     createTicketOrder,
     getTicketOrderByTrip,
+    getTicketsByUser,
     createGoodsOrder,
     updateGoodsOrder,
     deleteGoodsOrder,
     getGoodsOrderByTrip,
     updateStatusGoodsOrder,
-
+    updateTicketOrder,
+    changeSeat,
+    deleteSeat,
     getSeatsBookedByTrip,
-    updateStatusTicketOrder,
+    deleteTicketOrder,
+
     getDetailsOrder,
     cancelOrderDetails,
     getAllOrder

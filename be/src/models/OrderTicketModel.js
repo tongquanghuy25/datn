@@ -4,10 +4,10 @@ const orderTicketSchema = new mongoose.Schema({
 
     tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
     userOrder: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: { type: String, required: true },
     email: { type: String, required: true },
     phone: { type: String, required: true },
     departureDate: { type: String, required: true },
-
 
     pickUp: { type: String, required: true },
     notePickUp: { type: String },

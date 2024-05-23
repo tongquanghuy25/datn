@@ -1,13 +1,13 @@
-import { DatePicker, Form, InputNumber, Modal, Radio, Select, TimePicker } from 'antd'
+import { DatePicker, Form, Input, InputNumber, Modal, Radio, Row, Select, TimePicker } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { getRouteByBusOwner } from '../../../services/RouteService';
+import { getRouteByBusOwner } from '../../../../../services/RouteService';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getBussByBusOwner } from '../../../services/BusService';
-import { getDriversByBusOwner } from '../../../services/DriverService';
+import { getBussByBusOwner } from '../../../../../services/BusService';
+import { getDriversByBusOwner } from '../../../../../services/DriverService';
 import dayjs from 'dayjs';
-import { createTrip } from '../../../services/TripService';
-import { errorMes, loadingMes, successMes } from '../../Message/Message';
+import { createTrip } from '../../../../../services/TripService';
+import { errorMes, loadingMes, successMes } from '../../../../Message/Message';
 
 const ModalCreateTrip = (props) => {
     const { handleCancel, isCreateTrip, refetch, listRoute, listBus, listDriver, dataRoutes, dataBuss, filterOption } = props
@@ -56,6 +56,7 @@ const ModalCreateTrip = (props) => {
             prebooking: values?.prebooking === 'true' ? true : false,
             ticketPrice: values?.ticketPrice,
             availableSeats: availableSeats,
+            timeAlowCancel: values?.timeAlowCancel
         })
         loadingMes()
     }
@@ -105,34 +106,36 @@ const ModalCreateTrip = (props) => {
                             options={listRoute}
                         />
                     </Form.Item>
+                    <Row justify={'space-between'}>
 
-                    <Form.Item
-                        name="bus"
-                        label="Xe"
-                    >
-                        <Select
-                            style={{ minWidth: '150px', marginRight: '10px' }}
-                            showSearch
-                            placeholder="Chọn xe"
-                            // onChange={onChangeProvince}
-                            filterOption={filterOption}
-                            options={listBus}
-                        />
-                    </Form.Item>
+                        <Form.Item
+                            name="bus"
+                            label="Xe"
+                        >
+                            <Select
+                                style={{ minWidth: '150px', marginRight: '10px' }}
+                                showSearch
+                                placeholder="Chọn xe"
+                                // onChange={onChangeProvince}
+                                filterOption={filterOption}
+                                options={listBus}
+                            />
+                        </Form.Item>
 
-                    <Form.Item
-                        name="driver"
-                        label="Tài xế"
-                    >
-                        <Select
-                            style={{ minWidth: '150px', marginRight: '10px' }}
-                            showSearch
-                            placeholder="Chọn tài xế"
-                            // onChange={onChangeProvince}
-                            filterOption={filterOption}
-                            options={listDriver}
-                        />
-                    </Form.Item>
+                        <Form.Item
+                            name="driver"
+                            label="Tài xế"
+                        >
+                            <Select
+                                style={{ minWidth: '200px', marginRight: '10px' }}
+                                showSearch
+                                placeholder="Chọn tài xế"
+                                // onChange={onChangeProvince}
+                                filterOption={filterOption}
+                                options={listDriver}
+                            />
+                        </Form.Item>
+                    </Row>
 
                     <Form.Item
                         name="dates"
@@ -169,21 +172,33 @@ const ModalCreateTrip = (props) => {
                                 format='HH:mm'
                                 onChange={onchangeDepartureTime} />
                         </Form.Item>
-
                         <Form.Item
-                            name="ticketPrice"
-                            label="Giá vé"
+                            name="timeAlowCancel"
+                            label="Số giờ chon phép hủy trước khi chạy"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Tuyến đường không được bỏ trống !",
+                                    message: "Không được bỏ trống !",
                                 }
                             ]}
                         >
-                            <InputNumber suffix="VNĐ" style={{ width: '200px' }} />
+                            <Input type='number' style={{ width: '150px' }} />
                         </Form.Item>
-                    </div>
 
+
+                    </div>
+                    <Form.Item
+                        name="ticketPrice"
+                        label="Giá vé"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Tuyến đường không được bỏ trống !",
+                            }
+                        ]}
+                    >
+                        <Input type='number' suffix="VNĐ" style={{ width: '200px' }} />
+                    </Form.Item>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Form.Item
                             name="paymentRequire"

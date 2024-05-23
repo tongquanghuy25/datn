@@ -1,7 +1,4 @@
-export const getListSeat = (type, listTicketSold) => {
-
-    console.log('type, listTicketSold', type, listTicketSold);
-
+export const getListSeat = (type, listTicketSold, numberSeat) => {
     switch (type) {
         case 'xe limousine 7':
             return getListSeat1Floor(7, listTicketSold)
@@ -28,7 +25,7 @@ export const getListSeat = (type, listTicketSold) => {
         case 'xe giường nằm 40':
             return getListSeat2Floor(20, 20, listTicketSold)
         default:
-            return
+
     }
 
 }
@@ -42,7 +39,6 @@ const getListSeat1Floor = (numberSeat, listTicketSold) => {
             return result
         })
     }));
-    console.log('seats', seats);
     return seats
 }
 
@@ -50,19 +46,23 @@ const getListSeat1Floor = (numberSeat, listTicketSold) => {
 const getListSeat2Floor = (numberSeat1, numberSeat2, listTicketSold) => {
     const seats1 = Array.from({ length: numberSeat1 }, (_, index) => ({
         id: `A${index + 1}`,
-        data: listTicketSold?.map(item => {
+        data: listTicketSold?.find(item => {
             const result = item.seats?.find(it => it === `A${index + 1}`)
-            if (!result) return item
-            else return null
+            return result
+
+            // if (!result) return item
+            // else return null
         })
     }));
 
     const seats2 = Array.from({ length: numberSeat2 }, (_, index) => ({
         id: `B${index + 1}`,
-        data: listTicketSold?.map(item => {
+        data: listTicketSold?.find(item => {
             const result = item.seats?.find(it => it === `B${index + 1}`)
-            if (!result) return item
-            else return null
+            return result
+
+            // if (!result) return item
+            // else return null
         })
     }));
     const result = [...seats1, ...seats2]

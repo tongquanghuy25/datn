@@ -235,7 +235,7 @@ const ModalAddStopPoint = (props) => {
                         label="Chi phí phát sinh"
 
                     >
-                        <InputNumber suffix="VNĐ" style={{ width: '200px' }} />
+                        <Input type='number' suffix="VNĐ" style={{ width: '200px' }} />
                     </Form.Item>
 
                 </Form>

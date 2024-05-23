@@ -36,10 +36,10 @@ const SignInPage = () => {
             handleGetDetailsUser(decoded?.id, data?.access_token)
           }
           if (decoded?.role === 'admin') {
-            navigate('/admin')
+            navigate('/admin/home')
           } else if (decoded?.role === 'busowner') {
             handleGetDetailBusOwner(decoded?.id, data?.access_token)
-            navigate('/bus-owner')
+            navigate('/bus-owner/home/statistical')
           } else if (decoded?.role === 'driver') {
             handleGetDetailDriver(decoded?.id, data?.access_token)
             navigate('/driver')

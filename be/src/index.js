@@ -6,6 +6,7 @@ const routes = require('./routes');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { generateRandomCode, isDateInRange } = require('./utils');
 dotenv.config();
 
 
@@ -48,7 +49,6 @@ mongoose.connect(`${process.env.MONGO_DB}`)
     .catch(err => {
         console.log(err);
     });
-
 
 app.listen(port, () => {
     console.log("server listening on port: ", + port);

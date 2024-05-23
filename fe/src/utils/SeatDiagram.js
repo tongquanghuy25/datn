@@ -26,7 +26,7 @@ export const initArraySeat = (type, listTicketSold) => {
         case 'xe giường nằm 40':
             return giuongnam40(listTicketSold)
         default:
-            return
+            return { seatss: [], numCol: 0, numFloor: 0 }
     }
 
 }

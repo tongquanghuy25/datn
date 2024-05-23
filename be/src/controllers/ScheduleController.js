@@ -1,17 +1,15 @@
-const TripService = require('../services/TripService');
+const ScheduleService = require('../services/ScheduleService');
 
 
-const createTrip = async (req, res) => {
+const createSchedule = async (req, res) => {
     try {
-        let { routeId, busId, driverId, dates, departureTime, ticketPrice, availableSeats, busOwnerId, paymentRequire, prebooking, timeAlowCancel } = req.body
-        if (!busOwnerId || !routeId || !busId || !driverId || !dates || !departureTime || !ticketPrice || !availableSeats || !timeAlowCancel) {
+        let { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule } = req.body
+        if (!busOwnerId || !routeId || !busId || !driverId || !departureTime || !ticketPrice || !availableSeats || !timeAllowCancel || !scheduleType) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         }
-
-
-        const response = await TripService.createTrip(dates, { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAlowCancel })
+        const response = await ScheduleService.createSchedule({ busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule })
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -23,13 +21,12 @@ const createTrip = async (req, res) => {
 const getAllByBusOwner = async (req, res) => {
     try {
         const ownerId = req.params.id
-        const day = req.query.day
         if (!ownerId) {
             return res.status(400).json({
                 message: 'Id nhà xe không được bỏ trống!'
             })
         }
-        const response = await TripService.getAllByBusOwner(ownerId, day)
+        const response = await ScheduleService.getAllByBusOwner(ownerId)
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -38,6 +35,45 @@ const getAllByBusOwner = async (req, res) => {
     }
 }
 
+const updateSchedule = async (req, res) => {
+    try {
+        const scheduleId = req.params.id
+        console.log('aaa', scheduleId);
+        let { busOwnerId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule } = req.body
+        if (!busOwnerId || !busId || !driverId || !departureTime || !ticketPrice || !timeAllowCancel || !scheduleType) {
+            return res.status(400).json({
+                message: 'Thông tin nhập vào chưa đủ !'
+            })
+        }
+        const response = await ScheduleService.updateSchedule(scheduleId, { busOwnerId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule })
+        return res.status(response.status).json(response)
+
+    } catch (e) {
+        console.log(e);
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const deleteSchedule = async (req, res) => {
+    try {
+        const scheduleId = req.params.id
+        if (!scheduleId) {
+            return res.status(404).json({
+                message: 'Id lịch trình không được bỏ trống !'
+            })
+        }
+        const response = await ScheduleService.deleteSchedule(scheduleId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+///
 const getAllByDriver = async (req, res) => {
     try {
         const driverId = req.params.id
@@ -97,20 +133,6 @@ const getTripsByFilter = async (req, res) => {
     }
 }
 
-const updateTrip = async (req, res) => {
-    try {
-        const tripId = req.params.id
-        const { driverId, busId, status } = req.body
-        const response = await TripService.updateTrip(tripId, { driverId, busId, status })
-        return res.status(response.status).json(response)
-
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
-
 const updateFinishTrip = async (req, res) => {
     try {
         const tripId = req.params.id
@@ -124,30 +146,15 @@ const updateFinishTrip = async (req, res) => {
     }
 }
 
-const deleteTrip = async (req, res) => {
-    try {
-        const tripId = req.params.id
-        if (!tripId) {
-            return res.status(404).json({
-                message: 'Id chuyến không được bỏ trống !'
-            })
-        }
-        const response = await TripService.deleteTrip(tripId)
-        return res.status(response.status).json(response)
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
+
 
 
 
 module.exports = {
-    createTrip,
+    createSchedule,
     getAllByBusOwner,
-    deleteTrip,
-    updateTrip,
+    deleteSchedule,
+    updateSchedule,
     getTripsBySearch,
     getTripsByFilter,
     getAllByDriver,

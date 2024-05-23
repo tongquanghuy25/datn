@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button, Col, Row } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { getStopPointsByBusRoute } from '../../../../services/RouteService';
-import { updateStatusGoodsOrder, updateStatusTicketOrder } from '../../../../services/OrderService';
+import { updateStatusGoodsOrder, updateTicketOrder } from '../../../../services/OrderService';
 import { errorMes, successMes } from '../../../Message/Message';
 import { useSelector } from 'react-redux'
 
@@ -117,7 +117,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
             const { id, token, status } = data;
-            return await updateStatusTicketOrder(id, token, { status: status });
+            return await updateTicketOrder(id, token, { status: status });
         },
         onSuccess: (data) => {
 

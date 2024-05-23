@@ -11,9 +11,8 @@ const style = { "layout": "vertical" };
 
 const ButtonWrapper = ({ showSpinner, amount, handleFinish }) => {
     const [{ isPending }] = usePayPalScriptReducer();
-    const navigate = useNavigate()
     amount = amount?.toString()
-    console.log('am', amount);
+
     return (
         amount && <>
             {(showSpinner && isPending) && <div className="spinner" />}

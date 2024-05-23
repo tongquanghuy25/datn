@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Button } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
-import DriverManagement from '../../components/BusOwnerComponent/DriverManagerment/DriverManagement';
-import LoadingComponent from '../../components/Loading/LoadingComponent';
-import BusManagerment from '../../components/BusOwnerComponent/BusManagerment/BusManagerment';
-import { useNavigate } from 'react-router-dom';
-import RouteManagerment from '../../components/BusOwnerComponent/RouteManagerment/RouteManagerment';
-import TripManagerment from '../../components/BusOwnerComponent/TripManagerment/TripManagerment';
 import { useHandleLogout } from '../../utils/Action/HandleLogOut';
-import BusOwnerHome from '../../components/BusOwnerComponent/BusOwnerHome/BusOwnerHome';
 import TicketSales from '../../components/AgentComponent/TicketSales/TicketSales';
 
 const { Header, Content } = Layout;

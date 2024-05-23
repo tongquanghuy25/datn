@@ -14,6 +14,8 @@ import {
 import { Avatar, Button, Layout, Menu, theme } from 'antd';
 import GoodsManagerment from './BusOwnerHomeTabs/GoodManagerment/GoodsManagerment';
 import TicketManagerment from './BusOwnerHomeTabs/TicketManagerment/TicketManagerment';
+import TripManagerment from './BusOwnerHomeTabs/TripManagerment/TripManagerment';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 const { Header, Sider, Content } = Layout;
 
 
@@ -26,40 +28,34 @@ function getItem(label, key, icon, children) {
     };
 }
 const items = [
-    getItem('Thống kê', '1', <DesktopOutlined />),
-    getItem('Quản lý vé', '2', <PieChartOutlined />),
-    getItem('Quản lý hàng hóa', '3', <DesktopOutlined />),
-    getItem('Quản lý tài chính', '4', <DesktopOutlined />),
-    getItem('Thông tin tài khoản', '5', <DesktopOutlined />),
-    getItem('Đổi mật khẩu', '6', <DesktopOutlined />),
-    getItem('Đổi mật khẩu', '7', <DesktopOutlined />),
+    getItem('Thống kê', 'statistical', <DesktopOutlined />),
+    getItem('Quản lý chuyến', 'trip', <DesktopOutlined />),
+    getItem('Quản lý vé', 'ticket', <PieChartOutlined />),
+    getItem('Quản lý hàng hóa', 'goods', <DesktopOutlined />),
+    getItem('Quản lý tài chính', 'financial', <DesktopOutlined />),
+    getItem('Thông tin tài khoản', 'account-information', <DesktopOutlined />),
+    getItem('Đổi mật khẩu', 'change-assword', <DesktopOutlined />),
 ];
 
 
 const BusOwnerHome = () => {
     const user = useSelector((state) => state.user);
+    const location = useLocation();
+    const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(false);
-    const [selectedKeys, setSelectedKeys] = useState('3');
+    const [selectedKeys, setSelectedKeys] = useState('statistical');
     const [content, setContent] = useState();
+
+    useEffect(() => {
+        const currentPath = location.pathname.split('/')[3];
+        setSelectedKeys(currentPath);
+    }, [location]);
 
 
     const handleSliderChange = (value) => {
+        navigate(`/bus-owner/home/${value?.key}`)
         setSelectedKeys(value?.key)
     };
-
-    useEffect(() => {
-        switch (selectedKeys) {
-            case '2':
-                setContent(<TicketManagerment></TicketManagerment>);
-                break;
-            case '3':
-                setContent(<GoodsManagerment></GoodsManagerment>);
-                break;
-            default:
-                // setContent(<GoodsManagerment></GoodsManagerment>);
-                break;
-        }
-    }, [selectedKeys])
 
     return (
         <Layout
@@ -90,7 +86,7 @@ const BusOwnerHome = () => {
                         minHeight: 280,
                     }}
                 >
-                    {content}
+                    <Outlet />
                 </Content>
 
             </Layout>

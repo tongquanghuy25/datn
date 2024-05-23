@@ -1,6 +1,8 @@
 const OrderTicket = require("../models/OrderTicketModel")
 const OrderGoods = require("../models/OrderGoodsMode;")
+const User = require("../models/UserModel")
 const Trip = require("../models/TripModel")
+const Refund = require("../models/RefundModel")
 const EmailService = require("../services/EmailService")
 
 const mongoose = require('mongoose');
@@ -17,7 +19,7 @@ const createTicketOrder = (newOrder) => {
         try {
             // Kiểm tra số lượng ghế trống trong chuyến đi
 
-            const { tripId, email, phone, busOwnerName, routeName, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
+            const { tripId, userOrder, name, email, phone, departureTime, departureDate, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
                 seats, seatCount, ticketPrice, extraCosts, discount, totalPrice, payee, paymentMethod, paidAt, isPaid } = newOrder
 
             const trip = await Trip.findOneAndUpdate(
@@ -40,7 +42,7 @@ const createTicketOrder = (newOrder) => {
 
                 resolve({
                     status: 400,
-                    message: 'Chuyến đi không tồn tại!'
+                    message: 'Số chỗ trống không đủ!'
                 })
                 return
             }
@@ -60,35 +62,35 @@ const createTicketOrder = (newOrder) => {
 
             const createdOrder = await OrderTicket.create(
                 {
-                    tripId: tripId,
-                    email: email,
-                    phone: phone,
-                    busOwnerName: busOwnerName,
-                    routeName: routeName,
-                    departureTime: departureTime,
-                    departureDate: departureDate,
+                    tripId,
+                    userOrder,
+                    name,
+                    email,
+                    phone,
+                    departureTime,
+                    departureDate,
 
-                    pickUp: pickUp,
-                    notePickUp: notePickUp,
-                    timePickUp: timePickUp,
-                    datePickUp: datePickUp,
-                    dropOff: dropOff,
-                    noteDropOff: noteDropOff,
-                    timeDropOff: timeDropOff,
-                    dateDropOff: dateDropOff,
+                    pickUp,
+                    notePickUp,
+                    timePickUp,
+                    datePickUp,
+                    dropOff,
+                    noteDropOff,
+                    timeDropOff,
+                    dateDropOff,
 
-                    seats: seats,
-                    seatCount: seatCount,
+                    seats,
+                    seatCount,
 
-                    ticketPrice: ticketPrice,
-                    extraCosts: extraCosts,
-                    discount: discount,
-                    totalPrice: totalPrice,
+                    ticketPrice,
+                    extraCosts,
+                    discount,
+                    totalPrice,
 
-                    payee: payee,
-                    paymentMethod: paymentMethod,
-                    isPaid: isPaid,
-                    paidAt: paidAt
+                    payee,
+                    paymentMethod,
+                    isPaid,
+                    paidAt
                 }
             );
             await session.commitTransaction();
@@ -138,6 +140,31 @@ const getSeatsBookedByTrip = (tripId) => {
     })
 }
 
+const getTicketsByUser = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findById(userId)
+            if (user === null) {
+                resolve({
+                    status: 404,
+                    message: 'Không tìm thấy người dùng!'
+                })
+            }
+            const allTicket = await OrderTicket.find({ userOrder: userId })
+            console.log('aaa', allTicket);
+
+            resolve({
+                status: 200,
+                message: 'SUCESSS',
+                data: allTicket
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
 const getTicketOrderByTrip = (tripId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -162,11 +189,158 @@ const getTicketOrderByTrip = (tripId) => {
     })
 }
 
-const updateStatusTicketOrder = (id, status) => {
+const deleteTicketOrder = (ticketOrederId, isOnTimeAllow, isPaid) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log(id, status);
-            const ticketOrder = await OrderTicket.findByIdAndUpdate(id, { status: status }, { new: true })
+
+            const orderTicket = await OrderTicket.findById(ticketOrederId);
+
+            if (!orderTicket) {
+                resolve({
+                    status: 400,
+                    message: 'Đơn gửi hàng không tồn tại!'
+                })
+                return
+            }
+
+
+            const deleteOrder = await OrderTicket.findByIdAndDelete(ticketOrederId);
+
+
+            if (deleteOrder) {
+                if (isPaid === 'true') {
+                    let refundAmount = 0
+                    if (isOnTimeAllow === 'true') {
+                        refundAmount = deleteOrder.totalPrice
+                    } else refundAmount = deleteOrder.totalPrice / 2
+
+                    await Refund.create({ name: deleteOrder?.name, email: deleteOrder?.email, phone: deleteOrder?.phone, refundAmount: refundAmount })
+
+                }
+                await Trip.findByIdAndUpdate(deleteOrder.tripId._id,
+                    {
+                        $inc: {
+                            availableSeats: deleteOrder.seatCount
+                        }
+
+                    }
+
+                )
+
+                resolve({
+                    status: 200,
+                    message: 'Xóa đơn gửi hàng thành công!',
+                    data: deleteOrder
+                })
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const changeSeat = (ticketOrderId, tripId, seats, seatSwap, destinationSeat) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const existingOrders = await OrderTicket.find({ tripId, seats: { $elemMatch: { $eq: destinationSeat } } });
+            if (existingOrders.length > 0) {
+                resolve({
+                    status: 400,
+                    message: 'Ghế trống đã được đặt bởi người khác!'
+                })
+                return
+            }
+
+            const seatIndex = seats.indexOf(seatSwap);
+            if (seatIndex !== -1) {
+                seats.splice(seatIndex, 1);
+                seats.push(destinationSeat);
+            }
+
+            console.log(seats);
+            const ticketOrder = await OrderTicket.findByIdAndUpdate(ticketOrderId, { seats: seats }, { new: true })
+            if (ticketOrder === null) {
+                resolve({
+                    status: 404,
+                    message: 'Đơn vé không tồn tại!'
+                })
+                return
+            }
+            resolve({
+                status: 200,
+                message: 'Cập nhật trạng thái đơn vé thành công!',
+                data: ticketOrder
+            })
+        } catch (e) {
+            console.log('e', e);
+            reject(e)
+        }
+    })
+}
+
+const deleteSeat = (ticketOrder, seatDelete, isOnTimeAllow) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const seats = ticketOrder.seats
+            const seatIndex = seats.indexOf(seatDelete);
+            if (seatIndex !== -1) {
+                seats.splice(seatIndex, 1);
+            }
+
+            let ticket
+
+            if (ticketOrder?.isPaid) {
+                if (seats.length > 0) {
+                    let refundAmount = 0
+                    if (isOnTimeAllow) refundAmount = ticketOrder?.ticketPrice
+                    else refundAmount = ticketOrder?.ticketPrice / 2
+                    ticket = await OrderTicket.findByIdAndUpdate(ticketOrder._id, { seats: seats, seatCount: seats.length }, { new: true })
+                    await Refund.create({ name: ticketOrder?.name, email: ticketOrder?.email, phone: ticketOrder?.phone, refundAmount: refundAmount })
+                } else {
+                    let refundAmount = 0
+                    if (isOnTimeAllow) refundAmount = ticketOrder?.totalPrice
+                    else refundAmount = ticketOrder?.totalPrice / 2
+                    ticket = await OrderTicket.findByIdAndDelete(ticketOrder._id)
+                    await Refund.create({ name: ticketOrder?.name, email: ticketOrder?.email, phone: ticketOrder?.phone, refundAmount: ticketOrder?.totalPrice })
+                }
+            } else {
+                if (seats.length > 0) {
+                    const totalPrice = ticketOrder.totalPrice - ticketOrder.ticketPrice
+                    ticket = await OrderTicket.findByIdAndUpdate(ticketOrder._id, { seats: seats, totalPrice: totalPrice, seatCount: seats.length }, { new: true })
+                } else ticket = await OrderTicket.findByIdAndDelete(ticketOrder._id)
+            }
+
+            const trip = await Trip.findByIdAndUpdate(ticketOrder.tripId,
+                {
+                    $inc: {
+                        availableSeats: 1
+                    }
+
+                },
+
+                {
+                    new: true
+                }
+            )
+            resolve({
+                status: 200,
+                message: 'Cập nhật trạng thái đơn vé thành công!',
+                data: ticket
+            })
+
+        } catch (e) {
+            console.log('e', e);
+            reject(e)
+        }
+    })
+}
+
+const updateTicketOrder = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const ticketOrder = await OrderTicket.findByIdAndUpdate(id, data, { new: true })
             if (ticketOrder === null) {
                 resolve({
                     status: 404,
@@ -494,14 +668,18 @@ const updateStatusGoodsOrder = (id, status) => {
 module.exports = {
     createTicketOrder,
     getTicketOrderByTrip,
+    getSeatsBookedByTrip,
+    getTicketsByUser,
+    updateTicketOrder,
+    changeSeat,
+    deleteSeat,
     createGoodsOrder,
     updateGoodsOrder,
     deleteGoodsOrder,
     getGoodsOrderByTrip,
     updateStatusGoodsOrder,
+    deleteTicketOrder,
 
-    getSeatsBookedByTrip,
-    updateStatusTicketOrder,
     getTicketOrderDetails,
     cancelTicketOrderDetails,
     getAllTicketOrder

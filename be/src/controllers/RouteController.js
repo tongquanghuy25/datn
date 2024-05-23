@@ -66,6 +66,7 @@ const createRoute = async (req, res) => {
         })
     }
 }
+
 const getRoutesByBusOwner = async (req, res) => {
     try {
         const busOwnerId = req.params.id
@@ -86,6 +87,7 @@ const getRoutesByBusOwner = async (req, res) => {
         })
     }
 }
+
 const getStopPointsByBusRoute = async (req, res) => {
     try {
         const routeId = req.params.id
@@ -106,6 +108,7 @@ const getStopPointsByBusRoute = async (req, res) => {
         })
     }
 }
+
 const deleteStopPoint = async (req, res) => {
     try {
         const stopPointId = req.params.id

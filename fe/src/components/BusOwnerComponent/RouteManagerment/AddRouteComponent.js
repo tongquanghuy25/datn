@@ -7,6 +7,7 @@ import ModalAddStopPoint from './ModalAddStopPoint';
 import { createRoute } from '../../../services/RouteService';
 import { useSelector } from 'react-redux';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
+import { getVnCurrency } from '../../../utils';
 
 const AddRouteComponent = (props) => {
     const { refetch, closeCreateRoute } = props
@@ -51,7 +52,7 @@ const AddRouteComponent = (props) => {
             key: 'extracost',
             width: 120,
             render: (record) => {
-                const num = record ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(record) : null;
+                const num = record ? getVnCurrency(record) : null;
                 return <span style={{ color: '#2196F3   ', fontWeight: '500' }}>
                     {num}
                 </span>

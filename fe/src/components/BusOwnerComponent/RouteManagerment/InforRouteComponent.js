@@ -8,6 +8,7 @@ import { deleteRoute, deleteStopPoint, getStopPointsByBusRoute, updateRoute } fr
 import { useSelector } from 'react-redux';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import dayjs from 'dayjs';
+import { getVnCurrency } from '../../../utils';
 
 const InforRouteComponent = (props) => {
 
@@ -53,7 +54,7 @@ const InforRouteComponent = (props) => {
             key: 'extracost',
             width: 120,
             render: (record) => {
-                const num = record ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(record) : null
+                const num = record ? getVnCurrency(record) : null
                 return <span style={{ color: '#2ec429   ', fontWeight: '500' }}>
                     {num ? num : null}
                 </span>

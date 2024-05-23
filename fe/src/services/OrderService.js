@@ -12,6 +12,17 @@ export const getSeatsBookedByTrip = async (tripId) => {
     return res.data
 }
 
+export const getTicketsByUser = async (access_token, useId) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-tickets-by-user/${useId}`,
+        {
+            headers: {
+                token: `Bearer ${access_token}`,
+            }
+        }
+    )
+    return res.data
+}
+
 export const getTicketOrderByTrip = async (access_token, tripId) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-ticket-order-by-trip/${tripId}`,
         {
@@ -23,8 +34,42 @@ export const getTicketOrderByTrip = async (access_token, tripId) => {
     return res.data
 }
 
-export const updateStatusTicketOrder = async (id, access_token, data) => {
-    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/update-status-ticket/${id}`, data,
+export const deleteTicketOrder = async (id, access_token, data) => {
+    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/order/delete-ticket/${id}`,
+        {
+            params: { data },
+            headers: {
+                token: `Bearer ${access_token}`,
+            }
+        }
+    )
+    return res.data
+}
+
+export const changeSeat = async (id, access_token, data) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/change-seat/${id}`, data,
+        {
+            headers: {
+                token: `Bearer ${access_token}`,
+            }
+        }
+    )
+    return res.data
+}
+
+export const deleteSeat = async (access_token, data) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/delete-seat`, data,
+        {
+            headers: {
+                token: `Bearer ${access_token}`,
+            }
+        }
+    )
+    return res.data
+}
+
+export const updateTicketOrder = async (id, access_token, data) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/update-ticket/${id}`, data,
         {
             headers: {
                 token: `Bearer ${access_token}`,

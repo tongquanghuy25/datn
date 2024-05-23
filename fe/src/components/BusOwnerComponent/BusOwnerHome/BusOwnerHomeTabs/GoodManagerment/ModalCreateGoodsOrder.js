@@ -65,16 +65,12 @@ const ModalCreateGoodsOrder = (props) => {
     const user = useSelector((state) => state.user)
     const [listPickUpPoint, setListPickUpPoint] = useState([])
     const [listDropOffPoint, setListDropOffPoint] = useState([])
-    const [pickUpPoint, setPickUpPoint] = useState();
-    const [dropOffPoint, setDropOffPoint] = useState();
 
     const onCancel = () => {
         form.resetFields()
         // handleCancel()
         setIsCreateGoods(false)
     }
-
-    console.log('trip', trip);
 
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(

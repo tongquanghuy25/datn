@@ -156,6 +156,7 @@ const AdminUserComponent = () => {
             errorMes(data?.response?.data?.message)
         }
     });
+
     const mutationDeleted = useMutation({
         mutationFn: async (data) => {
             const { id, access_token, user } = data;

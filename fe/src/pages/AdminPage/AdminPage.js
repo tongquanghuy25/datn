@@ -9,7 +9,7 @@ import {
     ShopOutlined,
     ShoppingCartOutlined,
 } from '@ant-design/icons';
-import AdminComponent from '../../components/Admin/AdminComponent'
+import AdminComponent from '../../components/Admin/AdminHomeComponent'
 import AdminBusComponent from '../../components/Admin/AdminBusComponent'
 import AdminUserComponent from '../../components/Admin/AdminUserComponent'
 import AdminBusOwnerComponent from '../../components/Admin/AdminBusOwnerComponent'
@@ -17,49 +17,30 @@ import AdminTicketComponent from '../../components/Admin/AdminTicketComponent'
 import AdminDriverComponent from '../../components/Admin/AdminDriverComponent'
 import AcceptBusOwner from '../../components/Admin/AcceptBusOwner'
 import { useHandleLogout } from '../../utils/Action/HandleLogOut';
+import AdminDiscountComponent from '../../components/Admin/AdminDiscountComponent';
+import AdminHomeComponent from '../../components/Admin/AdminHomeComponent';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const { Header, Content } = Layout;
 const AdminPage = () => {
     const user = useSelector((state) => state.user);
+    const navigate = useNavigate();
+    const location = useLocation();
     const [userName, setUserName] = useState('')
     const [userAvatar, setUserAvatar] = useState('')
-    const [selectedKeys, setSelectedKeys] = useState("admin");
+    const [selectedKeys, setSelectedKeys] = useState("home");
 
 
-
+    useEffect(() => {
+        const currentPath = location.pathname.split('/')[2];
+        setSelectedKeys(currentPath);
+    }, [location]);
 
     ///
     useEffect(() => {
         setUserName(user?.name)
         setUserAvatar(user?.avatar)
     }, [user?.name, user?.avatar])
-
-    var content
-    switch (selectedKeys) {
-        case 'admin':
-            content = <AdminComponent></AdminComponent>
-            break;
-        case 'bus':
-            content = <AdminBusComponent></AdminBusComponent>
-            break;
-        case 'user':
-            content = <AdminUserComponent></AdminUserComponent>
-            break;
-        case 'busowner':
-            content = <AdminBusOwnerComponent></AdminBusOwnerComponent>
-            break;
-        case 'acceptbusowner':
-            content = <AcceptBusOwner></AcceptBusOwner>
-            break;
-        case 'ticket':
-            content = <AdminTicketComponent></AdminTicketComponent>
-            break;
-        case 'driver':
-            content = <AdminDriverComponent></AdminDriverComponent>
-            break;
-        default:
-            break;
-    }
 
     const handleLogOut = useHandleLogout()
 
@@ -82,14 +63,15 @@ const AdminPage = () => {
                         className="SideMenuVertical"
                         mode="vertical"
                         onClick={(item) => {
-                            setSelectedKeys(item.key)
+                            navigate(`/admin/${item.key}`)
+                            setSelectedKeys(item.key);
                         }}
                         selectedKeys={[selectedKeys]}
                         items={[
                             {
                                 label: "Trang chủ",
                                 icon: <AppstoreOutlined />,
-                                key: "admin",
+                                key: "home",
                             },
                             {
                                 label: "Quản lý người dùng",
@@ -121,12 +103,17 @@ const AdminPage = () => {
                                 key: "ticket",
                                 icon: <UserOutlined />,
                             },
+                            {
+                                label: "Quản lý mã giảm giá",
+                                key: "discount",
+                                icon: <UserOutlined />,
+                            },
 
                         ]}
                     ></Menu>
                 </div>
-                <div style={{ marginLeft: '20px', marginTop: '30px', flex: 1 }} className='Admin-content'>
-                    {content}
+                <div style={{ marginLeft: '20px', marginTop: '10px', flex: 1, height: 'calc(100vh - 150px)' }} className='Admin-content'>
+                    <Outlet></Outlet>
                 </div>
             </div>
 
