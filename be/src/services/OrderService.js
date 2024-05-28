@@ -150,13 +150,34 @@ const getTicketsByUser = (userId) => {
                     message: 'Không tìm thấy người dùng!'
                 })
             }
-            const allTicket = await OrderTicket.find({ userOrder: userId })
-            console.log('aaa', allTicket);
+            const allTicket = await OrderTicket.find({ userOrder: userId }).populate('tripId').sort({ createdAt: -1 })
 
             resolve({
                 status: 200,
                 message: 'SUCESSS',
                 data: allTicket
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
+const getTicketById = (ticketId, phone) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const ticket = await OrderTicket.find({ _id: ticketId, phone: phone })
+            if (ticket === null) {
+                resolve({
+                    status: 404,
+                    message: 'Vé không tồn tại!'
+                })
+            }
+            resolve({
+                status: 200,
+                message: 'SUCESSS',
+                data: ticket
             })
         } catch (e) {
             console.log(e);
@@ -526,7 +547,7 @@ const updateGoodsOrder = (Order) => {
     return new Promise(async (resolve, reject) => {
         try {
             const { goodsOrederId, nameSender, emailSender, phoneSender, nameReceiver, emailReceiver, phoneReceiver, sendPlace, noteSend, timeSend, dateSend, receivePlace,
-                noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid } = Order
+                noteReceive, timeReceive, dateReceive, goodsName, goodsDescription, price, Payee, paymentMethod, isPaid, status } = Order
 
             const orderGoods = await OrderGoods.findById(goodsOrederId);
 
@@ -563,7 +584,8 @@ const updateGoodsOrder = (Order) => {
 
                 Payee,
                 paymentMethod,
-                isPaid
+                isPaid,
+                status
             });
 
             if (updateOrder) {
@@ -642,10 +664,10 @@ const getGoodsOrderByTrip = (tripId) => {
     })
 }
 
-const updateStatusGoodsOrder = (id, status) => {
+const updateStatusGoodsOrder = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const goodsOrder = await OrderGoods.findByIdAndUpdate(id, { status: status }, { new: true })
+            const goodsOrder = await OrderGoods.findByIdAndUpdate(id, data, { new: true })
             if (goodsOrder === null) {
                 resolve({
                     status: 404,
@@ -670,6 +692,7 @@ module.exports = {
     getTicketOrderByTrip,
     getSeatsBookedByTrip,
     getTicketsByUser,
+    getTicketById,
     updateTicketOrder,
     changeSeat,
     deleteSeat,

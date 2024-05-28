@@ -10,7 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUser } from '../../redux/slides/userSlide';
-import { getDetailBusOwnerByUserId } from '../../services/BusOwnerSevice';
+import { getDetailBusOwnerByUserId } from '../../services/PartnerSevice';
 import { getDetailDriverByUserId } from '../../services/DriverService';
 
 
@@ -42,10 +42,10 @@ const SignInPage = () => {
             navigate('/bus-owner/home/statistical')
           } else if (decoded?.role === 'driver') {
             handleGetDetailDriver(decoded?.id, data?.access_token)
-            navigate('/driver')
+            navigate('/driver/running-trip')
           } else if (decoded?.role === 'agent') {
             // handleGetDetailDriver(decoded?.id, data?.access_token)
-            navigate('/agent')
+            navigate('/agent/sale-tickets')
           } else navigate('/')
         }
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import { Form, Input, Button, Card } from "antd";
-import { LoginOutlined, HomeOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Card, Row } from "antd";
+import { LoginOutlined, HomeOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import { useNavigate } from 'react-router-dom';
 import { errorMes, successMes, loadingMes, destroyMes } from '../../components/Message/Message';
@@ -124,16 +124,22 @@ const SignUpPage = () => {
                     </Form.Item>
 
                     <Form.Item>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                             <a onClick={() => navigate('/sign-in')}>
                                 Đăng nhập
                             </a>
 
+                            <a onClick={() => navigate('/partner-registration')}>
+                                Trở thành đối tác
+                                <UsergroupAddOutlined style={{ marginLeft: '10px' }} />
+                            </a>
+                        </div>
+                        <Row justify={'start'}>
                             <a onClick={() => navigate('/')}>
                                 Về trang chủ
                                 <HomeOutlined style={{ marginLeft: '10px' }} />
                             </a>
-                        </div>
+                        </Row>
                     </Form.Item>
 
                     <Button

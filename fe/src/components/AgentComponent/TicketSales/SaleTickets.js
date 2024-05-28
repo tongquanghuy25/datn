@@ -38,7 +38,7 @@ function calculateArrivalTime(startTime, duration) {
     return { departureTime, arrivalTime };
 }
 
-const TicketSales = () => {
+const SaleTickets = () => {
     const [dataSearch, setDataSearch] = useState()
     const [isSearch, setIsSearch] = useState(false)
     const [isOrdering, setIsOrdering] = useState(false)
@@ -138,4 +138,4 @@ const TicketSales = () => {
     )
 }
 
-export default TicketSales
+export default SaleTickets

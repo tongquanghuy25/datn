@@ -33,7 +33,7 @@ const items = [
     getItem('Quản lý vé', 'ticket', <PieChartOutlined />),
     getItem('Quản lý hàng hóa', 'goods', <DesktopOutlined />),
     getItem('Quản lý tài chính', 'financial', <DesktopOutlined />),
-    getItem('Thông tin tài khoản', 'account-information', <DesktopOutlined />),
+    getItem('Thông tin tài khoản', 'profile', <DesktopOutlined />),
     getItem('Đổi mật khẩu', 'change-assword', <DesktopOutlined />),
 ];
 

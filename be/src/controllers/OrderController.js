@@ -74,6 +74,31 @@ const getTicketsByUser = async (req, res) => {
     }
 }
 
+const getTicketById = async (req, res) => {
+    try {
+        const ticketId = req.query.ticketId
+        const phone = req.query.phone
+        if (!ticketId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Id vé không được bỏ trống!'
+            })
+        }
+        if (!phone) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Số điện thoại không được bỏ trống!'
+            })
+        }
+        const response = await OrderService.getTicketById(ticketId, phone)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 const deleteTicketOrder = async (req, res) => {
     try {
         const { isOnTimeAllow, isPaid } = req.query.data
@@ -336,7 +361,7 @@ const getGoodsOrderByTrip = async (req, res) => {
 
 const updateStatusGoodsOrder = async (req, res) => {
     try {
-        const status = req.body.status
+        const { status, isPaid } = req.body
         const goodsOrderId = req.params.id
         if (!goodsOrderId) {
             return res.status(200).json({
@@ -344,7 +369,7 @@ const updateStatusGoodsOrder = async (req, res) => {
                 message: 'Id của đơn gửi hàng bị trống!'
             })
         }
-        const response = await OrderService.updateStatusGoodsOrder(goodsOrderId, status)
+        const response = await OrderService.updateStatusGoodsOrder(goodsOrderId, { status, isPaid })
         return res.status(response.status).json(response)
     } catch (e) {
         console.log('e', e);
@@ -357,6 +382,7 @@ module.exports = {
     createTicketOrder,
     getTicketOrderByTrip,
     getTicketsByUser,
+    getTicketById,
     createGoodsOrder,
     updateGoodsOrder,
     deleteGoodsOrder,

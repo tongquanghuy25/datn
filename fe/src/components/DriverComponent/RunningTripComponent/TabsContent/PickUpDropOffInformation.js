@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Button, Col, Row } from 'antd'
+import { Button, Col, Row, Tag } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { getStopPointsByBusRoute } from '../../../../services/RouteService';
 import { updateStatusGoodsOrder, updateTicketOrder } from '../../../../services/OrderService';
@@ -116,16 +116,17 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
 
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
-            const { id, token, status } = data;
-            return await updateTicketOrder(id, token, { status: status });
+            const { id, token, ...rest } = data;
+            return await updateTicketOrder(id, token, rest);
         },
         onSuccess: (data) => {
 
             const listData = placeSelectedData
             const index = listData?.ordersTicket?.findIndex(item => item.id === data.data._id)
             listData.ordersTicket[index].status = data.data.status
+            listData.ordersTicket[index].isPaid = data.data.isPaid
             setPlaceSelectedData(listData)
-            handleUpdateStatusSeat(data.data._id, data.data.status)
+            handleUpdateStatusSeat(data.data._id, data.data.status, data.data.isPaid)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
@@ -134,16 +135,17 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
 
     const mutationUpdateGoods = useMutation({
         mutationFn: async (data) => {
-            const { id, token, status } = data;
-            return await updateStatusGoodsOrder(id, token, { status: status });
+            const { id, token, ...rest } = data;
+            return await updateStatusGoodsOrder(id, token, rest);
         },
         onSuccess: (data) => {
 
             const listData = placeSelectedData
             const index = listData?.ordersGoods?.findIndex(item => item.id === data.data._id)
             listData.ordersGoods[index].status = data.data.status
+            listData.ordersGoods[index].isPaid = data.data.isPaid
             setPlaceSelectedData(listData)
-            handleUpdateStatusGoods(data.data._id, data.data.status)
+            handleUpdateStatusGoods(data.data._id, data.data.status, data.data.isPaid)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
@@ -187,31 +189,31 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                                     <div><strong>Tổng số tiền: </strong>{item.totalPrice}</div>
                                                 </Col>
 
-                                                <Col span={5} align="middle" style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                                <Col span={5} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                                     {
-                                                        item?.isPickUp ? (
-                                                            item?.status === 'Đã lên xe' ?
-                                                                <div
-                                                                    key={item._id}
-                                                                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#4169e1', color: '#ffffff', fontSize: '16px', fontWeight: 'bold' }}
-                                                                >
-                                                                    Đã đón khách
-                                                                </div>
-                                                                :
-                                                                <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã lên xe' }) }} type='primary' danger>Xác nhận đón</Button>
-                                                        )
+                                                        item?.isPickUp ?
+                                                            (
+                                                                item?.status === 'Đã lên xe' ?
+                                                                    <Tag color='blue'>Đã đón khách</Tag>
+                                                                    :
+                                                                    <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã lên xe' }) }} type='primary' size='small' danger>Xác nhận đón</Button>
+                                                            )
                                                             :
                                                             (
                                                                 item?.status === 'Đã hoàn thành' ?
-                                                                    <div
-                                                                        key={item._id}
-                                                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#008000', color: 'white', fontSize: '16px', fontWeight: 'bold' }}
-                                                                    >
-                                                                        Đã trả khách
-                                                                    </div>
+                                                                    <Tag color='green'>Đã trả khách</Tag>
                                                                     :
-                                                                    <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã hoàn thành' }) }} type='primary'>Xác nhận trả</Button>
+                                                                    (
+                                                                        item?.status === 'Đã lên xe' ? <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã hoàn thành' }) }} type='primary' size='small'>Xác nhận trả</Button>
+                                                                            : <div></div>
+                                                                    )
                                                             )
+                                                    }
+                                                    {
+                                                        item?.isPaid ?
+                                                            <Tag color='green'>Đã thanh toán</Tag>
+                                                            :
+                                                            <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, isPaid: true }) }} type='primary' danger size='small'>Thanh toán</Button>
                                                     }
                                                 </Col>
                                             </Row >
@@ -219,15 +221,6 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
 
                                     )
                                 }
-
-                                {/* id: it._id,
-                    goodsName: it.goodsName,
-                    goodsDescription: it.goodsDescription,
-                    isPaid: it.isPaid,
-                    status: it.status,
-                    price: it.price,
-                    phone: it.sendPlace === item.name ? it.phoneSender : it.phoneReceiver,
-                    isSend: it.sendPlace === item.name, */}
 
                                 {
                                     placeSelectedData?.ordersGoods?.map(item =>
@@ -245,31 +238,35 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                                     <div><strong>Tổng số tiền: </strong>{item.price}</div>
                                                 </Col>
 
-                                                <Col span={5} align="middle" style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                                <Col span={5} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                                     {
                                                         item?.isSend ? (
                                                             item?.status === 'Đã nhận hàng' ?
-                                                                <div
-                                                                    key={item._id}
-                                                                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#4169e1', color: '#ffffff', fontSize: '16px', fontWeight: 'bold' }}
-                                                                >
-                                                                    Đã nhận hàng
-                                                                </div>
+                                                                <Tag color='blue'>Đã nhận hàng</Tag>
                                                                 :
-                                                                <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã nhận hàng' }) }} type='primary' danger>Nhận hàng</Button>
+                                                                <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã nhận hàng' }) }} type='primary' size='small' danger>Nhận hàng</Button>
                                                         )
                                                             :
                                                             (
                                                                 item?.status === 'Đã trả hàng' ?
-                                                                    <div
-                                                                        key={item._id}
-                                                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '110px', height: '50px', borderRadius: '20px', backgroundColor: '#008000', color: 'white', fontSize: '16px', fontWeight: 'bold' }}
-                                                                    >
-                                                                        Đã trả hàng
-                                                                    </div>
+                                                                    <Tag>Đã trả hàng</Tag>
                                                                     :
-                                                                    <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã trả hàng' }) }} type='primary'>Trả hàng</Button>
+                                                                    (
+                                                                        item?.status === 'Đã nhận hàng' ? <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã trả hàng' }) }} size='small' type='primary'>Trả hàng</Button>
+                                                                            : <div></div>
+                                                                    )
                                                             )
+                                                    }
+                                                    {
+                                                        item?.isPaid ?
+                                                            <Tag color='green'>Đã thanh toán</Tag>
+                                                            :
+                                                            (
+
+                                                                <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, isPaid: true }) }} type='primary' danger size='small'>Thanh toán</Button>
+
+                                                            )
+
                                                     }
                                                 </Col>
                                             </Row >

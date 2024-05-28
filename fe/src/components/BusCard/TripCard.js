@@ -61,7 +61,7 @@ const BusCard = ({ trip }) => {
                             <TabImagesComponent images={trip.images}></TabImagesComponent>
                         </TabPane>
                         <TabPane tab="Đánh giá" key="2">
-                            <TabReview />
+                            <TabReview busOwnerId={trip?.busOwnerId} />
                         </TabPane>
                         <TabPane tab="Tiện ích" key="3">
                             Nội dung Tiện ích

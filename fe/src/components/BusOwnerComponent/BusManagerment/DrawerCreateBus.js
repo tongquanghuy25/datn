@@ -6,16 +6,8 @@ import { driverRegister } from '../../../services/DriverService';
 import { useSelector } from 'react-redux'
 import { busRegister } from '../../../services/BusService';
 import { optionconvinients, typeOfBus } from '../../../utils/TypeBus';
+import { getBase64 } from '../../../utils';
 
-const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-};
-
-// const typeOfBus = typeOfBus
-
-// const optionconvinients = optionconvinients
 
 const DrawerCreateBus = (props) => {
     const { open, onClose, refetch } = props

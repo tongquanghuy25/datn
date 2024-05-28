@@ -6,6 +6,8 @@ const cloudinary = require('cloudinary').v2;
 
 const Bus = require("../models/BusModel");
 const Trip = require('../models/TripModel');
+const OrderTicket = require('../models/OrderTicketModel');
+const OrderGoods = require('../models/OrderGoodsMode;');
 
 
 
@@ -109,6 +111,50 @@ const updateUser = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res) => {
+    try {
+
+        const userId = req.params.id
+        const { password, newPassword, confirmNewPassword } = req.body
+        if (!userId) {
+            return res.status(400).json({
+                message: 'Id người dùng không được bỏ trống!'
+            })
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            return res.status(400).json({
+                message: 'Nhập lại mật khẩu không đúng!'
+            })
+        }
+
+        const response = await UserService.changePassword(userId, { password, newPassword })
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+
+        const { email, phone } = req.body
+        if (!email || !phone) {
+            return res.status(400).json({
+                message: 'Thông tin nhập vào chưa đủ!'
+            })
+        }
+        const response = await UserService.resetPassword(email, phone)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id
@@ -201,6 +247,10 @@ const logoutUser = async (req, res) => {
         //     }
         // });
 
+        // await Trip.findByIdAndUpdate("6631f6867b09020fcdd9815d", { status: 'Chưa khởi hành' })
+        // await OrderTicket.updateMany({}, { status: 'Chưa lên xe', isPaid: false })
+        // await OrderGoods.updateMany({}, { status: 'Chưa nhận hàng', isPaid: false })
+
         res.clearCookie('refresh_token')
         return res.status(200).json({
             message: 'Logout successfully'
@@ -215,6 +265,8 @@ module.exports = {
     createUser,
     loginUser,
     updateUser,
+    changePassword,
+    resetPassword,
     deleteUser,
     getAllUser,
     getDetailsUser,

@@ -6,6 +6,7 @@ const { authUserMiddleWare, authAdminMiddleWare, authDriverMiddleWare, authBusOw
 router.post('/create-ticket', OrderController.createTicketOrder)
 router.get('/get-seats-booked-by-trip/:id', OrderController.getSeatsBookedByTrip)
 router.get('/get-tickets-by-user/:id', authUserMiddleWare, OrderController.getTicketsByUser)
+router.get('/get-tickets-by-id', OrderController.getTicketById)
 router.delete('/delete-ticket/:id', authBusOwnerMiddleWare, OrderController.deleteTicketOrder)
 router.put('/change-seat/:id', authBusOwnerMiddleWare, OrderController.changeSeat)
 router.put('/delete-seat', authBusOwnerMiddleWare, OrderController.deleteSeat)

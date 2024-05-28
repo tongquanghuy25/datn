@@ -31,9 +31,8 @@ const orderTicketSchema = new mongoose.Schema({
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
 
-    isCancel: { type: Boolean, default: false },
-    status: { type: String, default: 'Chưa lên xe' },
-    isFinish: { type: Boolean, default: false },
+    status: { type: String, default: 'Chưa lên xe' },//[not boarded,boarded,completed,settled,cancel]
+    isReview: { type: Boolean, default: false },
 },
     {
         timestamps: true,

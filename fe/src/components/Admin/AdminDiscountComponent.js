@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Table, Button, Modal, Form, Input, DatePicker, Space, message, Select, Row } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-import { getAllBusOwner } from '../../services/BusOwnerSevice';
+import { getAllBusOwner } from '../../services/PartnerSevice';
 import { errorMes, successMes } from '../Message/Message';
 import { createDiscount, deleteDiscount, getAllDiscountByBusOwner } from '../../services/DiscountService';
 import { getVnCurrency } from '../../utils';

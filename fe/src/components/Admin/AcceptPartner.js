@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
-import { getAllBusOwnerNotAccept } from '../../services/BusOwnerSevice';
+import { getAllBusOwnerNotAccept, getAllPartnerNotAccept } from '../../services/PartnerSevice';
 import BusOwnerCard from '../BusOwnerCard/BusOwnerCard';
+import { Row } from 'antd';
 
-const AcceptBusOwner = () => {
+const AcceptPartner = () => {
     const user = useSelector((state) => state.user);
-    const [busOwnerNotAccept, setBusOwnerNotAccept] = useState([])
+    const [partnerNotAccept, setPartnerNotAccept] = useState([])
 
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: ['busOwnerNotAccept'],
-            queryFn: () => getAllBusOwnerNotAccept(user?.access_token),
+            queryFn: () => getAllPartnerNotAccept(user?.access_token),
         });
 
     useEffect(() => {
         if (isSuccess) {
-            setBusOwnerNotAccept(data?.data)
+            // console.log(data?.data);
+            setPartnerNotAccept(data?.data)
         } else if (isError) {
             console.log('err', data);
         }
@@ -26,8 +28,11 @@ const AcceptBusOwner = () => {
 
     return (
         <div style={{ overflowY: 'auto', maxHeight: 'calc(80vh)' }}>
+            <Row justify={'center'}>
+                <h1>Danh sách đối tác chờ phê duyệt</h1>
+            </Row>
             {
-                busOwnerNotAccept.map((data) =>
+                partnerNotAccept.map((data) =>
                     <BusOwnerCard key={data.id} data={data} access_token={user?.access_token} refetch={refetch}></BusOwnerCard>
 
                 )
@@ -36,4 +41,4 @@ const AcceptBusOwner = () => {
     )
 }
 
-export default AcceptBusOwner
+export default AcceptPartner

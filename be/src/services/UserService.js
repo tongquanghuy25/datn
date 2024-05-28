@@ -1,7 +1,8 @@
 const User = require("../models/UserModel")
 const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
-const { deleteImgCloud } = require("../utils");
+const { deleteImgCloud, generateRandomCode } = require("../utils");
+const { sendEmailResetPassword } = require("./EmailService");
 
 
 const createUser = (newUser) => {
@@ -161,6 +162,83 @@ const updateUser = (id, data) => {
     })
 }
 
+const changePassword = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+
+            const checkUser = await User.findOne({
+                _id: id,
+            })
+
+            if (checkUser === null) {
+                resolve({
+                    status: 404,
+                    message: 'Người dùng không tồn tại!'
+                })
+                return;
+            }
+
+            const comparePassword = bcrypt.compareSync(data.password, checkUser.password)
+
+            if (!comparePassword) {
+                resolve({
+                    status: 400,
+                    message: 'Mật khẩu không chính xác!'
+                })
+                return;
+            }
+
+            const hashNew = bcrypt.hashSync(data.newPassword, 10)
+
+            const updatedUser = await User.findByIdAndUpdate(id, { password: hashNew }, { new: true })
+
+            resolve({
+                status: 200,
+                message: 'Đổi mật khẩu thành công!',
+                data: updatedUser
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const resetPassword = (email, phone) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({
+                email: email,
+                phone: phone
+            })
+            if (checkUser === null) {
+                resolve({
+                    status: 404,
+                    message: 'Thông tin nhập vào không đúng!'
+                })
+                return;
+            }
+
+            const password = generateRandomCode(8)
+
+            await sendEmailResetPassword(password)
+
+            const hash = bcrypt.hashSync(password, 10)
+
+            const updatedUser = await User.findByIdAndUpdate(checkUser._id, { password: hash }, { new: true })
+
+            resolve({
+                status: 200,
+                message: 'Cập nhật thông tin người dùng thành công!',
+                data: updatedUser
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
 const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -244,6 +322,8 @@ module.exports = {
     createUser,
     loginUser,
     updateUser,
+    changePassword,
+    resetPassword,
     editUser,
     deleteUser,
     getAllUser,

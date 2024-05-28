@@ -70,23 +70,23 @@ const RunningTripComponent = () => {
         setActiveTab(key);
     };
 
-    const handleUpdateStatusSeat = (orderId, status) => {
+    const handleUpdateStatusSeat = (orderId, status, isPaid) => {
 
         const newListSeat = listSeat?.map(item => {
             if (item.orderId == orderId) {
-                return { ...item, status: status }
+                return { ...item, status: status, isPaid: isPaid }
             }
             else return item
         })
         setListSeat(newListSeat)
     }
 
-    const handleUpdateStatusGoods = (orderId, status) => {
+    const handleUpdateStatusGoods = (orderId, status, isPaid) => {
 
 
         const newListGoods = listGoodsOrder?.map(item => {
             if (item._id == orderId) {
-                return { ...item, status: status }
+                return { ...item, status: status, isPaid: isPaid }
             }
             else return item
         })

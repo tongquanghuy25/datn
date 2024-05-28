@@ -9,27 +9,14 @@ const sendEmailCreateOrder = async (orderDetails) => {
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
-      secure: true, // true for 465, false for other ports
+      secure: true,
       auth: {
-        user: process.env.MAIL_ACCOUNT, // generated ethereal user
-        pass: process.env.MAIL_PASSWORD, // generated ethereal password
+        user: process.env.MAIL_ACCOUNT,
+        pass: process.env.MAIL_PASSWORD,
       },
     });
     transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
-
-    // let listItem = '';
-    // const attachImage = []
-    // orderItems.forEach((order) => {
-    //   listItem += `<div>
-    //   <div>
-    //     Bạn đã đặt sản phẩm <b>${order.name}</b> với số lượng: <b>${order.amount}</b> và giá là: <b>${order.price} VND</b></div>
-    //     <div>Bên dưới là hình ảnh của sản phẩm</div>
-    //   </div>`
-    //   attachImage.push({ path: order.image })
-    // })
-
     const qrCodeImage = await generateQRCode(orderDetails);
-
     let emailContent = `
     <style>
   /* CSS cho hình ảnh */
@@ -90,23 +77,72 @@ const sendEmailCreateOrder = async (orderDetails) => {
   </div>
 `;
 
-    // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: process.env.MAIL_ACCOUNT, // sender address
-      to: 'tongquanghuy25@gmail.com', // list of receivers
-      subject: "Xác nhận Đơn Đặt Vé Xe", // Subject line
-      // text: "Hello world?", // plain text body
+      from: process.env.MAIL_ACCOUNT,
+      to: 'tongquanghuy25@gmail.com',
+      subject: "Xác nhận Đơn Đặt Vé Xe",
       html: emailContent,
-      // attachments: attachImage,
 
     });
-    console.log("Email sent:", info.response);
   } catch (error) {
     console.error("Error sending email:", error.message);
     throw error;
   }
 }
 
-module.exports = {
-  sendEmailCreateOrder
+
+const sendEmailResetPassword = async (password) => {
+  try {
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_ACCOUNT, // generated ethereal user
+        pass: process.env.MAIL_PASSWORD, // generated ethereal password
+      },
+    });
+    transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+
+    let emailContent = `Kính gửi người dùng,
+
+Chúng tôi đã đặt lại mật khẩu của bạn theo yêu cầu. Mật khẩu mới của bạn là:
+
+${password}
+
+Vui lòng thay đổi mật khẩu sau khi đăng nhập vì lý do bảo mật.
+`
+
+    let info = await transporter.sendMail({
+      from: process.env.MAIL_ACCOUNT, // sender address
+      to: 'tongquanghuy25@gmail.com',
+      subject: "Cấp mật khẩu mới", // Subject line
+      html: emailContent,
+    });
+  } catch (error) {
+    console.error("Error sending email:", error.message);
+    throw error;
+  }
 }
+module.exports = {
+  sendEmailCreateOrder,
+  sendEmailResetPassword
+}
+
+let refusePartner = `
+<p>Kính gửi ,</p>
+<p>Chúng tôi xin cảm ơn bạn đã quan tâm và đăng ký trở thành đối tác của <strong>Tên Công ty</strong>.</p>
+<p>Sau khi xem xét kỹ lưỡng hồ sơ đăng ký của bạn, chúng tôi rất tiếc phải thông báo rằng hồ sơ của bạn đã không được chấp thuận trở thành đối tác (nhà xe/đại lý bán vé) của chúng tôi vào thời điểm này.</p>
+<p>Quyết định này dựa trên các tiêu chí xét duyệt nghiêm ngặt của chúng tôi để đảm bảo rằng tất cả các đối tác của <strong>Tên Công ty</strong> đáp ứng đầy đủ các yêu cầu về chất lượng dịch vụ và uy tín. Chúng tôi rất tiếc vì điều này có thể gây ra sự thất vọng cho bạn.</p>
+<p>Tuy nhiên, chúng tôi luôn đánh giá cao sự quan tâm và mong muốn hợp tác từ phía bạn. Chúng tôi khuyến khích bạn xem xét và cải thiện hồ sơ của mình theo các tiêu chí mà chúng tôi đề ra và rất mong sẽ nhận được đăng ký lại từ bạn trong tương lai.</p>
+<p>Nếu bạn có bất kỳ câu hỏi hoặc cần thêm thông tin về quyết định này, xin vui lòng liên hệ với chúng tôi qua email <a href="mailto:support@example.com">support@example.com</a> hoặc số điện thoại (123) 456-7890.</p>
+<p>Chân thành cảm ơn bạn đã dành thời gian và nỗ lực để đăng ký trở thành đối tác của chúng tôi. Chúng tôi hy vọng sẽ có cơ hội hợp tác cùng bạn trong tương lai.</p>
+<p>Trân trọng,</p>
+<p><strong>[Tên của Bạn]</strong><br>
+Bộ phận Chăm sóc Đối tác<br>
+<strong>[Tên Công ty/Nền tảng]</strong><br>
+<a href="mailto:support@example.com">support@example.com</a><br>
+(123) 456-7890</p>
+`
+
+

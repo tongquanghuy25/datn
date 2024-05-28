@@ -57,7 +57,7 @@ function calculateArrivalDateAndTime(departureDate, departureTime, durationInMin
     return { arrivalDate, arrivalTime };
 }
 const TabSeatSelection = (props) => {
-    const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, routeName, busOwnerName, isAgent, handleOrderSuccess, busOwnerId } = props
+    const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, isAgent, handleOrderSuccess, busOwnerId } = props
     const user = useSelector((state) => state.user);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [seatCount, setSeatCount] = useState(0);
@@ -65,6 +65,7 @@ const TabSeatSelection = (props) => {
     const [isPaidAgent, setIsPaidAgent] = useState(false);
     const [message, setMessage] = useState('');
     const [codeDiscount, setCodeDiscount] = useState('');
+    const [discountValue, setDiscountValue] = useState(0);
     const [isDiscounted, setIsDiscounted] = useState(false);
 
 
@@ -167,17 +168,6 @@ const TabSeatSelection = (props) => {
     };
 
 
-    //Information
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [phone, setPhone] = useState();
-
-    useEffect(() => {
-        setName(user?.name)
-        setEmail(user?.email)
-        setPhone(user?.phone)
-    }, [user])
-
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
@@ -210,12 +200,53 @@ const TabSeatSelection = (props) => {
         setDropOffPoint(point)
     }
 
+
+    //Information
+    const [name, setName] = useState();
+    const [email, setEmail] = useState();
+    const [phone, setPhone] = useState();
+
+    useEffect(() => {
+        setName(user?.name)
+        setEmail(user?.email)
+        setPhone(user?.phone)
+    }, [user])
+
+
+    //Discount
+    const mutationCheckDiscount = useMutation(
+        {
+            mutationFn: (data) => {
+                return checkDiscount(data)
+            },
+            onSuccess: (data) => {
+                if (data?.data.discountType === 'percent') {
+                    const discount = totalPrice * data?.data.discountValue / 100
+                    setDiscountValue(discount)
+                    setTotalPricet(totalPrice - discount)
+                } else if (data?.data.discountType === 'fixed') {
+                    setDiscountValue(data?.data.discountValue)
+                    setTotalPricet(totalPrice - data?.data.discountValue)
+                }
+                setIsDiscounted(true)
+            },
+            onError: (data) => {
+                errorMes(data?.response?.data?.message)
+            }
+        }
+    )
+
+    const handleApplyDiscount = () => {
+        mutationCheckDiscount.mutate({ code: codeDiscount, busOwnerId: busOwnerId })
+    }
+
+
     //Finish
     const handleMessage = (mes) => {
         setMessage(mes)
         setTimeout(() => {
             setMessage('')
-        }, 3000)
+        }, 5000)
     }
     const mutation = useMutation(
         {
@@ -263,10 +294,11 @@ const TabSeatSelection = (props) => {
 
                 ticketPrice,
                 extraCosts: ((pickUpPoint?.extracost || 0) + (dropOffPoint?.extracost || 0)),
+                discount: discountValue,
                 totalPrice,
 
                 payee: isPaid || isPaidAgent ? user?.id : null,
-                paymentMethod,
+                paymentMethod: isAgent,
                 transactionId,
                 paidAt,
                 isPaid: isAgent ? isPaidAgent : isPaid,
@@ -278,29 +310,6 @@ const TabSeatSelection = (props) => {
     };
 
 
-    const mutationCheckDiscount = useMutation(
-        {
-            mutationFn: (data) => {
-                return checkDiscount(data)
-            },
-            onSuccess: (data) => {
-                if (data?.data.discountType === 'percent') {
-                    const newPrice = totalPrice * (100 - data?.data.discountValue) / 100
-                    setTotalPricet(newPrice)
-                } else if (data?.data.discountType === 'fixed') {
-                    setTotalPricet(totalPrice - data?.data.discountValue)
-                }
-                setIsDiscounted(true)
-            },
-            onError: (data) => {
-                errorMes(data?.response?.data?.message)
-            }
-        }
-    )
-
-    const handleApplyDiscount = () => {
-        mutationCheckDiscount.mutate({ code: codeDiscount, busOwnerId: busOwnerId })
-    }
 
     return (
         <div style={{ marginTop: '20px' }}>
@@ -399,7 +408,7 @@ const TabSeatSelection = (props) => {
                                 <h3>Chọn điểm đón</h3>
                                 <div style={{ maxHeight: '200px', width: '250px', overflowY: 'auto' }}>
                                     <Radio.Group onChange={onChangePickUpPoint} value={pickUpPoint?.id} style={{ display: 'block' }}>
-                                        {listPickUpPoint.map((item) => (
+                                        {listPickUpPoint?.map((item) => (
                                             <Radio style={{ display: 'block', marginBottom: '10px' }} key={item.id} value={item.id}>
                                                 {`${calculateTime(departureTime, item.timeFromStart)} - ${item.place}`}
                                                 {item?.extracost && <span style={{ color: 'red', display: 'block', height: '0px', marginLeft: '20px' }}>{item?.extracost > 0 ? '+' : '-'}{getVnCurrency(item?.extracost)} /1 ghế</span>}

@@ -13,6 +13,7 @@ import RunningTripComponent from '../../components/DriverComponent/RunningTripCo
 import ListMyTripComponent from '../../components/DriverComponent/ListMyTripComponent/ListMyTripComponent';
 import StatisticComponent from '../../components/DriverComponent/StatisticComponent/StatisticComponent';
 import { useHandleLogout } from '../../utils/Action/HandleLogOut';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 const { Header, Sider, Content } = Layout;
 
 
@@ -25,43 +26,34 @@ function getItem(label, key, icon, children) {
     };
 }
 const items = [
-    getItem('Chuyến xe đang chạy', '1', <PieChartOutlined />),
-    getItem('Chuyến xe của tôi', '2', <DesktopOutlined />),
-    getItem('Thống kê', '3', <DesktopOutlined />),
-    getItem('Thông tin tài khoản', '4', <DesktopOutlined />),
-    getItem('Đổi mật khẩu', '5', <DesktopOutlined />),
+    getItem('Chuyến xe đang chạy', 'running-trip', <PieChartOutlined />),
+    getItem('Chuyến xe của tôi', 'my-trip', <DesktopOutlined />),
+    getItem('Thống kê', 'statistical', <DesktopOutlined />),
+    getItem('Thông tin tài khoản', 'profile', <DesktopOutlined />),
+    getItem('Đổi mật khẩu', 'change-password', <DesktopOutlined />),
 ];
 
 
 const DriverPage = () => {
     const user = useSelector((state) => state.user);
+    const location = useLocation();
+    const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(false);
     const [selectedKeys, setSelectedKeys] = useState('1');
-    const [content, setContent] = useState();
 
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    useEffect(() => {
+        const currentPath = location.pathname.split('/')[2];
+        setSelectedKeys(currentPath);
+    }, [location]);
+
     const handleSliderChange = (value) => {
-        setSelectedKeys(value?.key)
+        navigate(`/driver/${value?.key}`)
     };
 
-    useEffect(() => {
-        switch (selectedKeys) {
-            case '1':
-                setContent(<RunningTripComponent></RunningTripComponent>);
-                break;
-            case '2':
-                setContent(<ListMyTripComponent setSelectedKeys={setSelectedKeys}></ListMyTripComponent>);
-                break;
-            case '3':
-                setContent(<StatisticComponent></StatisticComponent>);
-                break;
-            default:
-                break;
-        }
-    }, [selectedKeys])
 
     const handleLogOut = useHandleLogout()
     return (
@@ -72,9 +64,6 @@ const DriverPage = () => {
         >
             <Sider
                 trigger={null}
-
-            // collapsible
-            // collapsed={collapsed}
             >
                 <div className="user-info" style={{ padding: '20px', textAlign: 'center', marginBottom: '20px' }}>
                     <Avatar size={64} src={user?.avatar} icon={<UserOutlined />} />
@@ -96,23 +85,7 @@ const DriverPage = () => {
                 </div>
             </Sider>
             <Layout>
-                {/* <Header
-                    style={{
-                        padding: 0,
-                        background: colorBgContainer,
-                    }}
-                >
-                    <Button
-                        type="text"
-                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                        onClick={() => setCollapsed(!collapsed)}
-                        style={{
-                            fontSize: '16px',
-                            width: 64,
-                            height: 64,
-                        }}
-                    />
-                </Header> */}
+
                 <Content
                     style={{
                         // margin: '24px 16px',
@@ -121,76 +94,11 @@ const DriverPage = () => {
                         borderRadius: borderRadiusLG,
                     }}
                 >
-                    {content}
+                    <Outlet />
                 </Content>
-                {/* <Footer
-                    style={{
-                        textAlign: 'center',
-                    }}
-                >
-                    Ant Design ©{new Date().getFullYear()} Created by Ant UED
-                </Footer> */}
             </Layout>
         </Layout >
 
-        // <Layout
-        //     style={{
-        //         minHeight: '100vh',
-        //     }}
-        // >
-        //     <Sider trigger={null} collapsible collapsed={collapsed} style={{ background: siderBg }}>
-        //         <div className="demo-logo-vertical" />
-        //         <Menu
-        //             theme="dark"
-        //             mode="inline"
-        //             defaultSelectedKeys={['1']}
-        //             items={items}
-        //         />
-        //     </Sider>
-        //     <Layout>
-        //         <Header
-        //             style={{
-        //                 padding: 0,
-        //                 background: headerBg,
-        //                 color: headerColor,
-        //                 height: headerHeight,
-        //                 padding: headerPadding,
-        //             }}
-        //         >
-        //             <Button
-        //                 type="text"
-        //                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        //                 onClick={() => setCollapsed(!collapsed)}
-        //                 style={{
-        //                     fontSize: '16px',
-        //                     width: 64,
-        //                     height: 64,
-        //                     background: triggerBg,
-        //                     color: triggerColor,
-        //                 }}
-        //             />
-        //         </Header>
-        //         <Content
-        //             style={{
-        //                 padding: 24,
-        //                 minHeight: 280,
-        //                 background: colorBgContainer,
-        //                 borderRadius: borderRadiusLG,
-        //             }}
-        //         >
-        //             Content
-        //         </Content>
-        //         {/* <Footer
-        //         style={{
-        //             textAlign: 'center',
-        //             background: footerBg,
-        //             padding: footerPadding,
-        //         }}
-        //     >
-        //         Ant Design ©{new Date().getFullYear()} Created by Ant UED
-        //     </Footer> */}
-        //     </Layout>
-        // </Layout>
     );
 }
 

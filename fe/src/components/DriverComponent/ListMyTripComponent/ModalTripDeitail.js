@@ -133,7 +133,6 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
                             ))}
                         </div>
                     </TabPane>
-
                 </Tabs>
 
 

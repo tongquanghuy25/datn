@@ -10,7 +10,7 @@ const ModalOrderTicket = (props) => {
     const { isOrdering, setIsOrdering, trip } = props
 
     const handleOrderSuccess = () => {
-        // setIsOrdering(false)
+        setIsOrdering(false)
         successMes('Đặt vé thành công')
     }
 

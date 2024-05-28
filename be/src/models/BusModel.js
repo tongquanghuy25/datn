@@ -8,8 +8,6 @@ const busSchema = new mongoose.Schema(
         typeBus: { type: String, required: true },
         numberSeat: { type: Number, required: true },
         floorNumber: { type: Number, required: true },
-        reviewCount: { type: Number, default: 0 },
-        averageRating: { type: Number, default: 0.0 },
         convinients: [{ type: String }],
         images: [{ type: String }],
         isRecliningSeat: { type: Boolean, default: false }

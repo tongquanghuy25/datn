@@ -4,13 +4,8 @@ import { Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space, Uploa
 import { useMutation } from '@tanstack/react-query';
 import { driverRegister } from '../../../services/DriverService';
 import { useSelector } from 'react-redux'
+import { getBase64 } from '../../../utils';
 
-
-const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-};
 
 const DrawerCreateDriver = (props) => {
 

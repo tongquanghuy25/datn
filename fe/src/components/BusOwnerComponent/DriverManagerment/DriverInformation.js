@@ -5,13 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import { updateUser } from '../../../services/UserService';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import { deleteDriver } from '../../../services/DriverService';
+import { getBase64 } from '../../../utils';
 
-
-const getBase64 = (img, callback) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-};
 
 const DriverInformation = (props) => {
   const { driver, access_token, refetch } = props

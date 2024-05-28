@@ -1,5 +1,5 @@
 import './style.css'
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Button, Row } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -9,17 +9,9 @@ import {
     ShopOutlined,
     ShoppingCartOutlined,
 } from '@ant-design/icons';
-import AdminComponent from '../../components/Admin/AdminHomeComponent'
-import AdminBusComponent from '../../components/Admin/AdminBusComponent'
-import AdminUserComponent from '../../components/Admin/AdminUserComponent'
-import AdminBusOwnerComponent from '../../components/Admin/AdminBusOwnerComponent'
-import AdminTicketComponent from '../../components/Admin/AdminTicketComponent'
-import AdminDriverComponent from '../../components/Admin/AdminDriverComponent'
-import AcceptBusOwner from '../../components/Admin/AcceptBusOwner'
 import { useHandleLogout } from '../../utils/Action/HandleLogOut';
-import AdminDiscountComponent from '../../components/Admin/AdminDiscountComponent';
-import AdminHomeComponent from '../../components/Admin/AdminHomeComponent';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import Sider from 'antd/es/layout/Sider';
 
 const { Header, Content } = Layout;
 const AdminPage = () => {
@@ -45,23 +37,18 @@ const AdminPage = () => {
     const handleLogOut = useHandleLogout()
 
     return (
-        <div >
-            <Header style={{ padding: '10px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div >
-                    <h1 style={{ color: 'white', margin: 0 }}>Trang Admin</h1>
-                </div>
-                <div>
-                    <Button type="primary" icon={<LogoutOutlined />} onClick={() => { handleLogOut() }}>
-                        Đăng xuất
-                    </Button>
-                </div>
-            </Header>
-            <div style={{ display: 'flex' }}>
-                <div
-                    className='Admin-menu'>
+        <div style={{ display: 'flex' }}>
+            <Layout style={{ minHeight: '100vh' }}>
+                <Sider
+                    style={{ display: 'flex' }}
+                    collapsible>
+                    <Row justify={'center'}>
+                        <h1 style={{ color: 'white' }}>Admin Panel</h1>
+                    </Row>
                     <Menu
-                        className="SideMenuVertical"
-                        mode="vertical"
+                        style={{ display: 'flex', flexDirection: 'column', height: '80vh' }}
+                        mode="inline"
+                        theme="dark"
                         onClick={(item) => {
                             navigate(`/admin/${item.key}`)
                             setSelectedKeys(item.key);
@@ -79,19 +66,19 @@ const AdminPage = () => {
                                 key: "user",
                             },
                             {
-                                label: "Quản lý tài xế",
-                                key: "driver",
-                                icon: <ShoppingCartOutlined />,
-                            },
-                            {
                                 label: "Quản lý nhà xe",
-                                key: "busowner",
+                                key: "partner",
                                 icon: <UserOutlined />,
                             },
                             {
                                 label: "Phê duyệt nhà xe",
-                                key: "acceptbusowner",
+                                key: "accept-partner",
                                 icon: <UserOutlined />,
+                            },
+                            {
+                                label: "Quản lý tài xế",
+                                key: "driver",
+                                icon: <ShoppingCartOutlined />,
                             },
                             {
                                 label: "Quản lý xe",
@@ -108,14 +95,36 @@ const AdminPage = () => {
                                 key: "discount",
                                 icon: <UserOutlined />,
                             },
+                            {
+                                label: "Thông tin tài khoản",
+                                key: "profile",
+                                icon: <UserOutlined />,
+                            },
+                            {
+                                label: "Đổi mật khẩu",
+                                key: "change-password",
+                                icon: <UserOutlined />,
+                            },
 
                         ]}
-                    ></Menu>
-                </div>
-                <div style={{ marginLeft: '20px', marginTop: '10px', flex: 1, height: 'calc(100vh - 150px)' }} className='Admin-content'>
-                    <Outlet></Outlet>
-                </div>
-            </div>
+                    >
+                    </Menu>
+                    <Row justify={'center'} >
+                        <Button type="primary" icon={<LogoutOutlined />} onClick={() => { handleLogOut() }}>
+                            Đăng xuất
+                        </Button>
+                    </Row>
+                </Sider>
+
+                <Content>
+                    <div style={{ marginLeft: '20px', marginTop: '10px', flex: 1, height: 'calc(100vh - 150px)' }} className='Admin-content'>
+                        <Outlet></Outlet>
+                    </div>
+                </Content>
+            </Layout>
+
+
+
 
         </div>
     )

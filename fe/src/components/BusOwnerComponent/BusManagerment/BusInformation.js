@@ -5,13 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
 import { deleteBus, updateBus } from '../../../services/BusService';
 import { optionconvinients, typeOfBus } from '../../../utils/TypeBus';
-
-const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-};
-
+import { getBase64 } from '../../../utils';
 
 const BusInformation = (props) => {
     const { bus, access_token, refetch } = props

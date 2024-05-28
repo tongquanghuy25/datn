@@ -34,12 +34,8 @@ const HeaderComponent = () => {
             <p className='popover-item' style={{}} onClick={() => navigate('/profile')}>Thông tin người dùng</p>
             <div style={{ borderTop: '1px solid black' }}></div>
 
-            <p className='popover-item' style={{}} onClick={() => navigate('/admin')}>Admin</p>
+            <p className='popover-item' style={{}} onClick={() => navigate('/change-password')}>Đổi mật khẩu</p>
             <div style={{ borderTop: '1px solid black' }}></div>
-            {/* {user?.isAdmin && (
-
-                <p onClick={() => { }}>Quản lí hệ thống</p>
-            )} */}
             <p className='popover-item' onClick={() => handleLogOut()}>Đăng xuất</p>
         </div>
     );

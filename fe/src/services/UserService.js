@@ -41,15 +41,6 @@ export const getAllUser = async (access_token) => {
     return res.data
 }
 
-// export const refreshToken = async () => {
-//     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/refresh-token`, {
-//         withCredentials: true
-//     })
-//     return res.data
-// }
-
-
-
 export const refreshToken = async (refreshToken) => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/refresh-token`, {}, {
         headers: {
@@ -73,6 +64,7 @@ export const editUser = async (id, access_token, data) => {
     console.log('e', res.data);
     return res.data
 }
+
 export const updateUser = async (id, data, access_token) => {
     const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/user/update-user/${id}`, data, {
         headers: {
@@ -80,6 +72,20 @@ export const updateUser = async (id, data, access_token) => {
             token: `Bearer ${access_token}`,
         }
     })
+    return res.data
+}
+
+export const changePassword = async (id, access_token, data) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/user/change-password/${id}`, data, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
+export const resetPassword = async (data) => {
+    const res = await axios.put(`${process.env.REACT_APP_API_URL}/user/reset-password`, data)
     return res.data
 }
 

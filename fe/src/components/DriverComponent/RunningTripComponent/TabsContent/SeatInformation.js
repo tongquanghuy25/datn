@@ -28,7 +28,7 @@ const SeatInformation = ({ listSeat, setVisible, getTicketOrderDetail }) => {
                                 <div style={{ display: 'flex' }}>
                                     <strong>Giá vé : </strong> {seat.ticketPrice}
                                 </div>
-                                {seat.isPaid ? <Tag color='success'>Đã thanh toán</Tag> : <Button style={{ marginLeft: '10px' }} size='small' type='primary' danger>Thanh toán</Button>}
+                                {seat.isPaid ? <Tag color='success'>Đã thanh toán</Tag> : <Tag color='error'>Chưa thanh toán</Tag>}
                                 <Popover content="Chi tiết vé" >
                                     <FileTextOutlined onClick={() => { setVisible(true); getTicketOrderDetail(seat.orderId) }} style={{ fontSize: '20px' }} />
                                 </Popover>

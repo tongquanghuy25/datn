@@ -23,6 +23,11 @@ export const getTicketsByUser = async (access_token, useId) => {
     return res.data
 }
 
+export const getTicketById = async (data) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/order/get-tickets-by-id?ticketId=${data?.ticketId}&phone=${data?.phone}`)
+    return res.data
+}
+
 export const getTicketOrderByTrip = async (access_token, tripId) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-ticket-order-by-trip/${tripId}`,
         {

@@ -27,13 +27,10 @@ const orderGoodsSchema = new mongoose.Schema({
     goodsDescription: { type: String, required: true },
 
     price: { type: Number, required: true },
-    // discount: { type: Number },
-    // totalPrice: { type: Number, required: true },
 
     Payee: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     paymentMethod: { type: String },
     isPaid: { type: Boolean, default: false },
-    // paidAt: { type: Date },
 
     isCancel: { type: Boolean, default: false },
     status: { type: String, default: 'Chưa nhận hàng' },
