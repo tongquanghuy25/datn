@@ -7,8 +7,9 @@ const RouteRouter = require('./RouteRouter')
 const TripRouter = require('./TripRouter')
 const OrderRouter = require('./OrderRouter')
 const DiscountRouter = require('./DiscountRouter')
-const ReviewRouter = require('./ReviewRouter')
 const ScheduleRouter = require('./ScheduleRouter')
+const ReviewRouter = require('./ReviewRouter')
+const ReportRouter = require('./ReportRouter')
 
 
 const ProductRouter = require('./ProductRouter')
@@ -26,6 +27,7 @@ const routes = (app) => {
     app.use('/api/order', OrderRouter)
     app.use('/api/discount', DiscountRouter)
     app.use('/api/review', ReviewRouter)
+    app.use('/api/report', ReportRouter)
 
 
 

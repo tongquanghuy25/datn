@@ -7,7 +7,6 @@ import {
     LogoutOutlined,
     AppstoreOutlined,
     ShopOutlined,
-    ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { useHandleLogout } from '../../utils/Action/HandleLogOut';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -75,24 +74,34 @@ const AdminPage = () => {
                                 key: "accept-partner",
                                 icon: <UserOutlined />,
                             },
-                            {
-                                label: "Quản lý tài xế",
-                                key: "driver",
-                                icon: <ShoppingCartOutlined />,
-                            },
+                            // {
+                            //     label: "Quản lý tài xế",
+                            //     key: "driver",
+                            //     icon: <ShoppingCartOutlined />,
+                            // },
                             {
                                 label: "Quản lý xe",
                                 key: "bus",
                                 icon: <UserOutlined />,
                             },
-                            {
-                                label: "Quản lý vé xe",
-                                key: "ticket",
-                                icon: <UserOutlined />,
-                            },
+                            // {
+                            //     label: "Quản lý vé xe",
+                            //     key: "ticket",
+                            //     icon: <UserOutlined />,
+                            // },
                             {
                                 label: "Quản lý mã giảm giá",
                                 key: "discount",
+                                icon: <UserOutlined />,
+                            },
+                            {
+                                label: "Quản lý khiếu nại",
+                                key: "report",
+                                icon: <UserOutlined />,
+                            },
+                            {
+                                label: "Gửi mail thông báo",
+                                key: "sent-mail",
                                 icon: <UserOutlined />,
                             },
                             {

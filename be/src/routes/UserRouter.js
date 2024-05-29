@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router()
 const userController = require('../controllers/UserController');
 const uploadCloud = require('../middleware/uploader')
-const { authAdminMiddleWare, authUserMiddleWare } = require("../middleware/authMiddleware");
+const { authAdminMiddleWare, authUserMiddleWare, authBusOwnerMiddleWare } = require("../middleware/authMiddleware");
 
 router.post('/sign-up', userController.createUser)
 router.post('/sign-in', userController.loginUser)
@@ -17,4 +17,6 @@ router.get('/get-details/:id', authUserMiddleWare, userController.getDetailsUser
 router.post('/refresh-token', userController.refreshToken)
 router.post('/delete-many', authAdminMiddleWare, userController.deleteMany)
 
+
+router.post('/sent-mail-admin', authBusOwnerMiddleWare, userController.sentMailAdmin)
 module.exports = router

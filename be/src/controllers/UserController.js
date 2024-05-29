@@ -261,6 +261,22 @@ const logoutUser = async (req, res) => {
         })
     }
 }
+
+const sentMailAdmin = async (req, res) => {
+    try {
+
+        res.clearCookie('refresh_token')
+        return res.status(200).json({
+            message: 'Logout successfully'
+        })
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+
 module.exports = {
     createUser,
     loginUser,
@@ -273,5 +289,7 @@ module.exports = {
     refreshToken,
     logoutUser,
     deleteMany,
-    editUser
+    editUser,
+
+    sentMailAdmin
 }

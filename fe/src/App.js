@@ -41,6 +41,8 @@ import RunningTripComponent from './components/DriverComponent/RunningTripCompon
 import ListMyTripComponent from './components/DriverComponent/ListMyTripComponent/ListMyTripComponent';
 import SaleTickets from './components/AgentComponent/TicketSales/SaleTickets';
 import BookedTicketsComponent from './components/BookedTicketsComponent/BookedTicketsComponent';
+import AdminSentMailComponent from './components/Admin/AdminSentMailComponent';
+import AdminReportComponent from './components/Admin/AdminReportComponent';
 
 
 function App() {
@@ -132,6 +134,8 @@ function App() {
             <Route path='bus' element={<AdminBusComponent />} />
             <Route path='ticket' element={<AdminTicketComponent />} />
             <Route path='discount' element={<AdminDiscountComponent />} />
+            <Route path='report' element={<AdminReportComponent />} />
+            <Route path='sent-mail' element={<AdminSentMailComponent />} />
             <Route path='profile' element={<ProfileComponent />} />
             <Route path='change-password' element={<ChangePasswordComponent />} />
           </Route>
