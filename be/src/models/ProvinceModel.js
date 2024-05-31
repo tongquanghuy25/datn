@@ -1,11 +1,21 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const provinceSchema = new mongoose.Schema(
-    {
-        _id: { type: Number, required: true },
-        name: { type: String, required: true }
+module.exports = (sequelize, DataTypes) => {
+    class Province extends Model {
+        static associate(models) {
+            // Province.hasMany(models.District, { foreignKey: 'provinceId', as: 'districts' });
+        }
     }
-);
-const Province = mongoose.model('Province', provinceSchema);
 
-module.exports = Province;
+    Province.init({
+        id: { type: DataTypes.INTEGER, primaryKey: true },
+        name: { type: DataTypes.STRING, allowNull: false }
+    }, {
+        sequelize,
+        modelName: 'Province',
+        timestamps: false
+    });
+
+    return Province;
+};

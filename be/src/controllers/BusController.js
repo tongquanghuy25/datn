@@ -4,7 +4,7 @@ const { deleteImgCloud } = require('../utils');
 
 const createBus = async (req, res) => {
     try {
-        let { licensePlate, typeBus, type, numberSeat, color, convinients, busOwnerId, floorNumber } = req.body
+        let { licensePlate, typeBus, type, numberSeat, color, convinients, busOwnerId, floorNumber, typeSeat } = req.body
         const arrPath = req.files.map((file) => file?.path)
         let avatar
         let images = []
@@ -14,8 +14,8 @@ const createBus = async (req, res) => {
         } else {
             images = arrPath
         }
-        if (!licensePlate || !typeBus || !color || !busOwnerId || !floorNumber) {
-            if (req.file && req.file?.public_id) await deleteImgCloud({ files: req.files })
+        if (!licensePlate || !typeBus || !color || !busOwnerId || !floorNumber || !typeSeat) {
+            if (req.file && req.file?.publicid) await deleteImgCloud({ files: req.files })
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
@@ -29,10 +29,7 @@ const createBus = async (req, res) => {
 
         numberSeat = parseInt(numberSeat)
 
-        convinients = convinients?.split(",")
-
-
-        const response = await BusService.createBus({ licensePlate, typeBus, numberSeat, color, convinients, busOwnerId, images, avatar, floorNumber })
+        const response = await BusService.createBus({ licensePlate, typeBus, numberSeat, color, convinients, busOwnerId, images, avatar, floorNumber, typeSeat })
         if (response.status !== 200) {
             if (req.files) await deleteImgCloud({ files: req.files })
             return res.status(response.status).json(response)
@@ -72,9 +69,9 @@ const updateBus = async (req, res) => {
         let data = req.body
         delete data.avatar
         delete data.newImages
-        if (data.images === 'null') data.images = []
-        if (data.convinients === 'null') data.convinients = []
-
+        if (data.images === 'null') data.images = null
+        if (data.convinients === 'null') data.convinients = null
+        console.log(data.convinients);
         req.files?.forEach(file => {
             if (file.fieldname && file.fieldname === 'avatar') data = { ...data, avatar: file.path }
             else if (file.fieldname) {

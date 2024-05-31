@@ -41,7 +41,7 @@ const BookedTicketsCard = (props) => {
         mutation.mutate({
             access_token: user?.access_token,
             userId: user?.id,
-            ticketId: ticket?._id,
+            ticketId: ticket?.id,
             busOwnerId: ticket?.tripId.busOwnerId,
             stars: rating,
             content,

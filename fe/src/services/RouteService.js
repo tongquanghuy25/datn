@@ -58,6 +58,7 @@ export const getAllPlace = async (access_token, province, district) => {
     },)
     return res.data
 }
+
 export const getPlacesBySearchTrip = async (data) => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/route/get-places-by-search-trip`, {
         params: data
@@ -73,6 +74,7 @@ export const createRoute = async (data, access_token) => {
     })
     return res.data
 }
+
 export const getRouteByBusOwner = async (id, access_token) => {
     console.log('id, access_token', id, access_token);
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/route/get-route-by-busowner/${id}`, {

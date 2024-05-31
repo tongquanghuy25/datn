@@ -31,7 +31,7 @@ const RunningTripComponent = () => {
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: ['tripRunnig'],
-            queryFn: () => getTripRunningByDriver(JSON.parse(localStorage.getItem('driver_id')), user?.access_token),
+            queryFn: () => getTripRunningByDriver(JSON.parse(localStorage.getItem('driverid')), user?.access_token),
         });
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const RunningTripComponent = () => {
                 item.seats?.forEach(element => {
                     const seat = {
                         id: element,
-                        orderId: item._id,
+                        orderId: item.id,
                         phone: item.phone,
                         ticketPrice: item.ticketPrice,
                         seatCount: item.seatCount,
@@ -85,7 +85,7 @@ const RunningTripComponent = () => {
 
 
         const newListGoods = listGoodsOrder?.map(item => {
-            if (item._id == orderId) {
+            if (item.id == orderId) {
                 return { ...item, status: status, isPaid: isPaid }
             }
             else return item
@@ -96,7 +96,7 @@ const RunningTripComponent = () => {
     const [visible, setVisible] = useState(false);
 
     const getTicketOrderDetail = (orderId) => {
-        setTicketOrderDetail(listTicketOrder.find(item => item._id === orderId))
+        setTicketOrderDetail(listTicketOrder.find(item => item.id === orderId))
     }
 
     //Finish trip
@@ -115,7 +115,7 @@ const RunningTripComponent = () => {
     });
 
     const handleFinishTrip = () => {
-        mutation.mutate({ id: trip?._id, token: user?.access_token, })
+        mutation.mutate({ id: trip?.id, token: user?.access_token, })
     }
 
 
@@ -161,7 +161,7 @@ const RunningTripComponent = () => {
                                 <GoodsInformation listGoodsOrder={listGoodsOrder}></GoodsInformation>
                             </TabPane>
                             <TabPane tab="Thông tin đón/trả" key="3">
-                                <PickUpDropOffInformation handleUpdateStatusGoods={handleUpdateStatusGoods} listGoodsOrder={listGoodsOrder} listTicketOrder={listTicketOrder} handleUpdateStatusSeat={handleUpdateStatusSeat} departureTime={trip?.departureTime} routeId={trip?.routeId._id}></PickUpDropOffInformation>
+                                <PickUpDropOffInformation handleUpdateStatusGoods={handleUpdateStatusGoods} listGoodsOrder={listGoodsOrder} listTicketOrder={listTicketOrder} handleUpdateStatusSeat={handleUpdateStatusSeat} departureTime={trip?.departureTime} routeId={trip?.routeId.id}></PickUpDropOffInformation>
                             </TabPane>
                         </Tabs>
                     </Row>

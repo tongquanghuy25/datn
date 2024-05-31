@@ -30,17 +30,18 @@ const ModalUpdateSchedule = (props) => {
         form.resetFields()
     }
 
+    console.log('schedule?.bus.id', schedule);
     useEffect(() => {
         setScheduleType(schedule?.scheduleType)
         setDepartureTime(schedule?.departureTime)
         form.setFieldsValue({
-            bus: listBus?.find(item => item?.value === schedule?.busId._id)?.value,
-            driver: listDriver?.find(item => item?.value === schedule?.driverId._id)?.value,
+            bus: listBus?.find(item => item?.value === schedule?.busId)?.value,
+            driver: listDriver?.find(item => item?.value === schedule?.driverId)?.value,
             scheduleType: schedule?.scheduleType,
-            periodic: schedule?.scheduleType === 'periodic' ? schedule?.inforSchedule : '',
-            daysOfWeek: schedule?.scheduleType === 'weekly_days' ? schedule?.inforSchedule.split(', ') : '',
+            periodic: schedule?.scheduleType === 'Periodic' ? JSON.parse(schedule?.inforSchedule) : '',
+            daysOfWeek: schedule?.scheduleType === 'WeeklyDays' ? JSON.parse(schedule?.inforSchedule) : null,
             time: dayjs(schedule?.departureTime, 'HH:mm'),
-            timeAllowCancel: schedule?.timeAllowCancel,
+            timeAlowCancel: schedule?.timeAlowCancel,
             ticketPrice: schedule?.ticketPrice,
             paymentRequire: schedule?.paymentRequire ? 'true' : 'false',
             prebooking: schedule?.prebooking ? 'true' : 'false',
@@ -53,7 +54,6 @@ const ModalUpdateSchedule = (props) => {
             return await updateSchedule(id, access_token, rest);
         },
         onSuccess: (data) => {
-            console.log(data);
             successMes(data.message)
             refetch()
             handleCancel()
@@ -65,7 +65,7 @@ const ModalUpdateSchedule = (props) => {
 
     const onFinish = (values) => {
         mutation.mutate({
-            id: schedule?._id,
+            id: schedule?.id,
             access_token: user?.access_token,
             busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')),
             busId: values?.bus,
@@ -74,9 +74,9 @@ const ModalUpdateSchedule = (props) => {
             paymentRequire: values?.paymentRequire === 'true' ? true : false,
             prebooking: values?.prebooking === 'true' ? true : false,
             ticketPrice: values?.ticketPrice,
-            timeAllowCancel: values?.timeAllowCancel,
+            timeAlowCancel: values?.timeAlowCancel,
             scheduleType: values?.scheduleType,
-            inforSchedule: values?.scheduleType === 'periodic' ? values?.periodic : (values?.scheduleType === 'weekly_days' ? values?.daysOfWeek.join(', ') : '')
+            inforSchedule: values?.scheduleType === 'Periodic' ? values?.periodic : (values?.scheduleType === 'WeeklyDays' ? values?.daysOfWeek : '')
 
         })
         loadingMes()
@@ -137,13 +137,13 @@ const ModalUpdateSchedule = (props) => {
                     <Row>
                         <Form.Item name="scheduleType" label="Loại lịch trình" rules={[{ required: true }]}>
                             <Select onChange={value => { setScheduleType(value) }} style={{ width: '160px', marginRight: '50px' }}>
-                                <Option value="daily">Hàng ngày</Option>
-                                <Option value="periodic">Định kỳ</Option>
-                                <Option value="weekly_days">Ngày trong tuần</Option>
+                                <Option value="Daily">Hàng ngày</Option>
+                                <Option value="Periodic">Định kỳ</Option>
+                                <Option value="WeeklyDays">Ngày trong tuần</Option>
                             </Select>
                         </Form.Item>
 
-                        {scheduleType === 'periodic' && (
+                        {scheduleType === 'Periodic' && (
                             <Form.Item
                                 name="periodic"
                                 label="Số ngày định kỳ"
@@ -153,7 +153,7 @@ const ModalUpdateSchedule = (props) => {
                             </Form.Item>
                         )}
 
-                        {scheduleType === 'weekly_days' && (
+                        {scheduleType === 'WeeklyDays' && (
                             <Form.Item
                                 name="daysOfWeek"
                                 label="Chọn ngày trong tuần"
@@ -188,7 +188,7 @@ const ModalUpdateSchedule = (props) => {
                                 onChange={onchangeDepartureTime} />
                         </Form.Item>
                         <Form.Item
-                            name="timeAllowCancel"
+                            name="timeAlowCancel"
                             label="Giờ cho phép hủy vé trước khi chạy"
                             rules={[
                                 {

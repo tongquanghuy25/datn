@@ -167,19 +167,6 @@ const deleteAgent = async (req, res) => {
     }
 }
 
-
-const getAllAgentNotAccept = async (req, res) => {
-    try {
-
-        const response = await PartnerService.getAllAgentNotAccept()
-        return res.status(response.status).json(response)
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
-
 const getDetailAgentByUserId = async (req, res) => {
     try {
         const userId = req.params.id
@@ -207,7 +194,6 @@ module.exports = {
 
     createAgent,
     getAllAgent,
-    getAllAgentNotAccept,
     editAgent,
     deleteAgent,
     getDetailAgentByUserId

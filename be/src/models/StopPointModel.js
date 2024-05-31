@@ -1,14 +1,25 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const stopPointSchema = new mongoose.Schema(
-    {
-        routeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
-        locationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Location', required: true },
-        timeFromStart: { type: Number, required: true },
-        extracost: { type: Number },
-        isPickUp: { type: Boolean, require: true }
+module.exports = (sequelize, DataTypes) => {
+    class StopPoint extends Model {
+        static associate(models) {
+            StopPoint.belongsTo(models.Route, { foreignKey: 'routeId', as: 'route' });
+            StopPoint.belongsTo(models.Location, { foreignKey: 'locationId', as: 'location' });
+        }
     }
-);
-const StopPoint = mongoose.model('StopPoint', stopPointSchema);
 
-module.exports = StopPoint;
+    StopPoint.init({
+        routeId: { type: DataTypes.INTEGER, allowNull: false },
+        locationId: { type: DataTypes.INTEGER, allowNull: false },
+        timeFromStart: { type: DataTypes.INTEGER, allowNull: false },
+        extracost: { type: DataTypes.INTEGER },
+        isPickUp: { type: DataTypes.BOOLEAN, allowNull: false }
+    }, {
+        sequelize,
+        modelName: 'StopPoint',
+        timestamps: false
+    });
+
+    return StopPoint;
+};

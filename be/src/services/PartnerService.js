@@ -1,6 +1,4 @@
-const BusOwner = require("../models/BusOwnerModel");
-const Agent = require("../models/AgentModel");
-const User = require("../models/UserModel");
+const { User, BusOwner, Agent } = require("../models/index");
 const UserService = require('./UserService')
 
 const createBusOwner = (newBusOwner) => {
@@ -16,7 +14,7 @@ const createBusOwner = (newBusOwner) => {
                 return;
             }
             const createdBusOwner = await BusOwner.create({
-                userId: res?.data._id,
+                userId: res?.data.id,
                 busOwnerName,
                 address,
                 companyType,
@@ -34,7 +32,7 @@ const createBusOwner = (newBusOwner) => {
                     data: createdBusOwner
                 })
             } else {
-                await UserService.deleteUser(res?.data._id)
+                await UserService.deleteUser(res?.data.id)
             }
         } catch (e) {
             console.log(e);
@@ -47,7 +45,15 @@ const getAllBusOwner = () => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            const allBusOwner = await BusOwner.find({ isAccept: true }).populate('userId', 'email phone').sort({ createdAt: -1, updatedAt: -1 })
+            const allBusOwner = await BusOwner.findAll({
+                where: { isAccept: true },
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['email', 'phone']
+                }],
+                order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']]
+            });
 
             resolve({
                 status: 200,
@@ -64,8 +70,8 @@ const editBusOwner = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkBusOwner = await BusOwner.findOne({
-                _id: id
-            })
+                where: { id: id }
+            });
             if (checkBusOwner === null) {
                 resolve({
                     status: 404,
@@ -74,11 +80,13 @@ const editBusOwner = (id, data) => {
                 return;
             }
 
-            const updatedBusOwner = await BusOwner.findByIdAndUpdate(id, data, { new: true })
+            await BusOwner.update(data, {
+                where: { id: id }
+            });
+
             resolve({
                 status: 200,
                 message: 'Sửa nhà xe thành công!',
-                data: updatedBusOwner
             })
         } catch (e) {
             reject(e)
@@ -90,8 +98,8 @@ const deleteBusOwner = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkBusOwner = await BusOwner.findOne({
-                _id: id
-            })
+                where: { id: id }
+            });
             if (checkBusOwner === null) {
                 resolve({
                     status: 404,
@@ -100,8 +108,13 @@ const deleteBusOwner = (id) => {
                 return;
             }
 
-            const busOwnerDeleted = await BusOwner.findByIdAndDelete(id)
-            await User.findByIdAndDelete(busOwnerDeleted.userId._id)
+            await BusOwner.destroy({
+                where: { id: id }
+            });
+
+            await User.destroy({
+                where: { id: checkBusOwner.userId }
+            });
             resolve({
                 status: 200,
                 message: 'Xóa nhà xe thành công!',
@@ -115,9 +128,17 @@ const deleteBusOwner = (id) => {
 const getAllBusOwnerNotAccept = () => {
     return new Promise(async (resolve, reject) => {
         try {
+            const allBusOwnerNotAccept = await BusOwner.findAll({
+                where: { isAccept: false },
+                include: [{ model: User, as: 'user' }], // Sử dụng 'user' thay vì 'userId'
+                order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']]
+            });
 
-            const allBusOwnerNotAccept = await BusOwner.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            const allAgentNotAccept = await Agent.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
+            const allAgentNotAccept = await Agent.findAll({
+                where: { isAccept: false },
+                include: [{ model: User, as: 'user' }],
+                order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']]
+            });
 
             const list = [...allBusOwnerNotAccept, ...allAgentNotAccept]
             list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -128,6 +149,7 @@ const getAllBusOwnerNotAccept = () => {
                 data: list
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -137,8 +159,8 @@ const getDetailBusOwnerByUserId = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const busOwner = await BusOwner.findOne({
-                userId: id
-            })
+                where: { userId: id }
+            });
             if (busOwner === null) {
                 resolve({
                     status: 404,
@@ -172,7 +194,7 @@ const createAgent = (newAgent) => {
                 return;
             }
             const createdAgent = await Agent.create({
-                userId: res?.data._id,
+                userId: res?.data.id,
                 agentName,
                 address,
                 companyType,
@@ -189,6 +211,8 @@ const createAgent = (newAgent) => {
                     message: 'Đăng ký đại lý thành công! Vui vòng chờ admin xác nhận!',
                     data: createdAgent
                 })
+            } else {
+                await UserService.deleteUser(res?.data.id)
             }
         } catch (e) {
             console.log(e);
@@ -201,7 +225,15 @@ const getAllAgent = () => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            const allAgent = await Agent.find({ isAccept: true }).populate('userId', 'email phone').sort({ createdAt: -1, updatedAt: -1 })
+            const allAgent = await Agent.findAll({
+                where: { isAccept: true },
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['email', 'phone']
+                }],
+                order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']],
+            });
 
             resolve({
                 status: 200,
@@ -218,8 +250,8 @@ const editAgent = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkAgent = await Agent.findOne({
-                _id: id
-            })
+                where: { id: id }
+            });
             if (checkAgent === null) {
                 resolve({
                     status: 404,
@@ -228,11 +260,13 @@ const editAgent = (id, data) => {
                 return;
             }
 
-            const updatedAgent = await Agent.findByIdAndUpdate(id, data, { new: true })
+            await Agent.update(data, {
+                where: { id: id }
+            });
+
             resolve({
                 status: 200,
                 message: 'Sửa đại lý thành công!',
-                data: updatedAgent
             })
         } catch (e) {
             reject(e)
@@ -244,8 +278,8 @@ const deleteAgent = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkAgent = await Agent.findOne({
-                _id: id
-            })
+                where: { id: id }
+            });
             if (checkAgent === null) {
                 resolve({
                     status: 404,
@@ -254,8 +288,13 @@ const deleteAgent = (id) => {
                 return;
             }
 
-            const agentDeleted = await Agent.findByIdAndDelete(id)
-            await User.findByIdAndDelete(agentDeleted.userId._id)
+            await Agent.destroy({
+                where: { id: id }
+            });
+
+            await User.destroy({
+                where: { id: checkAgent.userId }
+            });
 
             resolve({
                 status: 200,
@@ -267,46 +306,29 @@ const deleteAgent = (id) => {
     })
 }
 
-const getAllAgentNotAccept = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            const allAgentNotAccept = await Agent.find({ isAccept: false }).populate('userId').sort({ createdAt: -1, updatedAt: -1 })
-            resolve({
-                status: 200,
-                message: 'Success',
-                data: allAgentNotAccept
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
 const getDetailAgentByUserId = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const busOwner = await Agent.findOne({
-                userId: id
-            })
-            if (busOwner === null) {
+            const agent = await Agent.findOne({
+                where: { userId: id }
+            });
+            if (agent === null) {
                 resolve({
                     status: 404,
-                    message: 'Nhà xe không tồn tại!'
+                    message: 'Đại lý không tồn tại!'
                 })
                 return;
             }
             resolve({
                 status: 200,
                 message: 'SUCESS',
-                data: busOwner
+                data: agent
             })
         } catch (e) {
             reject(e)
         }
     })
 }
-
 
 module.exports = {
     createBusOwner,
@@ -317,7 +339,6 @@ module.exports = {
     getDetailBusOwnerByUserId,
 
     createAgent,
-    getAllAgentNotAccept,
     getAllAgent,
     editAgent,
     deleteAgent,

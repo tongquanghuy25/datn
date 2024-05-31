@@ -1,19 +1,13 @@
-const Route = require("../models/RouteModel");
-const StopPoint = require("../models/StopPointModel");
-const Location = require("../models/LocationModel");
-const BusOwner = require("../models/BusOwnerModel");
-const Trip = require("../models/TripModel");
-
+const { BusOwner, Location, StopPoint, Route, Trip } = require("../models/index");
 
 const addLocation = (newLocation) => {
     return new Promise(async (resolve, reject) => {
 
         try {
             const checkLocation = await Location.findOne({
-                province: newLocation.province,
-                district: newLocation.district,
-                place: newLocation.place
-            })
+                where: { province: newLocation.province, district: newLocation.district, place: newLocation.place },
+                raw: true
+            });
             if (checkLocation === null) {
                 const createdLocation = await Location.create(newLocation)
                 if (createdLocation) {
@@ -31,8 +25,6 @@ const addLocation = (newLocation) => {
                 })
             }
 
-
-
         } catch (e) {
             reject(e)
         }
@@ -41,22 +33,22 @@ const addLocation = (newLocation) => {
 
 const addStopPoint = (newStopPoint) => {
     return new Promise(async (resolve, reject) => {
-
         try {
+
             const checkLocation = await Location.findOne({
-                province: newStopPoint.province,
-                district: newStopPoint.district,
-                place: newStopPoint.place
-            })
+                where: { province: newStopPoint.province, district: newStopPoint.district, place: newStopPoint.place },
+                raw: true
+            });
             if (checkLocation === null) {
                 const createdLocation = await Location.create({
                     province: newStopPoint.province,
                     district: newStopPoint.district,
                     place: newStopPoint.place
                 })
+
                 const createdStopPoint = await StopPoint.create({
                     routeId: newStopPoint.routeId,
-                    locationId: createdLocation._id,
+                    locationId: createdLocation.id,
                     timeFromStart: newStopPoint.timeFromStart,
                     extracost: newStopPoint.extracost,
                     isPickUp: newStopPoint.isPickUp
@@ -71,7 +63,7 @@ const addStopPoint = (newStopPoint) => {
             } else {
                 const createdStopPoint = await StopPoint.create({
                     routeId: newStopPoint.routeId,
-                    locationId: checkLocation._id,
+                    locationId: checkLocation.id,
                     timeFromStart: newStopPoint.timeFromStart,
                     extracost: newStopPoint.extracost,
                     isPickUp: newStopPoint.isPickUp
@@ -97,7 +89,8 @@ const addStopPoint = (newStopPoint) => {
 const createRoute = (newRoute) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkBusOwner = await BusOwner.findById(newRoute.busOwnerId)
+
+            const checkBusOwner = await BusOwner.findByPk(newRoute.busOwnerId);
             if (checkBusOwner === null) {
                 resolve({
                     status: 404,
@@ -119,7 +112,7 @@ const createRoute = (newRoute) => {
             if (createdRoute) {
                 for (const item of newRoute.listPickUpPoint) {
                     await StopPoint.create({
-                        routeId: createdRoute._id,
+                        routeId: createdRoute.id,
                         locationId: item.locationId,
                         timeFromStart: item.timeFromStart,
                         extracost: item.extracost,
@@ -128,7 +121,7 @@ const createRoute = (newRoute) => {
                 }
                 for (const item of newRoute.listDropOffPoint) {
                     await StopPoint.create({
-                        routeId: createdRoute._id,
+                        routeId: createdRoute.id,
                         locationId: item.locationId,
                         timeFromStart: item.timeFromStart,
                         extracost: item.extracost,
@@ -152,7 +145,7 @@ const getRoutesByBusOwner = (busOwnerId) => {
     return new Promise(async (resolve, reject) => {
 
         try {
-            const checkBusOwner = await BusOwner.findById(busOwnerId)
+            const checkBusOwner = await BusOwner.findByPk(busOwnerId);
             if (checkBusOwner === null) {
                 resolve({
                     status: 404,
@@ -161,7 +154,10 @@ const getRoutesByBusOwner = (busOwnerId) => {
                 return;
             }
 
-            const listRoute = await Route.find({ busOwnerId: busOwnerId }).sort({ createdAt: -1, updatedAt: -1 })
+            const listRoute = await Route.findAll({
+                where: { busOwnerId: busOwnerId },
+                order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']]
+            });
             resolve({
                 status: 200,
                 message: 'Lấy danh sách tuyến đường theo nhà xe thành công!',
@@ -181,7 +177,7 @@ const getStopPointsByBusRoute = (routeId) => {
     return new Promise(async (resolve, reject) => {
 
         try {
-            const checkRoute = await Route.findById(routeId)
+            const checkRoute = await Route.findByPk(routeId);
             if (checkRoute === null) {
                 resolve({
                     status: 404,
@@ -189,32 +185,36 @@ const getStopPointsByBusRoute = (routeId) => {
                 })
                 return;
             }
-            let listPickUpPoint = []
-            let listDropOffPoint = []
-            await StopPoint.find({ routeId: routeId })
-                .populate('locationId')
-                .sort({ timeFromStart: 1 })
-                .then(stopPoints => {
-                    for (const item of stopPoints) {
-                        if (item.isPickUp)
-                            listPickUpPoint.push({
-                                id: item._id,
-                                province: item.locationId?.province,
-                                district: item.locationId?.district,
-                                place: item.locationId?.place,
-                                timeFromStart: item.timeFromStart,
-                                extracost: item.extracost
-                            })
-                        else listDropOffPoint.push({
-                            id: item._id,
-                            province: item.locationId?.province,
-                            district: item.locationId?.district,
-                            place: item.locationId?.place,
-                            timeFromStart: item.timeFromStart,
-                            extracost: item.extracost
-                        })
-                    }
-                })
+            let listPickUpPoint = [];
+            let listDropOffPoint = [];
+
+            const stopPoints = await StopPoint.findAll({
+                where: { routeId: routeId },
+                include: {
+                    model: Location,
+                    as: 'location',
+                    // attributes: ['province', 'district', 'place']
+                },
+                order: [['timeFromStart', 'ASC']],
+            });
+
+            for (const item of stopPoints) {
+                const point = {
+                    id: item.id,
+                    province: item.location?.province,
+                    district: item.location?.district,
+                    place: item.location?.place,
+                    timeFromStart: item.timeFromStart,
+                    extracost: item.extracost
+                };
+
+                if (item.isPickUp) {
+                    listPickUpPoint.push(point);
+                } else {
+                    listDropOffPoint.push(point);
+                }
+            }
+
             resolve({
                 status: 200,
                 message: 'Lấy danh sách điểm dừng theo tuyến xe thành công!',
@@ -224,6 +224,7 @@ const getStopPointsByBusRoute = (routeId) => {
 
 
         } catch (e) {
+            console.log(e);
 
             reject(e)
         }
@@ -233,9 +234,8 @@ const getStopPointsByBusRoute = (routeId) => {
 const deleteStopPoint = (stopPointId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkStopPoint = await StopPoint.findOne({
-                _id: stopPointId
-            })
+
+            const checkStopPoint = await StopPoint.findOne({ where: { id: stopPointId } });
             if (checkStopPoint === null) {
                 resolve({
                     status: 404,
@@ -244,7 +244,7 @@ const deleteStopPoint = (stopPointId) => {
                 return;
             }
 
-            await StopPoint.findByIdAndDelete(stopPointId)
+            await StopPoint.destroy({ where: { id: stopPointId } });
             resolve({
                 status: 200,
                 message: 'Xóa điểm dừng thành công!',
@@ -258,9 +258,7 @@ const deleteStopPoint = (stopPointId) => {
 const deleteRoute = (routeId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkRoute = await Route.findOne({
-                _id: routeId
-            })
+            const checkRoute = await Route.findByPk(routeId);
             if (checkRoute === null) {
                 resolve({
                     status: 404,
@@ -269,14 +267,14 @@ const deleteRoute = (routeId) => {
                 return;
             }
 
-            await StopPoint.deleteMany({ routeId: routeId })
-            await Trip.deleteMany({ routeId: routeId })
-            await Route.findByIdAndDelete(routeId)
+            await Route.destroy({ where: { id: routeId } });
+
             resolve({
                 status: 200,
                 message: 'Xóa tuyến đường thành công!',
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -286,9 +284,8 @@ const updateRoute = (routeId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime, placeStart, placeEnd } = data
-            const checkRoute = await Route.findOne({
-                _id: routeId
-            })
+
+            const checkRoute = await Route.findByPk(routeId);
             if (checkRoute === null) {
                 resolve({
                     status: 404,
@@ -297,11 +294,10 @@ const updateRoute = (routeId, data) => {
                 return;
             }
 
-            const updatedRoute = await Route.findByIdAndUpdate(routeId, { provinceStart, districtStart, provinceEnd, districtEnd, journeyTime, placeStart, placeEnd }, { new: true })
+            await Route.update({ provinceStart, districtStart, provinceEnd, districtEnd, journeyTime, placeStart, placeEnd }, { where: { id: routeId } });
             resolve({
                 status: 200,
                 message: 'Chỉnh sửa tuyến đường thành công!',
-                data: updatedRoute
             })
         } catch (e) {
             reject(e)
@@ -312,29 +308,34 @@ const updateRoute = (routeId, data) => {
 const getAllPlace = (province, district) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const listPlace = await Location.distinct('place', { province: province, district: district })
+            const listPlace = await Location.findAll({
+                attributes: ['place'],
+                where: { province: province, district: district }
+            });
+
             resolve({
                 status: 200,
                 message: 'Lấy danh sách địa điểm thành công!',
                 data: listPlace
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
 }
+
 const getPlacesBySearchTrip = (data) => {
     const formatArr = (arr) => {
         const districtMap = {};
-
         arr.forEach(location => {
-            const { _id, district, place } = location;
+            const { id, district, place } = location;
 
             if (!districtMap[district]) {
                 districtMap[district] = [];
             }
 
-            districtMap[district].push({ _id, place });
+            districtMap[district].push({ id, place });
         });
 
         // Chuyển đổi đối tượng thành mảng
@@ -342,16 +343,34 @@ const getPlacesBySearchTrip = (data) => {
 
         return districtArray
     }
+
     return new Promise(async (resolve, reject) => {
         try {
             let listPlaceStart, listPlaceEnd
 
-            if (data?.districtStart) listPlaceStart = await Location.find({ province: data?.provinceStart, district: data?.districtStart }).select('district place')
-            else listPlaceStart = await Location.find({ province: data?.provinceStart }).select('district place')
+            if (data?.districtStart) {
+                listPlaceStart = await Location.findAll({
+                    where: { province: data?.provinceStart, district: data?.districtStart },
+                    attributes: ['district', 'place']
+                });
+            } else {
+                listPlaceStart = await Location.findAll({
+                    where: { province: data?.provinceStart },
+                    attributes: ['district', 'place']
+                });
+            }
 
-            if (data?.districtEnd) listPlaceEnd = await Location.find({ province: data?.provinceEnd, district: data?.districtEnd }).select('district place')
-            else listPlaceEnd = await Location.find({ province: data?.provinceEnd }).select('district place')
-
+            if (data?.districtEnd) {
+                listPlaceEnd = await Location.findAll({
+                    where: { province: data?.provinceEnd, district: data?.districtEnd },
+                    attributes: ['district', 'place']
+                });
+            } else {
+                listPlaceEnd = await Location.findAll({
+                    where: { province: data?.provinceEnd },
+                    attributes: ['district', 'place']
+                });
+            }
 
             listPlaceStart = formatArr(listPlaceStart)
             listPlaceEnd = formatArr(listPlaceEnd)
@@ -366,11 +385,6 @@ const getPlacesBySearchTrip = (data) => {
         }
     })
 }
-
-
-
-
-
 
 
 module.exports = {

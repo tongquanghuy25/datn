@@ -32,7 +32,7 @@ const tripData = [
         updatedAt: "2024-05-23T14:08:15.056Z",
         userOrder: "662f726cf4e64a08e996b749",
         __v: 0,
-        _id: "664f4dcf21733b3d12c69001",
+        id: "664f4dcf21733b3d12c69001",
         busOwnerName: "Quang Huy",
         routeName: "Hà Nội-Ninh Bình",
     },
@@ -64,7 +64,7 @@ const tripData = [
         updatedAt: "2024-05-23T14:08:15.056Z",
         userOrder: "662f726cf4e64a08e996b749",
         __v: 0,
-        _id: "664f4dcf21733b3d12c69001",
+        id: "664f4dcf21733b3d12c69001",
         busOwnerName: "Quang Huy",
         routeName: "Hà Nội-Ninh Bình",
     }

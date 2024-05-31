@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router()
 const userController = require('../controllers/UserController');
+// const PlaceController = require('../controllers/PlaceController');
 const uploadCloud = require('../middleware/uploader')
 const { authAdminMiddleWare, authUserMiddleWare, authBusOwnerMiddleWare } = require("../middleware/authMiddleware");
 
@@ -15,7 +16,6 @@ router.delete('/delete-user/:id', authAdminMiddleWare, userController.deleteUser
 router.get('/getAll', authAdminMiddleWare, userController.getAllUser)
 router.get('/get-details/:id', authUserMiddleWare, userController.getDetailsUser)
 router.post('/refresh-token', userController.refreshToken)
-router.post('/delete-many', authAdminMiddleWare, userController.deleteMany)
 
 
 router.post('/sent-mail-admin', authBusOwnerMiddleWare, userController.sentMailAdmin)

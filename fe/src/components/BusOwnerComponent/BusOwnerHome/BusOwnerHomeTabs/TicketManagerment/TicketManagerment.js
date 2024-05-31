@@ -65,7 +65,7 @@ const TicketManagerment = () => {
     const handleDeleteTicket = (record) => {
         const isOnTimeAllow = isCancellationAllowed(trip?.departureDate, trip?.departureTime, trip?.timeAlowCancel)
         mutationDelete.mutate({
-            id: record?._id,
+            id: record?.id,
             access_token: user?.access_token,
             isOnTimeAllow: isOnTimeAllow,
             isPaid: record?.isPaid
@@ -194,12 +194,12 @@ const TicketManagerment = () => {
         }
     });
     const handleSelectTrip = (value) => {
-        setTrip(listTrip?.find(item => item._id === value))
+        setTrip(listTrip?.find(item => item.id === value))
         mutation.mutate({ tripId: value, token: user?.access_token })
     }
 
     const handleRefretch = () => {
-        mutation.mutate({ tripId: trip?._id, token: user?.access_token })
+        mutation.mutate({ tripId: trip?.id, token: user?.access_token })
         resetSeat()
     }
 
@@ -229,7 +229,7 @@ const TicketManagerment = () => {
             }
         } else {
             if (seatSwap) {
-                mutationChange.mutate({ id: seatSwap?.data?._id, access_token: user?.access_token, tripId: trip?._id, seats: seatSwap?.data.seats, seatSwap: seatSwap?.id, destinationSeat: seat?.id })
+                mutationChange.mutate({ id: seatSwap?.data?.id, access_token: user?.access_token, tripId: trip?.id, seats: seatSwap?.data.seats, seatSwap: seatSwap?.id, destinationSeat: seat?.id })
                 setSeatSwap(null);
                 setSelectedSeat(null);
                 setSelectedEmptySeats([]);
@@ -292,9 +292,9 @@ const TicketManagerment = () => {
                     </div>
                     <div style={{ width: '400px', marginLeft: '30px' }}>
                         <div>Chọn chuyến</div>
-                        <Select placeholder='Chọn chuyến xe' value={trip?._id} style={{ width: '400px' }} onSelect={(value) => { handleSelectTrip(value); resetSeat() }}>
+                        <Select placeholder='Chọn chuyến xe' value={trip?.id} style={{ width: '400px' }} onSelect={(value) => { handleSelectTrip(value); resetSeat() }}>
                             {listTrip?.map(item => {
-                                return <Option value={item._id}>
+                                return <Option value={item.id}>
                                     <Tag color='error'>{item.departureTime}</Tag>
                                     <Tag color='warning'>{item.busId.licensePlate}</Tag>
                                     {item.routeId.districtStart}-{item.routeId.districtEnd}
@@ -414,7 +414,7 @@ const TicketManagerment = () => {
                             <div>
                                 {
                                     trip && <Table
-                                        rowKey="_id"
+                                        rowKey="id"
                                         bordered
                                         dataSource={listTicketOrder}
                                         columns={column}

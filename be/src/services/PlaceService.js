@@ -1,5 +1,4 @@
-const Province = require('../models/ProvinceModel')
-const District = require('../models/DistrictModel')
+const { District, Province } = require('../models/index')
 
 const provinces = [
     "An Giang",
@@ -901,7 +900,7 @@ const addPlace = (id) => {
             for (let i = 0; i < provinces.length; i++) {
                 for (let j = 0; j < district[i].length; j++) {
                     await District.create({
-                        _id: id + 1,
+                        id: id + 1,
                         provinceId: i + 1,
                         name: district[i][j]
                     })
@@ -912,7 +911,7 @@ const addPlace = (id) => {
 
             // for (let i = 0; i < provinces.length; i++) {
             //     await Province.create({
-            //         _id: i + 1,
+            //         id: i + 1,
             //         name: provinces[i]
             //     })
             // }
@@ -929,7 +928,7 @@ const addPlace = (id) => {
 const getAllProvince = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const listProvince = await Province.find()
+            const listProvince = await Province.findAll();
             resolve({
                 status: 'OK',
                 message: 'Lấy danh sách tỉnh thành công!',
@@ -944,7 +943,7 @@ const getAllProvince = () => {
 const getDistrictByProvince = (provinceId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const listDistrict = await District.find({ provinceId: provinceId })
+            const listDistrict = await District.findAll({ where: { provinceId: provinceId } });
             resolve({
                 status: 'OK',
                 message: 'Lấy danh sách huyện thành công!',

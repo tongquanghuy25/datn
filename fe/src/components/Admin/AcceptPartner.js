@@ -17,7 +17,6 @@ const AcceptPartner = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            // console.log(data?.data);
             setPartnerNotAccept(data?.data)
         } else if (isError) {
             console.log('err', data);

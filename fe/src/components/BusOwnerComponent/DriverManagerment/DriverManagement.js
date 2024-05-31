@@ -22,7 +22,7 @@ const DriverManagement = () => {
             queryFn: () => getDriversByBusOwner(user?.access_token, JSON.parse(localStorage.getItem('bus_owner_id'))),
             staleTime: Infinity
         });
-
+    console.log('JSON.parse(localStorage.getIt', JSON.parse(localStorage.getItem('bus_owner_id')));
     useEffect(() => {
         if (isSuccess) {
             setListDriver(data?.data)
@@ -40,6 +40,7 @@ const DriverManagement = () => {
     };
 
     const handleClickDriver = (driver) => {
+        console.log(driver);
         setDriverSelected(driver);
     }
 
@@ -65,10 +66,10 @@ const DriverManagement = () => {
                     {
                         listDriver?.map((driver) => (
                             <div onClick={() => handleClickDriver(driver)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: driverSelected === driver ? '#c6e7f5' : '#f0f0f0', padding: '10px' }}>
-                                {driver?.userId?.avatar ? <Avatar src={driver?.userId?.avatar} size={64} style={{ marginRight: '20px' }} /> : <UserOutlined style={{ marginRight: '20px', fontSize: '50px', width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'gray', display: 'flex', justifyContent: 'center' }}></UserOutlined>}
+                                {driver?.user?.avatar ? <Avatar src={driver?.user?.avatar} size={64} style={{ marginRight: '20px' }} /> : <UserOutlined style={{ marginRight: '20px', fontSize: '50px', width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'gray', display: 'flex', justifyContent: 'center' }}></UserOutlined>}
                                 <div>
-                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff', textDecoration: 'none' }}>{driver?.userId?.name}</div>
-                                    <p style={{ color: '#555' }}>{driver?.userId?.email}</p>
+                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff', textDecoration: 'none' }}>{driver?.user?.name}</div>
+                                    <p style={{ color: '#555' }}>{driver?.user?.email}</p>
                                 </div>
                             </div>
                         ))

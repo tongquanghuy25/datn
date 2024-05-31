@@ -42,7 +42,6 @@ const AdminPartnerComponent = () => {
     }, [isSuccess, isError, data])
 
 
-
     const column = [
         {
             title: 'STT',
@@ -79,9 +78,9 @@ const AdminPartnerComponent = () => {
         },
         {
             title: "Email",
-            dataIndex: 'userId',
+            dataIndex: 'user',
             key: 'email',
-            render: (userId) => userId?.email,
+            render: (user) => user?.email,
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
                 return <Input
                     autoFocus placeholder='Nhập email muốn tìm ?'
@@ -105,9 +104,9 @@ const AdminPartnerComponent = () => {
 
         {
             title: "Số điện thoại",
-            dataIndex: 'userId',
+            dataIndex: 'user',
             key: 'phone',
-            render: (userId) => userId?.phone,
+            render: (user) => user?.phone,
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
                 return <Input
                     autoFocus placeholder='Nhập số điện thoại muốn tìm ?'
@@ -210,7 +209,7 @@ const AdminPartnerComponent = () => {
         else
             values.agentName = values.partnerName
         setConfirmLoading(true)
-        mutationUpdate.mutate({ id: PartnerEditing._id, partner: values, token: user?.access_token })
+        mutationUpdate.mutate({ id: PartnerEditing.id, partner: values, token: user?.access_token })
     }
 
 
@@ -243,7 +242,7 @@ const AdminPartnerComponent = () => {
     }
     const HandleDeletePartner = () => {
         setConfirmLoading(true)
-        mutationDeleted.mutate({ id: PartnerDeleting._id, token: user?.access_token })
+        mutationDeleted.mutate({ id: PartnerDeleting.id, token: user?.access_token })
     }
 
     const formItemLayout = {
@@ -262,7 +261,7 @@ const AdminPartnerComponent = () => {
             </Tabs>
             <div>
                 <Table
-                    rowKey="_id"
+                    rowKey="id"
                     bordered
                     dataSource={listData}
                     columns={column}

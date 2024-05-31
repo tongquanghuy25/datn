@@ -143,7 +143,7 @@ const AdminReportComponent = () => {
 
     // const HandleEditUser = () => {
     //     setConfirmLoading(true)
-    //     mutationUpdate.mutate({ id: userEditing._id, user: userEditing, access_token: user?.access_token })
+    //     mutationUpdate.mutate({ id: userEditing.id, user: userEditing, access_token: user?.access_token })
     // }
 
     // const OnDeleteUser = (record) => {
@@ -152,13 +152,13 @@ const AdminReportComponent = () => {
     // }
     // const HandleDeleteUser = () => {
     //     setConfirmLoading(true)
-    //     mutationDeleted.mutate({ id: userDeleting._id, user: userDeleting, access_token: user?.access_token })
+    //     mutationDeleted.mutate({ id: userDeleting.id, user: userDeleting, access_token: user?.access_token })
     // }
 
     return (
         <>
             <Table
-                rowKey="_id"
+                rowKey="id"
                 bordered
                 dataSource={listReport}
                 columns={column}

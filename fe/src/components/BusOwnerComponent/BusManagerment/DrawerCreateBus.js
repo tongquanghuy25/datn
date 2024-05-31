@@ -94,13 +94,12 @@ const DrawerCreateBus = (props) => {
         formData.append('color', values.color);
         formData.append('convinients', values.convinients);
         formData.append('avatar', avatarFile?.originFileObj);
+        formData.append('typeSeat', values?.typeSeat)
         fileList.forEach((file, index) => {
             formData.append(`images${index}`, file.originFileObj);
         });
         const busOwnerId = JSON.parse(localStorage.getItem('bus_owner_id'))
         formData.append('busOwnerId', busOwnerId);
-        if (values?.typeSeat === 'seat') { formData.append('isRecliningSeat', false) }
-        else formData.append('isRecliningSeat', true)
         if (values?.floorNumber === '1') formData.append('floorNumber', 1)
         else formData.append('floorNumber', 2)
         mutation.mutate({ formData, access_token: user.access_token })
@@ -271,8 +270,10 @@ const DrawerCreateBus = (props) => {
                             }
                         ]}>
                         <Radio.Group >
-                            <Radio value="seat">Ghế ngồi</Radio>
-                            <Radio value="bed">Ghế giường nằm</Radio>
+                            <Radio value="Sitting">Ghế ngồi</Radio>
+                            <Radio value="Sleeper">Ghế giường nằm</Radio>
+                            <Radio value="Massage">Ghế massage</Radio>
+                            <Radio value="BusinessClass">Ghế thương gia</Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item

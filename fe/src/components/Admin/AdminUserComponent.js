@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { deleteUser, editUser, getAllUser, updateUser } from '../../services/UserService'
 import { Select } from 'antd';
 import { errorMes, successMes } from '../Message/Message';
+import dayjs from 'dayjs';
 const { Option } = Select;
 
 
@@ -103,10 +104,33 @@ const AdminUserComponent = () => {
             key: 'phone',
         },
         {
+            title: "Ngày sinh",
+            dataIndex: 'dateOfBirth',
+            key: 'dateOfBirth',
+            render: (dateOfBirth) => dateOfBirth ? dayjs(dateOfBirth).format('DD/MM/YYYY') : dateOfBirth
+        },
+        {
+            title: "Giới tính",
+            dataIndex: 'gender',
+            key: 'gender',
+            render: (gender) => {
+                switch (gender) {
+                    case 'male':
+                        return 'Nam'
+                    case 'female':
+                        return 'Nữ'
+                    case 'other':
+                        return 'Khác'
+                    default:
+                        return ' '
+                }
+            }
+        },
+        {
             title: "Vai trò",
             dataIndex: 'role',
             key: 'role',
-            width: 100,
+            width: 120,
         },
         {
             title: "Sửa",
@@ -180,7 +204,7 @@ const AdminUserComponent = () => {
     // const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const HandleEditUser = () => {
         setConfirmLoading(true)
-        mutationUpdate.mutate({ id: userEditing._id, user: userEditing, access_token: user?.access_token })
+        mutationUpdate.mutate({ id: userEditing.id, user: userEditing, access_token: user?.access_token })
     }
 
     const OnDeleteUser = (record) => {
@@ -189,13 +213,13 @@ const AdminUserComponent = () => {
     }
     const HandleDeleteUser = () => {
         setConfirmLoading(true)
-        mutationDeleted.mutate({ id: userDeleting._id, user: userDeleting, access_token: user?.access_token })
+        mutationDeleted.mutate({ id: userDeleting.id, user: userDeleting, access_token: user?.access_token })
     }
 
     return (
         <>
             <Table
-                rowKey="_id"
+                rowKey="id"
                 bordered
                 dataSource={users}
                 columns={column}
@@ -231,11 +255,7 @@ const AdminUserComponent = () => {
                 <Input
                     style={{ marginBottom: '20px', marginTop: '10px' }}
                     value={userEditing?.email}
-                    onChange={(e) => {
-                        setUserEditing((pre) => {
-                            return { ...pre, email: e.target.value }
-                        })
-                    }}
+                    disabled={true}
                 />
                 <span>Số điện thoại</span>
                 <Input

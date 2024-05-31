@@ -21,8 +21,6 @@ const InforRouteComponent = (props) => {
             title: "Tỉnh/Thành phố",
             dataIndex: 'province',
             key: 'province',
-
-
         },
         {
             title: "Quận/Huyện",
@@ -104,6 +102,7 @@ const InforRouteComponent = (props) => {
 
     const [isCreatePoint, setIsCreatePoint] = useState(false)
     const [isPickUpPoint, setIsPickUpPoint] = useState(true)
+
     const [listPickUpPoint, setListPickUpPoint] = useState([])
     const [listDropOffPoint, setListDropOffPoint] = useState([])
     const [isDeletingRoute, setIsDeletingRoute] = useState(false)
@@ -131,7 +130,7 @@ const InforRouteComponent = (props) => {
 
     useEffect(() => {
         const listData = data?.data?.map((province) => ({
-            value: province._id,
+            value: province.id,
             label: province.name,
         }));
         setListProvince(listData);
@@ -150,7 +149,7 @@ const InforRouteComponent = (props) => {
     useEffect(() => {
         queryClient.setQueryData(provinceStart, dataDistrictStart?.data);
         const listData1 = dataDistrictStart?.data?.map((district) => ({
-            value: district._id,
+            value: district.id,
             label: district.name,
         }));
         setListDistrictStart(listData1)
@@ -161,7 +160,7 @@ const InforRouteComponent = (props) => {
 
         if (cacheDistrict?.length > 0) {
             const listData2 = cacheDistrict?.map((district) => ({
-                value: district._id,
+                value: district.id,
                 label: district.name,
             }));
             setListDistrictStart(listData2)
@@ -190,7 +189,7 @@ const InforRouteComponent = (props) => {
     useEffect(() => {
         queryClient.setQueryData(provinceEnd, dataDistrictEnd?.data);
         const listData3 = dataDistrictEnd?.data?.map((district) => ({
-            value: district._id,
+            value: district.id,
             label: district.name,
         }));
         setListDistrictEnd(listData3)
@@ -200,7 +199,7 @@ const InforRouteComponent = (props) => {
         const cahceDistrict = queryClient.getQueryData(listProvince[provinceId - 1]?.label)
         if (cahceDistrict?.length > 0) {
             const listData4 = cahceDistrict?.map((district) => ({
-                value: district._id,
+                value: district.id,
                 label: district.name,
             }));
             setListDistrictEnd(listData4)
@@ -221,11 +220,12 @@ const InforRouteComponent = (props) => {
     const onchangeJourneyTime = (time, timeString) => {
         setJourneyTime(timeString)
     }
+
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
-            queryKey: [`listStopPoint${route?._id}`],
-            queryFn: () => getStopPointsByBusRoute(route?._id),
+            queryKey: [`listStopPoint${route?.id}`],
+            queryFn: () => getStopPointsByBusRoute(route?.id),
         });
 
     useEffect(() => {
@@ -238,6 +238,8 @@ const InforRouteComponent = (props) => {
     }
 
     const addDataToListPoint = (data) => {
+
+        console.log('fff', data);
         if (isPickUpPoint) setListPickUpPoint([...listPickUpPoint, data])
         else setListDropOffPoint([...listDropOffPoint, data])
     }
@@ -248,7 +250,6 @@ const InforRouteComponent = (props) => {
             return await updateRoute(id, access_token, rest);
         },
         onSuccess: (data) => {
-            console.log(data);
             successMes(data?.message)
             refetchListRoute()
             setIsDeletingRoute(false)
@@ -259,12 +260,12 @@ const InforRouteComponent = (props) => {
         }
     })
 
+    console.log('listPickUpPoint,listDropOffPoint', listPickUpPoint, listDropOffPoint);
 
     const handleUpdateRoute = () => {
         const placeStart = listPickUpPoint.length > 0 && listPickUpPoint[0].place
         const placeEnd = listDropOffPoint.length > 0 && listDropOffPoint[listDropOffPoint.length - 1].place
-        console.log(placeStart, placeEnd);
-        mutationUpdateRoute.mutate({ id: route._id, districtStart, provinceStart, districtEnd, provinceEnd, journeyTime, placeStart, placeEnd, access_token: user?.access_token })
+        mutationUpdateRoute.mutate({ id: route.id, districtStart, provinceStart, districtEnd, provinceEnd, journeyTime, placeStart, placeEnd, access_token: user?.access_token })
     }
 
     const mutationDeleteRoute = useMutation({
@@ -284,7 +285,7 @@ const InforRouteComponent = (props) => {
     })
 
     const handleDeleteRoute = () => {
-        mutationDeleteRoute.mutate({ id: route._id, access_token: user?.access_token })
+        mutationDeleteRoute.mutate({ id: route.id, access_token: user?.access_token })
     }
 
 
@@ -375,7 +376,7 @@ const InforRouteComponent = (props) => {
                     </Button>
                 </div>
                 <Table
-                    rowKey="_id"
+                    rowKey="id"
                     pagination={false}
                     dataSource={isPickUpPoint ? listPickUpPoint : listDropOffPoint}
                     columns={column}

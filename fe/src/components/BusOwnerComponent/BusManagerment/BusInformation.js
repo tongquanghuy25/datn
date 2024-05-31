@@ -23,16 +23,19 @@ const BusInformation = (props) => {
         form.setFieldsValue({
             licensePlate: bus?.licensePlate,
             color: bus?.color,
-            convinients: bus?.convinients,
+            convinients: bus?.convinients ? JSON.parse(bus?.convinients) : null,
             typeBus: bus?.typeBus,
-            typeSeat: bus?.isRecliningSeat ? 'bed' : 'seat',
+            typeSeat: bus?.typeSeat,
             floorNumber: bus?.floorNumber === 1 ? '1' : '2'
         });
-        setFileList(bus?.images.map((img, index) => {
-            return {
-                url: `${img}`,
-            }
-        }))
+        let list
+        if (bus?.images)
+            list = JSON.parse(bus?.images)?.map((img, index) => {
+                return {
+                    url: `${img}`,
+                }
+            })
+        setFileList(list)
         setImageUrl(bus?.avatar)
     }, [bus])
 
@@ -55,14 +58,15 @@ const BusInformation = (props) => {
     )
 
     const onFinish = (values) => {
-        let images = fileList.filter((file) => {
+        let images = fileList?.filter((file) => {
             return file.url
         })
-        if (images.length > 0) images = images.map((img) => img.url)
+        if (images?.length > 0) images = images?.map((img) => img.url)
 
-        const deleteImages = bus.images.filter(img => !images.includes(img))
+        let deleteImages
+        if (bus.images) deleteImages = JSON.parse(bus.images)?.filter(img => !images.includes(img))
 
-        const newImages = fileList.filter((file) => {
+        const newImages = fileList?.filter((file) => {
             return !file.url
         })
         let data = {}
@@ -76,15 +80,14 @@ const BusInformation = (props) => {
             }
             else data = { ...data, typeBus: values.typeBus, numberSeat: parseInt(values.typeBus.split(" ").pop()) }
         }
-        if (values?.typeSeat === 'seat') data = { ...data, isRecliningSeat: false }
-        else data = { ...data, isRecliningSeat: true }
+        if (values?.typeSeat !== bus?.typeSeat) data = { ...data, typeSeat: values?.typeSeat }
         if (values?.floorNumber === '1') data = { ...data, floorNumber: 1 }
         else data = { ...data, floorNumber: 2 }
         if (avatarFile) data = { ...data, avatar: avatarFile }
-        if (newImages.length > 0) { data = { ...data, images: images, newImages: newImages } }
-        if (deleteImages.length > 0) { data = { ...data, images: images > 0 ? images : 'null', deleteImages: deleteImages } }
-        if (Object.keys(data).length > 0) {
-            mutation.mutate({ ...data, id: bus?._id, access_token })
+        if (newImages?.length > 0) { data = { ...data, images: images, newImages: newImages } }
+        if (deleteImages?.length > 0) { data = { ...data, images: images > 0 ? images : 'null', deleteImages: deleteImages } }
+        if (Object.keys(data)?.length > 0) {
+            mutation.mutate({ ...data, id: bus?.id, access_token })
             setAvatarFile('')
             loadingMes()
         }
@@ -122,7 +125,7 @@ const BusInformation = (props) => {
     )
 
     const handleDeleteBus = () => {
-        mutationDelete.mutate({ id: bus._id, access_token })
+        mutationDelete.mutate({ id: bus.id, access_token })
         loadingMes()
     }
 
@@ -149,6 +152,7 @@ const BusInformation = (props) => {
 
     const handleChangeList = ({ fileList }) => setFileList(fileList);
 
+    console.log('fileList', fileList);
     return (
         <>
             <div style={{ overflowY: 'auto', width: '100%', maxHeight: '600px', backgroundColor: '#e0f2f5', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '0px 20px' }}>
@@ -280,8 +284,10 @@ const BusInformation = (props) => {
 
                     <Form.Item name="typeSeat">
                         <Radio.Group>
-                            <Radio value="seat">Ghế ngồi</Radio>
-                            <Radio value="bed">Ghế giường nằm</Radio>
+                            <Radio value="Sitting">Ghế ngồi</Radio>
+                            <Radio value="Sleeper">Ghế giường nằm</Radio>
+                            <Radio value="Massage">Ghế massage</Radio>
+                            <Radio value="BusinessClass">Ghế thương gia</Radio>
                         </Radio.Group>
                     </Form.Item>
 

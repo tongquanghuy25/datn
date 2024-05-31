@@ -6,13 +6,12 @@ const authAdminMiddleWare = (req, res, next) => {
     const token = req.headers.token?.split(' ')[1]
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
         if (err) {
-            console.log('ee', err);
             return res.status(401).json({
                 message: 'The authemtication',
                 status: 'ERR'
             })
         }
-        if (user?.role === 'admin') {
+        if (user?.role === 'ADMIN') {
             next()
         } else {
             return res.status(401).json({
@@ -32,7 +31,7 @@ const authUserMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'user' || user?.role === 'busowner' || user?.role === 'driver' || user?.role === 'agent') {
+        if (user?.role === 'ADMIN' || user?.role === 'USER' || user?.role === 'BUSOWNER' || user?.role === 'DRIVER' || user?.role === 'AGENT') {
             next()
         } else {
             return res.status(401).json({
@@ -54,7 +53,7 @@ const authBusOwnerMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'busowner') {
+        if (user?.role === 'ADMIN' || user?.role === 'BUSOWNER') {
             next()
         } else {
             return res.status(401).json({
@@ -75,7 +74,7 @@ const authDriverMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'busowner' || user?.role === 'driver' || user?.role === 'agent') {
+        if (user?.role === 'ADMIN' || user?.role === 'BUSOWNER' || user?.role === 'DRIVER' || user?.role === 'AGENT') {
             next()
         } else {
             return res.status(401).json({
@@ -96,7 +95,7 @@ const authAgentMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.role === 'admin' || user?.role === 'busowner' || user?.role === 'agent') {
+        if (user?.role === 'ADMIN' || user?.role === 'BUSOWNER' || user?.role === 'AGENT') {
             next()
         } else {
             return res.status(401).json({

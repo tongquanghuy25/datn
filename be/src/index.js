@@ -23,7 +23,7 @@ routes(app);
 const sequelize = new Sequelize('datn', 'root', null, {
     host: 'localhost',
     dialect: 'mysql',
-    logging: false
+    logging: false,
 })
 
 async function connectToDatabase() {

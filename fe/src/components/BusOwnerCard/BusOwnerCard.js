@@ -7,16 +7,17 @@ import { deleteAgent, deleteBusOwner, editAgent, editBusOwner } from '../../serv
 import { deleteUser, editUser } from '../../services/UserService';
 const BusOwnerCard = (props) => {
     const { data, access_token, refetch } = props
-    // const { _id, userId, busOwnerName, citizenId, address, route } = data;
+    // const { id, userId, busOwnerName, citizenId, address, route } = data;
     // const { email, phone, name } = userId;
     const mutationAccept = useMutation({
         mutationFn: async (data) => {
+            console.log(data);
             if (data.isBusOwner) {
-                await editUser(data?.userId, data?.access_token, { role: 'busowner' });
-                return await editBusOwner(data._id, data.access_token, { isAccept: true });
+                await editUser(data?.userId, data?.access_token, { role: 'BUSOWNER' });
+                return await editBusOwner(data.id, data.access_token, { isAccept: true });
             } else {
-                await editUser(data?.userId, data?.access_token, { role: 'agent' });
-                return await editAgent(data._id, data.access_token, { isAccept: true });
+                await editUser(data?.userId, data?.access_token, { role: 'AGENT' });
+                return await editAgent(data.id, data.access_token, { isAccept: true });
             }
         },
         onSuccess: (data) => {
@@ -32,9 +33,9 @@ const BusOwnerCard = (props) => {
 
     const HandleAccept = () => {
         mutationAccept.mutate({
-            _id: data?._id,
+            id: data?.id,
             access_token,
-            userId: data?.userId._id,
+            userId: data?.userId,
             isBusOwner: data.busOwnerName ? true : false
         })
     }
@@ -43,9 +44,9 @@ const BusOwnerCard = (props) => {
         mutationFn: async (data) => {
             await deleteUser(data?.userId, data?.access_token);
             if (data.isBusOwner) {
-                return await deleteBusOwner(data._id, data.access_token);
+                return await deleteBusOwner(data.id, data.access_token);
             } else {
-                return await deleteAgent(data._id, data.access_token);
+                return await deleteAgent(data.id, data.access_token);
             }
         },
         onSuccess: () => {
@@ -60,9 +61,9 @@ const BusOwnerCard = (props) => {
 
     const HandleRefuse = () => {
         mutationRefuse.mutate({
-            _id: data?._id,
+            id: data?.id,
             access_token,
-            userId: data?.userId._id,
+            userId: data?.userId.id,
             isBusOwner: data.busOwnerName ? true : false
         })
     }
@@ -85,7 +86,6 @@ const BusOwnerCard = (props) => {
                     <p><strong>Địa chỉ:</strong> {data?.address}</p>
 
                     <p><strong>Số căn cước công dân:</strong> {data?.citizenId}</p>
-                    {/* <p><strong>Tuyến đường:</strong> {route}</p> */}
                 </Col>
                 <Col span={10}>
                     <p><strong>Loại doanh nghiệp:</strong> {data?.companyType}</p>

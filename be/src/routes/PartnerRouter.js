@@ -14,7 +14,6 @@ router.post('/register-agent', PartnerController.createAgent)
 router.get('/get-all-agent', authAdminMiddleWare, PartnerController.getAllAgent)
 router.put('/edit-agent/:id', authAdminMiddleWare, PartnerController.editAgent)
 router.delete('/delete-agent/:id', authAdminMiddleWare, PartnerController.deleteAgent)
-router.get('/get-all-agent-not-accept', authAdminMiddleWare, PartnerController.getAllAgentNotAccept)
 router.get('/get-detail-agent-by-userId/:id', authAgentMiddleWare, PartnerController.getDetailAgentByUserId)
 
 module.exports = router

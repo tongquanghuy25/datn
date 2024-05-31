@@ -28,6 +28,16 @@ export const getDriversByBusOwner = async (access_token, id) => {
     return res.data
 }
 
+export const updateDriver = async (id, access_token, data) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/driver/update/${id}`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
 export const deleteDriver = async (id, access_token) => {
     const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/driver/delete/${id}`, {
         headers: {

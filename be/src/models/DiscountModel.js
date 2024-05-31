@@ -1,15 +1,27 @@
-const mongoose = require('mongoose')
-const discountSchema = new mongoose.Schema(
-    {
-        code: { type: String, required: true },
-        discountType: { type: String, required: true },
-        discountValue: { type: Number, required: true },
-        startDate: { type: String, required: true },
-        endDate: { type: String, required: true },
-        description: { type: String, required: true },
-        numberUses: { type: Number, required: true },
-        busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner' },
+'use strict';
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class Discount extends Model {
+        static associate(models) {
+            // Discount.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
+        }
     }
-);
-const Discount = mongoose.model("Discount", discountSchema);
-module.exports = Discount;
+
+    Discount.init({
+        busOwnerId: { type: DataTypes.INTEGER, allowNull: true, references: { model: 'BusOwners', key: 'id' } },
+        code: { type: DataTypes.STRING(8), allowNull: false },
+        discountType: { type: DataTypes.ENUM('Percent', 'Fixed'), allowNull: false },
+        discountValue: { type: DataTypes.INTEGER, allowNull: false },
+        startDate: { type: DataTypes.STRING, allowNull: false },
+        endDate: { type: DataTypes.STRING, allowNull: false },
+        description: { type: DataTypes.STRING, allowNull: false },
+        numberUses: { type: DataTypes.INTEGER, allowNull: false },
+    }, {
+        sequelize,
+        modelName: 'Discount',
+        timestamps: true
+    });
+
+    return Discount;
+};

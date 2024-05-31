@@ -20,8 +20,8 @@ const ModalUpdateTrip = (props) => {
     }
 
     useEffect(() => {
-        setDriver(trip?.driverId?._id)
-        setBus(trip?.busId?._id)
+        setDriver(trip?.driverId)
+        setBus(trip?.busId)
         setStatus(trip?.status)
     }, [trip])
 
@@ -52,7 +52,7 @@ const ModalUpdateTrip = (props) => {
     });
 
     const handleUpdate = () => {
-        mutation.mutate({ id: trip?._id, access_token: user?.access_token, busId: bus, driverId: driver, status: status })
+        mutation.mutate({ id: trip?.id, access_token: user?.access_token, busId: bus, driverId: driver, status: status })
     }
     return (
         <div>

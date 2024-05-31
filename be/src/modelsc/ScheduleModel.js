@@ -11,7 +11,7 @@ const scheduleSchema = new mongoose.Schema(
         ticketPrice: { type: Number, required: true },
         paymentRequire: { type: Boolean, required: true, default: true },
         prebooking: { type: Boolean, required: true, default: false },
-        timeAllowCancel: { type: Number, required: true },
+        timeAlowCancel: { type: Number, required: true },
         scheduleType: { type: String, required: true },
         inforSchedule: { type: String },
     }

@@ -2,7 +2,6 @@ const UserService = require('../services/UserService')
 const JwtService = require('../services/JwtService')
 const uploadCloud = require('../middleware/uploader');
 const { deleteImgCloud } = require('../utils');
-const cloudinary = require('cloudinary').v2;
 
 const Bus = require("../models/BusModel");
 const Trip = require('../models/TripModel');
@@ -172,24 +171,6 @@ const deleteUser = async (req, res) => {
     }
 }
 
-const deleteMany = async (req, res) => {
-    try {
-        const ids = req.body.ids
-        if (!ids) {
-            return res.status(400).json({
-                message: 'Ids người dùng không được bỏ trống!'
-            })
-        }
-        const response = await UserService.deleteManyUser(ids)
-        return res.status(response.status).json(response)
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
-
-
 const getAllUser = async (req, res) => {
     try {
         const response = await UserService.getAllUser()
@@ -235,7 +216,6 @@ const refreshToken = async (req, res) => {
     }
 }
 
-
 const logoutUser = async (req, res) => {
     try {
 
@@ -276,7 +256,6 @@ const sentMailAdmin = async (req, res) => {
     }
 }
 
-
 module.exports = {
     createUser,
     loginUser,
@@ -288,7 +267,6 @@ module.exports = {
     getDetailsUser,
     refreshToken,
     logoutUser,
-    deleteMany,
     editUser,
 
     sentMailAdmin

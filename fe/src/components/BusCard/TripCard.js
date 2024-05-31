@@ -123,7 +123,7 @@ const BusCard = ({ trip }) => {
                         routeId={trip.routeId}
                         ticketPrice={trip.ticketPrice}
                         departureTime={trip.departureTime}
-                        tripId={trip._id}
+                        tripId={trip.id}
                         departureDate={trip.departureDate}
                         busOwnerId={trip.busOwnerId}
                         busOwnerName={trip.busOwnerName}

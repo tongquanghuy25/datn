@@ -1,17 +1,27 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const routeSchema = new mongoose.Schema(
-    {
-        busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner', required: true },
-        provinceStart: { type: String, required: true },
-        districtStart: { type: String, required: true },
-        placeStart: { type: String, required: true },
-        provinceEnd: { type: String, required: true },
-        districtEnd: { type: String, required: true },
-        placeEnd: { type: String, required: true },
-        journeyTime: { type: String, required: true },
+module.exports = (sequelize, DataTypes) => {
+    class Route extends Model {
+        static associate(models) {
+            Route.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
+        }
     }
-);
-const Route = mongoose.model('Route', routeSchema);
 
-module.exports = Route;
+    Route.init({
+        busOwnerId: { type: DataTypes.INTEGER, allowNull: false },
+        provinceStart: { type: DataTypes.STRING, allowNull: false },
+        districtStart: { type: DataTypes.STRING, allowNull: false },
+        placeStart: { type: DataTypes.STRING, allowNull: false },
+        provinceEnd: { type: DataTypes.STRING, allowNull: false },
+        districtEnd: { type: DataTypes.STRING, allowNull: false },
+        placeEnd: { type: DataTypes.STRING, allowNull: false },
+        journeyTime: { type: DataTypes.TIME, allowNull: false }
+    }, {
+        sequelize,
+        modelName: 'Route',
+        timestamps: true
+    });
+
+    return Route;
+};

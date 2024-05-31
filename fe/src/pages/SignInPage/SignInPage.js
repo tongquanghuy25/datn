@@ -35,15 +35,15 @@ const SignInPage = () => {
           if (decoded?.id) {
             handleGetDetailsUser(decoded?.id, data?.access_token)
           }
-          if (decoded?.role === 'admin') {
+          if (decoded?.role === 'ADMIN') {
             navigate('/admin/home')
-          } else if (decoded?.role === 'busowner') {
+          } else if (decoded?.role === 'BUSOWNER') {
             handleGetDetailBusOwner(decoded?.id, data?.access_token)
             navigate('/bus-owner/home/statistical')
-          } else if (decoded?.role === 'driver') {
+          } else if (decoded?.role === 'DRIVER') {
             handleGetDetailDriver(decoded?.id, data?.access_token)
             navigate('/driver/running-trip')
-          } else if (decoded?.role === 'agent') {
+          } else if (decoded?.role === 'AGENT') {
             // handleGetDetailDriver(decoded?.id, data?.access_token)
             navigate('/agent/sale-tickets')
           } else navigate('/')
@@ -66,21 +66,19 @@ const SignInPage = () => {
 
   const handleGetDetailBusOwner = async (id, token) => {
     const res = await getDetailBusOwnerByUserId(id, token)
-    localStorage.setItem('bus_owner_id', JSON.stringify(res?.data?._id))
+    localStorage.setItem('bus_owner_id', JSON.stringify(res?.data?.id))
     localStorage.setItem('bus_owner_name', JSON.stringify(res?.data?.name))
   }
 
   const handleGetDetailDriver = async (id, token) => {
     const res = await getDetailDriverByUserId(id, token)
-    localStorage.setItem('driver_id', JSON.stringify(res?.data?._id))
+    localStorage.setItem('driverid', JSON.stringify(res?.data?.id))
   }
 
   const onFinish = (values) => {
     loadingMes()
     mutation.mutate({ email: values.email, password: values.password });
   }
-
-
 
   return (
 

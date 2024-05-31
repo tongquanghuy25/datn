@@ -1,22 +1,35 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const tripSchema = new mongoose.Schema(
-    {
-        busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner', required: true },
-        busId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bus', required: true },
-        driverId: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver', required: true },
-        routeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
-        departureDate: { type: String, required: true },
-        departureTime: { type: String, required: true },
-        availableSeats: { type: Number, required: true },
-        ticketsSold: { type: Number, default: 0 },
-        status: { type: String, required: true, default: 'Chưa khởi hành' },
-        ticketPrice: { type: Number, required: true },
-        paymentRequire: { type: Boolean, required: true, default: true },
-        prebooking: { type: Boolean, required: true, default: false },
-        timeAlowCancel: { type: String, required: true }
+module.exports = (sequelize, DataTypes) => {
+    class Trip extends Model {
+        static associate(models) {
+            Trip.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
+            Trip.belongsTo(models.Bus, { foreignKey: 'busId', as: 'bus' });
+            Trip.belongsTo(models.Driver, { foreignKey: 'driverId', as: 'driver' });
+            Trip.belongsTo(models.Route, { foreignKey: 'routeId', as: 'route' });
+        }
     }
-);
-const Trip = mongoose.model('Trip', tripSchema);
 
-module.exports = Trip;
+    Trip.init({
+        busOwnerId: { type: DataTypes.INTEGER, allowNull: false },
+        busId: { type: DataTypes.INTEGER, allowNull: false },
+        driverId: { type: DataTypes.INTEGER, allowNull: false },
+        routeId: { type: DataTypes.INTEGER, allowNull: false },
+        departureDate: { type: DataTypes.DATE, allowNull: false },
+        departureTime: { type: DataTypes.TIME, allowNull: false },
+        totalSeats: { type: DataTypes.INTEGER, allowNull: false },
+        bookedSeats: { type: DataTypes.INTEGER, defaultValue: 0 },
+        status: { type: DataTypes.ENUM('NotStarted', 'Started', 'Ended', 'Cancelled'), allowNull: false, defaultValue: 'NotStarted' },
+        ticketPrice: { type: DataTypes.INTEGER, allowNull: false },
+        paymentRequire: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+        prebooking: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+        timeAlowCancel: { type: DataTypes.STRING, allowNull: false }
+    }, {
+        sequelize,
+        modelName: 'Trip',
+        timestamps: false
+    });
+
+    return Trip;
+};

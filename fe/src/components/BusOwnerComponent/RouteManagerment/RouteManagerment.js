@@ -19,7 +19,7 @@ const RouteManagerment = () => {
       queryKey: ['routes'],
       queryFn: () => getRouteByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token),
     });
-  console.log('listRoute', listRoute);
+
   useEffect(() => {
     if (isSuccess) {
       setListRoute(data?.data)
@@ -46,7 +46,7 @@ const RouteManagerment = () => {
                   setIsCreateRoute(false)
                   setRouteSelected(route)
                 }}
-                style={{ cursor: 'pointer', fontSize: '20px', color: ' #333', backgroundColor: routeSelected._id === route._id ? '#c6e7f5' : '#f0f0f0', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}>
+                style={{ cursor: 'pointer', fontSize: '20px', color: ' #333', backgroundColor: routeSelected.id === route.id ? '#c6e7f5' : '#f0f0f0', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}>
                 <div>
                   <strong>{route?.districtStart} - {route?.provinceStart} ({route?.placeStart}) </strong>
                 </div>

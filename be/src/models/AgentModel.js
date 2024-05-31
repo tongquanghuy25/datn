@@ -1,20 +1,29 @@
-const mongoose = require('mongoose')
-const agentSchema = new mongoose.Schema(
-    {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        agentName: { type: String, required: true },
-        address: { type: String, required: true },
-        citizenId: { type: String, required: true },
-        companyType: { type: String, required: true },
-        companyDescription: { type: String, required: true },
-        managerName: { type: String, required: true },
-        managerPhone: { type: String, required: true },
-        managerEmail: { type: String, required: true },
-        isAccept: { type: Boolean, default: false },
-    },
-    {
-        timestamps: true
+'use strict';
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class Agent extends Model {
+        static associate(models) {
+            Agent.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+        }
     }
-);
-const Agent = mongoose.model("Agent", agentSchema);
-module.exports = Agent;
+
+    Agent.init({
+        userId: { type: DataTypes.INTEGER, allowNull: false },
+        agentName: { type: DataTypes.STRING, allowNull: false },
+        address: { type: DataTypes.STRING, allowNull: false },
+        citizenId: { type: DataTypes.STRING, allowNull: false },
+        companyType: { type: DataTypes.STRING, allowNull: false },
+        companyDescription: { type: DataTypes.TEXT, allowNull: false },
+        managerName: { type: DataTypes.STRING, allowNull: false },
+        managerPhone: { type: DataTypes.STRING, allowNull: false },
+        managerEmail: { type: DataTypes.STRING, allowNull: false },
+        isAccept: { type: DataTypes.BOOLEAN, defaultValue: false }
+    }, {
+        sequelize,
+        modelName: 'Agent',
+        timestamps: true
+    });
+
+    return Agent;
+};

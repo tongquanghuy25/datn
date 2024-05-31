@@ -11,7 +11,7 @@ import ModalUpdateTrip from './ModalUpdateTrip';
 import { getBussByBusOwner } from '../../../../../services/BusService';
 import { getDriversByBusOwner } from '../../../../../services/DriverService';
 import { getRouteByBusOwner } from '../../../../../services/RouteService';
-import { getVnCurrency } from '../../../../../utils';
+import { convertTimeToHourMinute, getVnCurrency } from '../../../../../utils';
 
 const TripManagerment = () => {
 
@@ -20,27 +20,27 @@ const TripManagerment = () => {
 
         {
             title: "Tuyến đường",
-            dataIndex: 'routeId',
+            dataIndex: 'route',
             key: 'route',
             width: 350,
             align: 'center',
-            render: (routeId) => `${routeId.districtStart}-${routeId.provinceStart} -> ${routeId.districtEnd}-${routeId.provinceEnd}`
+            render: (route) => `${route.districtStart}-${route.provinceStart} -> ${route.districtEnd}-${route.provinceEnd}`
 
         },
         {
             title: "Xe",
-            dataIndex: 'busId',
+            dataIndex: 'bus',
             key: 'bus',
             width: 120,
             align: 'center',
-            render: (busId) => busId?.licensePlate
+            render: (bus) => bus?.licensePlate
         },
         {
             title: "Tài xế",
-            dataIndex: 'driverId',
+            dataIndex: 'driver',
             key: 'driver',
             align: 'center',
-            render: (driverId) => driverId?.userId?.name
+            render: (driver) => driver?.user?.name
         },
         {
             title: "Giờ",
@@ -49,10 +49,7 @@ const TripManagerment = () => {
             width: 100,
             align: 'center',
             render: (departureTime) => {
-                var timeParts = departureTime.split(":");
-                var hours = parseInt(timeParts[0], 10);
-                var minutes = parseInt(timeParts[1], 10);
-                return `${hours} giờ ${minutes < 10 ? `0${minutes}` : minutes}`
+                return convertTimeToHourMinute(departureTime)
             }
         },
         {
@@ -61,36 +58,35 @@ const TripManagerment = () => {
             align: 'center',
             width: 150,
             render: (record) => {
-                if (record?.status === 'Đã kết thúc') return <div style={{ backgroundColor: '#4CAF50', borderRadius: '10px', padding: '3px', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'center' }}>Đã kết thúc</div>
-                if (record?.status === 'Đã khởi hành') return <div style={{ backgroundColor: '#3282d1', borderRadius: '10px', padding: '3px', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'center' }}>Đã khởi hành</div>
-                if (record?.status === 'Chưa khởi hành') return <div style={{ backgroundColor: '#F44336', borderRadius: '10px', padding: '3px', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'center' }}>Chưa khởi hành</div>
+                if (record?.status === 'Ended') return <div style={{ backgroundColor: '#4CAF50', borderRadius: '10px', padding: '3px', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'center' }}>Đã kết thúc</div>
+                if (record?.status === 'Started') return <div style={{ backgroundColor: '#3282d1', borderRadius: '10px', padding: '3px', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'center' }}>Đã khởi hành</div>
+                if (record?.status === 'NotStarted') return <div style={{ backgroundColor: '#F44336', borderRadius: '10px', padding: '3px', color: 'white', fontWeight: 'bold', display: 'flex', justifyContent: 'center' }}>Chưa khởi hành</div>
             },
             filters: [
                 {
                     text: 'Đã kết thúc',
-                    value: 'Đã kết thúc',
+                    value: 'Ended',
                 },
                 {
                     text: 'Đã khởi hành',
-                    value: 'Đã khởi hành',
+                    value: 'Started',
                 },
                 {
                     text: 'Chưa khởi hành',
-                    value: 'Chưa khởi hành',
+                    value: 'NotStarted',
                 },
             ],
             onFilter: (value, record) => {
-                console.log('value', value, record);
-                if (value === 'Đã kết thúc') return record?.status === 'Đã kết thúc'
-                else if (value === 'Đã khởi hành') return record?.status === 'Đã khởi hành'
-                else return record?.status === 'Chưa khởi hành'
+                if (value === 'NotStarted') return record?.status === 'NotStarted'
+                else if (value === 'Started') return record?.status === 'Started'
+                else return record?.status === 'Ended'
             },
         },
         {
             title: "Đã bán",
-            dataIndex: 'ticketsSold',
+            dataIndex: 'bookedSeats',
             align: 'center',
-            key: 'timeStart',
+            key: 'bookedSeats',
             width: 80,
         },
         {
@@ -160,7 +156,7 @@ const TripManagerment = () => {
     const [tripUpdate, setTripUpdate] = useState()
     const [listTrip, setListTrip] = useState([])
     const [filter, setFilter] = useState()
-    const [day, setDay] = useState(dayjs().format('DD/MM/YYYY'))
+    const [day, setDay] = useState(dayjs().format('YYYY-MM-DD'))
     const [listRoute, setListRoute] = useState([])
     const [listBus, setListBus] = useState([])
     const [listDriver, setListDriver] = useState([])
@@ -175,7 +171,7 @@ const TripManagerment = () => {
     useEffect(() => {
         console.log('dataRoutes', dataRoutes);
         const listData = dataRoutes?.data?.map((route) => ({
-            value: route?._id,
+            value: route?.id,
             label: `${route?.districtStart}-${route?.provinceStart} (${route?.placeStart}) -> ${route?.districtEnd}-${route?.provinceEnd} (${route?.placeEnd})`,
         }));
         setListRoute(listData);
@@ -189,9 +185,9 @@ const TripManagerment = () => {
             staleTime: Infinity,
         });
     useEffect(() => {
-        console.log('dataRoutes', dataBuss);
+        console.log('dataBus', dataBuss);
         const listData = dataBuss?.data?.map((bus) => ({
-            value: bus?._id,
+            value: bus?.id,
             label: bus?.licensePlate,
         }));
         setListBus(listData);
@@ -207,8 +203,8 @@ const TripManagerment = () => {
     useEffect(() => {
         console.log('dataRoutes', dataDrivers);
         const listData = dataDrivers?.data?.map((driver) => ({
-            value: driver?._id,
-            label: driver?.userId?.name,
+            value: driver?.id,
+            label: driver?.user?.name,
         }));
         setListDriver(listData);
     }, [dataDrivers])
@@ -222,9 +218,10 @@ const TripManagerment = () => {
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: [`trips`, day],
-            queryFn: () => getTripsByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token, day ? day : dayjs().format('DD/MM/YY')),
+            queryFn: () => getTripsByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token, day ? day : dayjs().format('YYYY-MM-DD')),
         });
 
+    console.log('l', listTrip);
 
     useEffect(() => {
         if (isSuccess) {
@@ -235,8 +232,8 @@ const TripManagerment = () => {
 
     }, [isSuccess, isError, data])
 
-    const onChangeDate = (time, timeString) => {
-        setDay(timeString)
+    const onChangeDate = (date, dateString) => {
+        setDay(date.format('YYYY-MM-DD'))
     }
     const handleCancel = () => {
         setIsCreateTrip(false)
@@ -259,7 +256,7 @@ const TripManagerment = () => {
     )
     const onDelete = (record) => {
         console.log(record);
-        mutationDelete.mutate({ id: record._id, access_token: user?.access_token })
+        mutationDelete.mutate({ id: record.id, access_token: user?.access_token })
     }
 
     const handleCancelUpdate = () => {
@@ -287,7 +284,7 @@ const TripManagerment = () => {
             <Row>
                 <div>
                     <Table
-                        rowKey="_id"
+                        rowKey="id"
                         bordered
                         pagination={false}
                         dataSource={listTrip}

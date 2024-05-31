@@ -24,32 +24,31 @@ const dayMapping = {
 
 const ScheduleManagerment = () => {
 
-
     const column = [
 
         {
             title: "Tuyến đường",
-            dataIndex: 'routeId',
+            dataIndex: 'route',
             key: 'route',
             width: 400,
             align: 'center',
-            render: (routeId) => `${routeId.districtStart}-${routeId.provinceStart} -> ${routeId.districtEnd}-${routeId.provinceEnd}`
+            render: (route) => `${route.districtStart}-${route.provinceStart} -> ${route.districtEnd}-${route.provinceEnd}`
 
         },
         {
             title: "Xe",
-            dataIndex: 'busId',
+            dataIndex: 'bus',
             key: 'bus',
             width: 200,
             align: 'center',
-            render: (busId) => busId?.licensePlate
+            render: (bus) => bus?.licensePlate
         },
         {
             title: "Tài xế",
-            dataIndex: 'driverId',
+            dataIndex: 'driver',
             key: 'driver',
             align: 'center',
-            render: (driverId) => driverId?.userId?.name
+            render: (driver) => driver?.user?.name
         },
         {
             title: "Giờ xuất phát",
@@ -84,12 +83,12 @@ const ScheduleManagerment = () => {
             width: 200,
             render: (record) => {
                 let result = ''
-                if (record.scheduleType === 'daily') result = 'Hàng ngày'
-                else if (record.scheduleType === 'weekly_days') {
-                    const days = record.inforSchedule.split(', ')
+                if (record.scheduleType === 'Daily') result = 'Hàng ngày'
+                else if (record.scheduleType === 'WeeklyDays') {
+                    const days = JSON.parse(record.inforSchedule)
                     const thus = days.map(day => dayMapping[day])
                     result = `${thus.join(', ')} hàng tuần`
-                } else if (record.scheduleType === 'periodic') result = `${record.inforSchedule} ngày một chuyến`
+                } else if (record.scheduleType === 'Periodic') result = `${JSON.parse(record.inforSchedule)} ngày một chuyến`
                 return <>
                     {result}
                 </>
@@ -136,10 +135,10 @@ const ScheduleManagerment = () => {
     const [isUpdateSchedule, setIsUpdateSchedule] = useState(false)
     const [scheduleUpdate, setScheduleUpdate] = useState()
     const [listSchedule, setListSchedule] = useState([])
-    const [filter, setFilter] = useState()
     const [listRoute, setListRoute] = useState([])
     const [listBus, setListBus] = useState([])
     const [listDriver, setListDriver] = useState([])
+
     //Get all routes
     const { data: dataRoutes } = useQuery(
         {
@@ -150,7 +149,7 @@ const ScheduleManagerment = () => {
 
     useEffect(() => {
         const listData = dataRoutes?.data?.map((route) => ({
-            value: route?._id,
+            value: route?.id,
             label: `${route?.districtStart}-${route?.provinceStart} (${route?.placeStart}) -> ${route?.districtEnd}-${route?.provinceEnd} (${route?.placeEnd})`,
         }));
         setListRoute(listData);
@@ -165,7 +164,7 @@ const ScheduleManagerment = () => {
         });
     useEffect(() => {
         const listData = dataBuss?.data?.map((bus) => ({
-            value: bus?._id,
+            value: bus?.id,
             label: bus?.licensePlate,
         }));
         setListBus(listData);
@@ -180,8 +179,8 @@ const ScheduleManagerment = () => {
         });
     useEffect(() => {
         const listData = dataDrivers?.data?.map((driver) => ({
-            value: driver?._id,
-            label: driver?.userId?.name,
+            value: driver?.id,
+            label: driver?.user?.name,
         }));
         setListDriver(listData);
     }, [dataDrivers])
@@ -198,10 +197,8 @@ const ScheduleManagerment = () => {
             queryFn: () => getSchedulesByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token),
         });
 
-
     useEffect(() => {
         if (isSuccess) {
-            console.log(data);
             setListSchedule(data?.data)
         } else if (isError) {
             errorMes()
@@ -232,13 +229,15 @@ const ScheduleManagerment = () => {
     )
     const onDelete = (record) => {
         console.log(record);
-        mutationDelete.mutate({ id: record._id, access_token: user?.access_token })
+        mutationDelete.mutate({ id: record.id, access_token: user?.access_token })
     }
 
     const handleCancelUpdate = () => {
         setScheduleUpdate()
         setIsUpdateSchedule(false)
     }
+    console.log('listSchedule', listSchedule);
+
     return (
         <div style={{ marginTop: '20px', padding: '0 20px' }}>
             <Row justify='end'>
@@ -252,7 +251,7 @@ const ScheduleManagerment = () => {
             <Row>
                 <div>
                     <Table
-                        rowKey="_id"
+                        rowKey="id"
                         bordered
                         pagination={false}
                         dataSource={listSchedule}

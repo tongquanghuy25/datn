@@ -7,6 +7,7 @@ const { authBusOwnerMiddleWare, authDriverMiddleWare } = require("../middleware/
 router.post('/register', uploadCloud.single('avatar'), authBusOwnerMiddleWare, DriverController.createDriver)
 router.get('/get-driver-by-busowner/:id', authBusOwnerMiddleWare, DriverController.getDriversByBusOwner)
 router.get('/get-detail-by-user-id/:id', authDriverMiddleWare, DriverController.getDriversByUserId)
+router.put('/update/:id', uploadCloud.single('avatar'), authDriverMiddleWare, DriverController.updateDriver)
 router.delete('/delete/:id', authBusOwnerMiddleWare, DriverController.deleteDriver)
 
 module.exports = router

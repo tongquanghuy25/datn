@@ -44,7 +44,7 @@ const AdminDiscountComponent = () => {
     useEffect(() => {
         if (busOwnerIsSuccess) {
             setListBusOwner(busOwnerData?.data.map(item => {
-                return { label: item.busOwnerName, value: item._id }
+                return { label: item.busOwnerName, value: item.id }
             }))
         } else if (busOwnerIsError) {
             console.log('err', busOwnerData);
@@ -98,7 +98,7 @@ const AdminDiscountComponent = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button type="link" onClick={() => handleDelete(record._id)}>Xóa</Button>
+                    <Button type="link" onClick={() => handleDelete(record.id)}>Xóa</Button>
                 </Space>
             ),
             align: 'center',
@@ -194,7 +194,7 @@ const AdminDiscountComponent = () => {
             <Table
                 columns={columns}
                 dataSource={listDiscount}
-                rowKey="_id"
+                rowKey="id"
                 bordered
                 scroll={{
                     y: 430,

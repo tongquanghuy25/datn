@@ -1,13 +1,24 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const pickUpDropOffSchema = new mongoose.Schema(
-    {
-        tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
-        stopPointId: { type: mongoose.Schema.Types.ObjectId, ref: 'StopPoint', required: true },
-        time: { type: String, required: true },
-        isPickUp: { type: Boolean, required: true }
+module.exports = (sequelize, DataTypes) => {
+    class PickUpDropOff extends Model {
+        static associate(models) {
+            PickUpDropOff.belongsTo(models.Trip, { foreignKey: 'tripId', as: 'trip' });
+            PickUpDropOff.belongsTo(models.StopPoint, { foreignKey: 'stopPointId', as: 'stopPoint' });
+        }
     }
-);
-const PickUpDropOff = mongoose.model('PickUpDropOff', pickUpDropOffSchema);
 
-module.exports = PickUpDropOff;
+    PickUpDropOff.init({
+        tripId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'Trips', key: 'id' } },
+        stopPointId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'StopPoints', key: 'id' } },
+        time: { type: DataTypes.STRING, allowNull: false },
+        isPickUp: { type: DataTypes.BOOLEAN, allowNull: false }
+    }, {
+        sequelize,
+        modelName: 'PickUpDropOff',
+        timestamps: true,
+    });
+
+    return PickUpDropOff;
+};

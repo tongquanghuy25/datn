@@ -18,6 +18,7 @@ const daysOfWeekOptions = [
 
 const ModalCreateSchedule = (props) => {
     const { handleCancel, isCreateSchedule, refetch, listRoute, listBus, listDriver, dataBuss, filterOption } = props
+    console.log('listRoute, listBus, listDriver', listRoute, listBus, listDriver);
     const [form] = Form.useForm();
     const formRef = useRef(null);
     const user = useSelector((state) => state.user)
@@ -42,7 +43,7 @@ const ModalCreateSchedule = (props) => {
 
 
     const onFinish = (values) => {
-        const availableSeats = dataBuss?.data?.find(item => item._id === values?.bus)?.numberSeat
+        const totalSeats = dataBuss?.data?.find(item => item.id === values?.bus)?.numberSeat
         mutation.mutate({
             access_token: user?.access_token,
             busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')),
@@ -53,10 +54,10 @@ const ModalCreateSchedule = (props) => {
             paymentRequire: values?.paymentRequire === 'true' ? true : false,
             prebooking: values?.prebooking === 'true' ? true : false,
             ticketPrice: values?.ticketPrice,
-            availableSeats: availableSeats,
-            timeAllowCancel: values?.timeAllowCancel,
+            totalSeats: totalSeats,
+            timeAlowCancel: values?.timeAlowCancel,
             scheduleType: values?.scheduleType,
-            inforSchedule: values?.scheduleType === 'periodic' ? values?.periodic : (values?.scheduleType === 'weekly_days' ? values?.daysOfWeek.join(', ') : '')
+            inforSchedule: values?.scheduleType === 'Periodic' ? values?.periodic : (values?.scheduleType === 'WeeklyDays' ? values?.daysOfWeek : '')
 
         })
         loadingMes()
@@ -140,13 +141,13 @@ const ModalCreateSchedule = (props) => {
                     <Row>
                         <Form.Item name="scheduleType" label="Loại lịch trình" rules={[{ required: true }]}>
                             <Select onChange={value => { setScheduleType(value) }} style={{ width: '160px', marginRight: '50px' }}>
-                                <Option value="daily">Hàng ngày</Option>
-                                <Option value="periodic">Định kỳ</Option>
-                                <Option value="weekly_days">Ngày trong tuần</Option>
+                                <Option value="Daily">Hàng ngày</Option>
+                                <Option value="Periodic">Định kỳ</Option>
+                                <Option value="WeeklyDays">Ngày trong tuần</Option>
                             </Select>
                         </Form.Item>
 
-                        {scheduleType === 'periodic' && (
+                        {scheduleType === 'Deriodic' && (
                             <Form.Item
                                 name="periodic"
                                 label="Số ngày định kỳ"
@@ -156,7 +157,7 @@ const ModalCreateSchedule = (props) => {
                             </Form.Item>
                         )}
 
-                        {scheduleType === 'weekly_days' && (
+                        {scheduleType === 'WeeklyDays' && (
                             <Form.Item
                                 name="daysOfWeek"
                                 label="Chọn ngày trong tuần"
@@ -191,7 +192,7 @@ const ModalCreateSchedule = (props) => {
                                 onChange={onchangeDepartureTime} />
                         </Form.Item>
                         <Form.Item
-                            name="timeAllowCancel"
+                            name="timeAlowCancel"
                             label="Giờ cho phép hủy vé trước khi chạy"
                             rules={[
                                 {

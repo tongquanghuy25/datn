@@ -1,45 +1,50 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const orderGoodsSchema = new mongoose.Schema({
-
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
-    departureDate: { type: String, required: true },
-
-    nameSender: { type: String, required: true },
-    emailSender: { type: String, required: true },
-    phoneSender: { type: String, required: true },
-    nameReceiver: { type: String, required: true },
-    emailReceiver: { type: String, required: true },
-    phoneReceiver: { type: String, required: true },
-
-
-    sendPlace: { type: String, required: true },
-    noteSend: { type: String },
-    timeSend: { type: String, required: true },
-    dateSend: { type: String, required: true },
-
-    receivePlace: { type: String, required: true },
-    noteReceive: { type: String },
-    timeReceive: { type: String, required: true },
-    dateReceive: { type: String, required: true },
-
-    weight: { type: Number, required: true },
-    goodsDescription: { type: String, required: true },
-
-    price: { type: Number, required: true },
-
-    Payee: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    paymentMethod: { type: String },
-    isPaid: { type: Boolean, default: false },
-
-    // isCancel: { type: Boolean, default: false },
-    status: { type: String, default: 'Chưa nhận hàng' },//Pending,Received,Delivered ,Cancelled 
-    // isFinish: { type: Boolean, default: false },
-
-},
-    {
-        timestamps: true,
+module.exports = (sequelize, DataTypes) => {
+    class OrderGoods extends Model {
+        static associate(models) {
+            // OrderGoods.belongsTo(models.Trip, { foreignKey: 'tripId', as: 'trip' });
+            // OrderGoods.belongsTo(models.User, { foreignKey: 'Payee', as: 'payee' });
+        }
     }
-);
-const OrderGoods = mongoose.model('OrderGoods', orderGoodsSchema);
-module.exports = OrderGoods
+
+    OrderGoods.init({
+        tripId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'Trips', key: 'id' } },
+        departureDate: { type: DataTypes.STRING, allowNull: false },
+
+        nameSender: { type: DataTypes.STRING, allowNull: false },
+        emailSender: { type: DataTypes.STRING, allowNull: false },
+        phoneSender: { type: DataTypes.STRING, allowNull: false },
+        nameReceiver: { type: DataTypes.STRING, allowNull: false },
+        emailReceiver: { type: DataTypes.STRING, allowNull: false },
+        phoneReceiver: { type: DataTypes.STRING, allowNull: false },
+
+        sendPlace: { type: DataTypes.STRING, allowNull: false },
+        noteSend: { type: DataTypes.TEXT, allowNull: true },
+        timeSend: { type: DataTypes.TIME, allowNull: false },
+        dateSend: { type: DataTypes.DATE, allowNull: false },
+
+        receivePlace: { type: DataTypes.STRING, allowNull: false },
+        noteReceive: { type: DataTypes.TEXT, allowNull: true },
+        timeReceive: { type: DataTypes.TIME, allowNull: false },
+        dateReceive: { type: DataTypes.DATE, allowNull: false },
+
+        weight: { type: DataTypes.INTEGER, allowNull: false },
+        goodsDescription: { type: DataTypes.TEXT, allowNull: false },
+
+        price: { type: DataTypes.INTEGER, allowNull: false },
+
+        Payee: { type: DataTypes.INTEGER, allowNull: true, references: { model: 'Users', key: 'id' } },
+        paymentMethod: { type: DataTypes.STRING, allowNull: true },
+        isPaid: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+
+        status: { type: DataTypes.ENUM('Pending', 'Received', 'Delivered', 'Settled', 'Cancelled'), allowNull: false, defaultValue: 'Pending' },
+    }, {
+        sequelize,
+        modelName: 'OrderGoods',
+        timestamps: true,
+    });
+
+    return OrderGoods;
+};

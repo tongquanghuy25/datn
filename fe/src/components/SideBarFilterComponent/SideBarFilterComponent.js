@@ -120,8 +120,8 @@ const SideBarFilterComponent = (props) => {
         key: Object.keys(districtObj)[0],
         children: districtObj[Object.keys(districtObj)[0]].map(location => ({
             title: location.place,
-            value: location._id,
-            key: location._id
+            value: location.id,
+            key: location.id
         }))
     }));
 
@@ -148,8 +148,8 @@ const SideBarFilterComponent = (props) => {
         key: Object.keys(districtObj)[0],
         children: districtObj[Object.keys(districtObj)[0]].map(location => ({
             title: location.place,
-            value: location._id,
-            key: location._id
+            value: location.id,
+            key: location.id
         }))
     }));
 
@@ -174,7 +174,7 @@ const SideBarFilterComponent = (props) => {
                 // Nếu giá trị là một huyện
                 const locations = districtObj[val];
                 locations.forEach(location => {
-                    newResult.push(location._id);
+                    newResult.push(location.id);
                 });
             } else {
                 // Nếu giá trị là một địa điểm
@@ -195,7 +195,7 @@ const SideBarFilterComponent = (props) => {
             const listData = data.data?.map(trip => {
                 const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
                 return {
-                    _id: trip._id,
+                    id: trip.id,
                     busOwnerName: trip.busOwnerId.busOwnerName,
                     avatar: trip.busId.avatar,
                     rating: trip.busId.averageRating,
@@ -204,7 +204,7 @@ const SideBarFilterComponent = (props) => {
                     convinients: trip.busId.convinients,
                     typeBus: trip.busId.typeBus,
                     availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
-                    routeId: trip.routeId._id,
+                    routeId: trip.routeId.id,
                     departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
                     arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
                     ticketPrice: trip.ticketPrice,

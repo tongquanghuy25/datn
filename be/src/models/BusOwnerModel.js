@@ -1,22 +1,37 @@
-const mongoose = require('mongoose')
-const busOwnerSchema = new mongoose.Schema(
-    {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        busOwnerName: { type: String, required: true },
-        address: { type: String, required: true },
-        citizenId: { type: String, required: true },
-        companyType: { type: String, required: true },
-        companyDescription: { type: String, required: true },
-        managerName: { type: String, required: true },
-        managerPhone: { type: String, required: true },
-        managerEmail: { type: String, required: true },
-        isAccept: { type: Boolean, default: false },
-        reviewCount: { type: Number, default: 0 },
-        averageRating: { type: Number, default: 0.0 },
-    },
-    {
-        timestamps: true
+'use strict';
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class BusOwner extends Model {
+        /**
+         * Helper method for defining associations.
+         * This method is not a part of Sequelize lifecycle.
+         * The `models/index` file will call this method automatically.
+         */
+        static associate(models) {
+            // define association here
+            BusOwner.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+        }
     }
-);
-const BusOwner = mongoose.model("BusOwner", busOwnerSchema);
-module.exports = BusOwner;
+
+    BusOwner.init({
+        userId: { type: DataTypes.INTEGER, allowNull: false },
+        busOwnerName: { type: DataTypes.STRING, allowNull: false },
+        address: { type: DataTypes.STRING, allowNull: false },
+        citizenId: { type: DataTypes.STRING, allowNull: false },
+        companyType: { type: DataTypes.STRING, allowNull: false },
+        companyDescription: { type: DataTypes.TEXT, allowNull: false },
+        managerName: { type: DataTypes.STRING, allowNull: false },
+        managerPhone: { type: DataTypes.STRING, allowNull: false },
+        managerEmail: { type: DataTypes.STRING, allowNull: false },
+        isAccept: { type: DataTypes.BOOLEAN, defaultValue: false },
+        reviewCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+        averageRating: { type: DataTypes.FLOAT, defaultValue: 0.0 }
+    }, {
+        sequelize,
+        modelName: 'BusOwner',
+        timestamps: true
+    });
+
+    return BusOwner;
+};

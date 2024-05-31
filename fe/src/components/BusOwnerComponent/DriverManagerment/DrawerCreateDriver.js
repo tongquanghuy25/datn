@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { driverRegister } from '../../../services/DriverService';
 import { useSelector } from 'react-redux'
 import { getBase64 } from '../../../utils';
+import { Option } from 'antd/es/mentions';
 
 
 const DrawerCreateDriver = (props) => {
@@ -65,14 +66,20 @@ const DrawerCreateDriver = (props) => {
             duration: 10,
         });
         const formData = new FormData();
-        formData.append('email', values.email);
         formData.append('name', values.name);
+        formData.append('citizenId', values?.citizenId);
+        formData.append('address', values?.address);
+        formData.append('licenseType', values?.licenseType);
+        formData.append('dateOfBirth', values.dateOfBirth.format('YYYY-MM-DD'));
+        formData.append('gender', values?.gender);
+        formData.append('email', values.email);
         formData.append('phone', values.phone);
         formData.append('password', values.password);
         formData.append('confirmPassword', values.confirmPassword);
-        formData.append('role', 'driver');
+        formData.append('role', 'DRIVER');
         formData.append('avatar', avatarFile?.originFileObj);
-        formData.append('busOwnerId', user?.id);
+        formData.append('busOwnerId', JSON.parse(localStorage.getItem('bus_owner_id')));
+
 
         mutation.mutate({
             formData,
@@ -121,84 +128,164 @@ const DrawerCreateDriver = (props) => {
             >
 
                 <Form layout="vertical" form={form} onFinish={onFinish}>
-                    <Form.Item
-                        name="email"
-                        label="Email"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Email không được bỏ trống !",
-                            },
-                            {
-                                type: "email",
-                                message: "Email không đúng định dạng !",
-                            },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="name"
-                        label="Họ và tên"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Tên không được bỏ trống !",
-                            }
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="phone"
-                        label="Số điện thoại"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Số điện thoại không được bỏ trống !",
-                            },
-                            {
-                                min: 10,
-                                max: 11,
-                                message: "Số điện thoại không đúng định dạng !",
-                            },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="password"
-                        label="Mật khẩu"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Mật khẩu không được bỏ trống !",
-                            },
-                            { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự !" },
-                        ]}
-                    >
-                        <Input.Password />
-                    </Form.Item>
-                    <Form.Item
-                        name="confirmPassword"
-                        label="Nhập lại mật khẩu"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Nhập lại mật khẩu không được bỏ trống !',
-                            },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    if (!value || getFieldValue('password') === value) {
-                                        return Promise.resolve();
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item
+                                name="name"
+                                label="Họ và tên"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Tên không được bỏ trống !",
                                     }
-                                    return Promise.reject(new Error('Mật khẩu nhập lại không đúng !'));
-                                },
-                            }),
-                        ]}
-                    >
-                        <Input.Password />
-                    </Form.Item>
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="address"
+                                label="Địa chỉ"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Địa chỉ không được bỏ trống !",
+                                    }
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="dateOfBirth"
+                                label="Ngày sinh"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Ngày sinh không được bỏ trống !",
+                                    }
+                                ]}
+                            >
+                                <DatePicker format='DD/MM/YYYY' style={{ width: '200px' }} />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="email"
+                                label="Email"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Email không được bỏ trống !",
+                                    },
+                                    {
+                                        type: "email",
+                                        message: "Email không đúng định dạng !",
+                                    },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="password"
+                                label="Mật khẩu"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Mật khẩu không được bỏ trống !",
+                                    },
+                                    { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự !" },
+                                ]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                            <Form.Item
+                                name="citizenId"
+                                label="Số căn cước"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Không được bỏ trống !",
+                                    }
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="licenseType"
+                                label="Loại bằng lái"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Không được bỏ trống !",
+                                    }
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="gender"
+                                label="Giới tính"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Không được bỏ trống !",
+                                    }
+                                ]}
+                            >
+                                <Select style={{ width: '200px' }}>
+                                    <Option value="male">Nam</Option>
+                                    <Option value="female">Nữ</Option>
+                                    <Option value="other">Khác</Option>
+                                </Select>
+                            </Form.Item>
+
+                            <Form.Item
+                                name="phone"
+                                label="Số điện thoại"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Số điện thoại không được bỏ trống !",
+                                    },
+                                    {
+                                        min: 10,
+                                        max: 11,
+                                        message: "Số điện thoại không đúng định dạng !",
+                                    },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="confirmPassword"
+                                label="Nhập lại mật khẩu"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Nhập lại mật khẩu không được bỏ trống !',
+                                    },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            if (!value || getFieldValue('password') === value) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('Mật khẩu nhập lại không đúng !'));
+                                        },
+                                    }),
+                                ]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
+                        </Col>
+                    </Row>
 
                     <Form.Item
                         name="avatar"
@@ -232,6 +319,7 @@ const DrawerCreateDriver = (props) => {
                             )}
                         </Upload>
                     </Form.Item>
+
                     <Form.Item style={{ marginTop: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <Button type="primary" htmlType="submit">
                             Đăng ký

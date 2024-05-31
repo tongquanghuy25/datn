@@ -84,7 +84,7 @@ const updateBus = (busId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkBus = await Bus.findOne({
-                _id: busId
+                id: busId
             })
             if (checkBus === null) {
                 resolve({
@@ -117,7 +117,7 @@ const deleteBus = (busId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkBus = await Bus.findOne({
-                _id: busId
+                id: busId
             })
             if (checkBus === null) {
                 resolve({

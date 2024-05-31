@@ -32,7 +32,7 @@ const SearchBusComponent = (props) => {
 
     useEffect(() => {
         const listData = data?.data?.map((province) => ({
-            value: province._id,
+            value: province.id,
             label: province.name,
         }));
         setListProvince(listData);
@@ -51,7 +51,7 @@ const SearchBusComponent = (props) => {
     useEffect(() => {
         queryClient.setQueryData(provinceStart, dataDistrictStart?.data);
         const listData = dataDistrictStart?.data?.map((district) => ({
-            value: district._id,
+            value: district.id,
             label: district.name,
         }));
         setListDistrictStart(listData)
@@ -62,7 +62,7 @@ const SearchBusComponent = (props) => {
 
         if (cacheDistrict?.length > 0) {
             const listData2 = cacheDistrict?.map((district) => ({
-                value: district._id,
+                value: district.id,
                 label: district.name,
             }));
             setListDistrictStart(listData2)
@@ -92,7 +92,7 @@ const SearchBusComponent = (props) => {
     useEffect(() => {
         queryClient.setQueryData(provinceEnd, dataDistrictEnd?.data);
         const listData3 = dataDistrictEnd?.data?.map((district) => ({
-            value: district._id,
+            value: district.id,
             label: district.name,
         }));
         setListDistrictEnd(listData3)
@@ -102,7 +102,7 @@ const SearchBusComponent = (props) => {
         const cahceDistrict = queryClient.getQueryData(listProvince[provinceId - 1].label)
         if (cahceDistrict?.length > 0) {
             const listData4 = cahceDistrict?.map((district) => ({
-                value: district._id,
+                value: district.id,
                 label: district.name,
             }));
             setListDistrictEnd(listData4)
@@ -122,7 +122,7 @@ const SearchBusComponent = (props) => {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
     const onChangeDate = (date, dateString) => {
-        setDate(dateString)
+        setDate(date.format('YYYY-MM-DD'))
     }
 
 

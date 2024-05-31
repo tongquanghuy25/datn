@@ -102,8 +102,8 @@ const ModalUpdateGoodsOrder = (props) => {
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
-            queryKey: [`listStopPoint${trip?.routeId._id}`],
-            queryFn: () => getStopPointsByBusRoute(trip?.routeId._id),
+            queryKey: [`listStopPoint${trip?.routeId.id}`],
+            queryFn: () => getStopPointsByBusRoute(trip?.routeId.id),
         });
 
     useEffect(() => {
@@ -114,7 +114,7 @@ const ModalUpdateGoodsOrder = (props) => {
     const mutation = useMutation(
         {
             mutationFn: (data) => {
-                return updateGoodsOrder(goodsOrder._id, user?.access_token, data)
+                return updateGoodsOrder(goodsOrder.id, user?.access_token, data)
             },
             onSuccess: (data) => {
                 handleRefetchGoodsOrder()

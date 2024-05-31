@@ -14,14 +14,12 @@ const ModalCreateTrip = (props) => {
     const [form] = Form.useForm();
     const formRef = useRef(null);
     const user = useSelector((state) => state.user)
-    const [listDate, setListDate] = useState()
-    const [departureTime, setDepartureTime] = useState()
-
 
 
     const mutation = useMutation({
         mutationFn: async (data) => {
             const { access_token, ...rest } = data;
+            console.log('datasđfsa', data);
             return await createTrip(access_token, rest);
         },
         onSuccess: (data) => {
@@ -35,27 +33,23 @@ const ModalCreateTrip = (props) => {
         }
     });
 
-    const onChangeDate = (date, dateString) => {
-        setListDate(dateString)
-    }
+
 
     const onFinish = (values) => {
-        // const journeyTime = dataRoutes?.data?.find(item => item._id === values?.route)?.journeyTime
-        const availableSeats = dataBuss?.data?.find(item => item._id === values?.bus)?.numberSeat
+
+        const totalSeats = dataBuss?.data?.find(item => item.id === values?.bus)?.numberSeat
         mutation.mutate({
             access_token: user?.access_token,
             busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')),
-            routeId: values?.route,
             busId: values?.bus,
+            routeId: values?.route,
             driverId: values?.driver,
-            dates: listDate,
-            departureTime: departureTime,
-            // departureTime: `${values.time?.hour()}:${values.time?.minute()}`,
-            // journeyTime: journeyTime,
+            dates: values.dates?.map(item => item.format('YYYY-MM-DD')),
+            departureTime: values.time.format('HH:mm'),
+            totalSeats: totalSeats,
             paymentRequire: values?.paymentRequire === 'true' ? true : false,
             prebooking: values?.prebooking === 'true' ? true : false,
             ticketPrice: values?.ticketPrice,
-            availableSeats: availableSeats,
             timeAlowCancel: values?.timeAlowCancel
         })
         loadingMes()
@@ -66,9 +60,7 @@ const ModalCreateTrip = (props) => {
         handleCancel()
     }
 
-    const onchangeDepartureTime = (time, timeString) => {
-        setDepartureTime(timeString)
-    }
+
     return (
         <div>
             <Modal
@@ -150,9 +142,9 @@ const ModalCreateTrip = (props) => {
                         <DatePicker
                             multiple
                             format='DD/MM/YYYY'
-                            // minDate={dayjs()}
-                            // defaultValue={dayjs()}
-                            onChange={onChangeDate}
+                        // minDate={dayjs()}
+                        // defaultValue={dayjs()}
+                        // onChange={onChangeDate}
                         />
                     </Form.Item>
 
@@ -170,7 +162,7 @@ const ModalCreateTrip = (props) => {
                             <TimePicker
                                 placeholder="Chọn giờ phút"
                                 format='HH:mm'
-                                onChange={onchangeDepartureTime} />
+                            />
                         </Form.Item>
                         <Form.Item
                             name="timeAlowCancel"

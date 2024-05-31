@@ -24,7 +24,7 @@ const createTicketOrder = (newOrder) => {
 
             const trip = await Trip.findOneAndUpdate(
                 {
-                    _id: tripId,
+                    id: tripId,
                     availableSeats: { $gte: seatCount }
                 },
                 {
@@ -167,7 +167,7 @@ const getTicketsByUser = (userId) => {
 const getTicketById = (ticketId, phone) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const ticket = await OrderTicket.find({ _id: ticketId, phone: phone })
+            const ticket = await OrderTicket.find({ id: ticketId, phone: phone })
             if (ticket === null) {
                 resolve({
                     status: 404,
@@ -238,7 +238,7 @@ const deleteTicketOrder = (ticketOrederId, isOnTimeAllow, isPaid) => {
                     await Refund.create({ name: deleteOrder?.name, email: deleteOrder?.email, phone: deleteOrder?.phone, refundAmount: refundAmount })
 
                 }
-                await Trip.findByIdAndUpdate(deleteOrder.tripId._id,
+                await Trip.findByIdAndUpdate(deleteOrder.tripId.id,
                     {
                         $inc: {
                             availableSeats: deleteOrder.seatCount
@@ -317,20 +317,20 @@ const deleteSeat = (ticketOrder, seatDelete, isOnTimeAllow) => {
                     let refundAmount = 0
                     if (isOnTimeAllow) refundAmount = ticketOrder?.ticketPrice
                     else refundAmount = ticketOrder?.ticketPrice / 2
-                    ticket = await OrderTicket.findByIdAndUpdate(ticketOrder._id, { seats: seats, seatCount: seats.length }, { new: true })
+                    ticket = await OrderTicket.findByIdAndUpdate(ticketOrder.id, { seats: seats, seatCount: seats.length }, { new: true })
                     await Refund.create({ name: ticketOrder?.name, email: ticketOrder?.email, phone: ticketOrder?.phone, refundAmount: refundAmount })
                 } else {
                     let refundAmount = 0
                     if (isOnTimeAllow) refundAmount = ticketOrder?.totalPrice
                     else refundAmount = ticketOrder?.totalPrice / 2
-                    ticket = await OrderTicket.findByIdAndDelete(ticketOrder._id)
+                    ticket = await OrderTicket.findByIdAndDelete(ticketOrder.id)
                     await Refund.create({ name: ticketOrder?.name, email: ticketOrder?.email, phone: ticketOrder?.phone, refundAmount: ticketOrder?.totalPrice })
                 }
             } else {
                 if (seats.length > 0) {
                     const totalPrice = ticketOrder.totalPrice - ticketOrder.ticketPrice
-                    ticket = await OrderTicket.findByIdAndUpdate(ticketOrder._id, { seats: seats, totalPrice: totalPrice, seatCount: seats.length }, { new: true })
-                } else ticket = await OrderTicket.findByIdAndDelete(ticketOrder._id)
+                    ticket = await OrderTicket.findByIdAndUpdate(ticketOrder.id, { seats: seats, totalPrice: totalPrice, seatCount: seats.length }, { new: true })
+                } else ticket = await OrderTicket.findByIdAndDelete(ticketOrder.id)
             }
 
             const trip = await Trip.findByIdAndUpdate(ticketOrder.tripId,
@@ -385,7 +385,7 @@ const getTicketOrderDetails = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const order = await OrderTicket.findById({
-                _id: id
+                id: id
             })
             if (order === null) {
                 resolve({
@@ -412,7 +412,7 @@ const cancelTicketOrderDetails = (id, data) => {
             const promises = data.map(async (order) => {
                 const productData = await Product.findOneAndUpdate(
                     {
-                        _id: order.product,
+                        id: order.product,
                         selled: { $gte: order.amount }
                     },
                     {

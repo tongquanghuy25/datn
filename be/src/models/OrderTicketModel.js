@@ -1,42 +1,52 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const orderTicketSchema = new mongoose.Schema({
-
-    tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
-    userOrder: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-    departureDate: { type: String, required: true },
-
-    pickUp: { type: String, required: true },
-    notePickUp: { type: String },
-    timePickUp: { type: String, required: true },
-    datePickUp: { type: String, required: true },
-    dropOff: { type: String, required: true },
-    noteDropOff: { type: String },
-    timeDropOff: { type: String, required: true },
-    dateDropOff: { type: String, required: true },
-
-    seats: { type: [String], required: true },
-    seatCount: { type: Number, required: true },
-
-    ticketPrice: { type: Number, required: true },
-    extraCosts: { type: Number },
-    discount: { type: Number },
-    totalPrice: { type: Number, required: true },
-
-    payee: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    paymentMethod: { type: String },
-    isPaid: { type: Boolean, default: false },
-    paidAt: { type: Date },
-
-    status: { type: String, default: 'Chưa lên xe' },//[not boarded,boarded,completed,settled,cancel]
-    isReview: { type: Boolean, default: false },
-},
-    {
-        timestamps: true,
+module.exports = (sequelize, DataTypes) => {
+    class OrderTicket extends Model {
+        static associate(models) {
+            // OrderTicket.belongsTo(models.Trip, { foreignKey: 'tripId', as: 'trip' });
+            // OrderTicket.belongsTo(models.User, { foreignKey: 'userOrder', as: 'userorder' });
+            // OrderTicket.belongsTo(models.User, { foreignKey: 'payee', as: 'payee' });
+        }
     }
-);
-const OrderTicket = mongoose.model('OrderTicket', orderTicketSchema);
-module.exports = OrderTicket
+
+    OrderTicket.init({
+        tripId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'Trips', key: 'id' } },
+        userOrder: { type: DataTypes.INTEGER, references: { model: 'Users', key: 'id' } },
+        name: { type: DataTypes.STRING, allowNull: false },
+        email: { type: DataTypes.STRING, allowNull: false },
+        phone: { type: DataTypes.STRING, allowNull: false },
+        departureDate: { type: DataTypes.DATE, allowNull: false },
+
+        pickUp: { type: DataTypes.STRING, allowNull: false },
+        notePickUp: { type: DataTypes.TEXT, allowNull: true },
+        timePickUp: { type: DataTypes.TIME, allowNull: false },
+        datePickUp: { type: DataTypes.DATE, allowNull: false },
+        dropOff: { type: DataTypes.STRING, allowNull: false },
+        noteDropOff: { type: DataTypes.TEXT, allowNull: true },
+        timeDropOff: { type: DataTypes.TIME, allowNull: false },
+        dateDropOff: { type: DataTypes.DATE, allowNull: false },
+
+        // seats: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
+        seatCount: { type: DataTypes.INTEGER, allowNull: false },
+
+        ticketPrice: { type: DataTypes.INTEGER, allowNull: false },
+        extraCosts: { type: DataTypes.INTEGER, allowNull: true },
+        discount: { type: DataTypes.INTEGER, allowNull: true },
+        totalPrice: { type: DataTypes.INTEGER, allowNull: false },
+
+        payee: { type: DataTypes.INTEGER, references: { model: 'Users', key: 'id' } },
+        paymentMethod: { type: DataTypes.STRING, allowNull: true },
+        isPaid: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+        paidAt: { type: DataTypes.DATE, allowNull: true },
+
+        status: { type: DataTypes.ENUM('NotBoarded', 'Boarded', 'Completed', 'Settled', 'Canceled'), allowNull: false, defaultValue: 'NotBoarded' },
+        isReview: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    }, {
+        sequelize,
+        modelName: 'OrderTicket',
+        timestamps: true,
+    });
+
+    return OrderTicket;
+};

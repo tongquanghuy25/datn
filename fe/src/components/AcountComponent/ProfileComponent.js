@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useMutation } from '@tanstack/react-query';
 import { updateUser as updateUserApi } from '../../services/UserService';
-import { Button, Card, Form, Input, Select, Upload } from 'antd';
+import { Button, Card, DatePicker, Form, Input, Row, Select, Upload } from 'antd';
 import Title from 'antd/es/typography/Title';
 import { errorMes, loadingMes, successMes } from '../Message/Message';
 import { updateUser } from '../../redux/slides/userSlide';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import { getBase64 } from '../../utils';
+import { Option } from 'antd/es/mentions';
 
 const ProfileComponent = () => {
     const user = useSelector((state) => state.user)
@@ -22,9 +24,13 @@ const ProfileComponent = () => {
             email: user?.email,
             name: user?.name,
             phone: user?.phone,
+            dateOfBirth: user?.dateOfBirth ? dayjs(user?.dateOfBirth) : '',
+            gender: user?.gender
         });
         setAvatar(user?.avatar)
     }, [user])
+
+
 
     const mutation = useMutation({
         mutationFn: (data) => {
@@ -33,7 +39,7 @@ const ProfileComponent = () => {
         },
         onSuccess: (data) => {
             successMes("Cập nhật người dùng thành công !");
-            dispatch(updateUser({ email: data?.data?.email, name: data?.data?.name, phone: data?.data?.phone, avatar: data?.data?.avatar }))
+            dispatch(updateUser({ email: data?.data?.email, name: data?.data?.name, phone: data?.data?.phone, avatar: data?.data?.avatar, dateOfBirth: data?.data?.dateOfBirth, gender: data?.data?.gender }))
 
         },
         onError: (data) => {
@@ -47,6 +53,8 @@ const ProfileComponent = () => {
         formData.append('email', values.email);
         formData.append('phone', values.phone);
         formData.append('name', values.name);
+        formData.append('dateOfBirth', values.dateOfBirth.format('YYYY-MM-DD'));
+        formData.append('gender', values?.gender);
         formData.append('avatar', avatarFile);
 
         mutation.mutate({
@@ -162,6 +170,25 @@ const ProfileComponent = () => {
                     >
                         <Input placeholder="Số điện thoại" />
                     </Form.Item>
+                    <Row >
+                        <Form.Item
+                            name="dateOfBirth"
+                            label="Ngày sinh"
+                        >
+                            <DatePicker format='DD/MM/YYYY' style={{ width: '200px' }} />
+                        </Form.Item>
+                        <Form.Item
+                            name="gender"
+                            label="Giới tính"
+                        >
+                            <Select style={{ width: '150px' }}>
+                                <Option value="male">Nam</Option>
+                                <Option value="female">Nữ</Option>
+                                <Option value="other">Khác</Option>
+                            </Select>
+                        </Form.Item>
+                    </Row>
+
                 </div>
                 <Button
                     type="primary"

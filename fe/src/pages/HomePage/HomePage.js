@@ -61,8 +61,8 @@ const HomePage = () => {
             const listData = data.data?.map(trip => {
                 const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
                 return {
-                    _id: trip._id,
-                    busOwnerId: trip.busOwnerId._id,
+                    id: trip.id,
+                    busOwnerId: trip.busOwnerId.id,
                     busOwnerName: trip.busOwnerId.busOwnerName,
                     avatar: trip.busId.avatar,
                     rating: trip.busId.averageRating,
@@ -71,7 +71,7 @@ const HomePage = () => {
                     convinients: trip.busId.convinients,
                     typeBus: trip.busId.typeBus,
                     availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
-                    routeId: trip.routeId._id,
+                    routeId: trip.routeId.id,
                     departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
                     arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
                     ticketPrice: trip.ticketPrice,

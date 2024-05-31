@@ -100,7 +100,7 @@ const GoodsManagerment = () => {
         }
     });
     const handelDeleteGoods = () => {
-        mutationDelete.mutate({ goodsOrderId: goodsOrder._id, token: user?.access_token })
+        mutationDelete.mutate({ goodsOrderId: goodsOrder.id, token: user?.access_token })
     }
 
 
@@ -122,7 +122,7 @@ const GoodsManagerment = () => {
                     <div>Chọn chuyến</div>
                     <Select placeholder='Chọn chuyến xe' style={{ width: '400px' }} onSelect={(value) => { handleSelectTrip(value) }}>
                         {listTrip?.map(item => {
-                            return <Option value={item._id}>
+                            return <Option value={item.id}>
                                 <Tag color='error'>{item.departureTime}</Tag>
                                 <Tag color='warning'>{item.busId.licensePlate}</Tag>
                                 {item.routeId.districtStart}-{item.routeId.districtEnd}
@@ -153,7 +153,7 @@ const GoodsManagerment = () => {
                             Thêm hàng hóa
                         </Button>
                     </div>
-                    {isCreateGoods && <ModalCreateGoodsOrder trip={listTrip.find(item => item._id === tripId)} isCreateGoods={isCreateGoods} setIsCreateGoods={setIsCreateGoods}></ModalCreateGoodsOrder>}
+                    {isCreateGoods && <ModalCreateGoodsOrder trip={listTrip.find(item => item.id === tripId)} isCreateGoods={isCreateGoods} setIsCreateGoods={setIsCreateGoods}></ModalCreateGoodsOrder>}
                 </Row>
                 <Row style={{ overflowY: 'auto', height: 'calc(100vh - 200px)' }}>
                     {listGoodsOrder?.length > 0 ?
@@ -206,7 +206,7 @@ const GoodsManagerment = () => {
                         </div>
                     }
                 </Row>
-                {isUpdateGoods && <ModalUpdateGoodsOrder handleRefetchGoodsOrder={handleRefetchGoodsOrder} trip={listTrip.find(item => item._id === tripId)} goodsOrder={goodsOrder} isUpdateGoods={isUpdateGoods} setIsUpdateGoods={setIsUpdateGoods}></ModalUpdateGoodsOrder>}
+                {isUpdateGoods && <ModalUpdateGoodsOrder handleRefetchGoodsOrder={handleRefetchGoodsOrder} trip={listTrip.find(item => item.id === tripId)} goodsOrder={goodsOrder} isUpdateGoods={isUpdateGoods} setIsUpdateGoods={setIsUpdateGoods}></ModalUpdateGoodsOrder>}
                 {isDeleteGoods &&
                     <Modal
                         title='Bạn có chắc chắn muốn xóa nhà xe ?'

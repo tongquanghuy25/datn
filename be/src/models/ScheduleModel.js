@@ -1,21 +1,34 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const scheduleSchema = new mongoose.Schema(
-    {
-        busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner', required: true },
-        busId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bus', required: true },
-        driverId: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver', required: true },
-        routeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
-        departureTime: { type: String, required: true },
-        availableSeats: { type: Number, required: true },
-        ticketPrice: { type: Number, required: true },
-        paymentRequire: { type: Boolean, required: true, default: true },
-        prebooking: { type: Boolean, required: true, default: false },
-        timeAllowCancel: { type: Number, required: true },
-        scheduleType: { type: String, required: true },
-        inforSchedule: { type: String },
+module.exports = (sequelize, DataTypes) => {
+    class Schedule extends Model {
+        static associate(models) {
+            Schedule.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
+            Schedule.belongsTo(models.Bus, { foreignKey: 'busId', as: 'bus' });
+            Schedule.belongsTo(models.Driver, { foreignKey: 'driverId', as: 'driver' });
+            Schedule.belongsTo(models.Route, { foreignKey: 'routeId', as: 'route' });
+        }
     }
-);
-const Schedule = mongoose.model('Schedule', scheduleSchema);
 
-module.exports = Schedule;
+    Schedule.init({
+        busOwnerId: { type: DataTypes.INTEGER, allowNull: false },
+        busId: { type: DataTypes.INTEGER, allowNull: false },
+        driverId: { type: DataTypes.INTEGER, allowNull: false },
+        routeId: { type: DataTypes.INTEGER, allowNull: false },
+        departureTime: { type: DataTypes.TIME, allowNull: false },
+        totalSeats: { type: DataTypes.INTEGER, allowNull: false },
+        ticketPrice: { type: DataTypes.INTEGER, allowNull: false },
+        paymentRequire: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+        prebooking: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+        timeAlowCancel: { type: DataTypes.INTEGER, allowNull: false },
+        scheduleType: { type: DataTypes.ENUM('Daily', 'Periodic', 'WeeklyDays'), allowNull: false },
+        inforSchedule: { type: DataTypes.JSON }
+    }, {
+        sequelize,
+        modelName: 'Schedule',
+        timestamps: true
+    });
+
+    return Schedule;
+};

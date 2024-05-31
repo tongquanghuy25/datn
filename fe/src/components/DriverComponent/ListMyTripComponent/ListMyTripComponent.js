@@ -18,7 +18,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: ['tripsdriver', day],
-            queryFn: () => getTripsByDriver(JSON.parse(localStorage.getItem('driver_id')), user?.access_token, day ? day : dayjs().format('DD/MM/YY')),
+            queryFn: () => getTripsByDriver(JSON.parse(localStorage.getItem('driverid')), user?.access_token, day ? day : dayjs().format('DD/MM/YY')),
         });
 
 
@@ -43,11 +43,11 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     const mutationStartTrip = useMutation({
         mutationFn: async (data) => {
             const { id, token } = data;
-            return await updateTrip(id, token, { status: 'Đã khởi hành', driverId: JSON.parse(localStorage.getItem('driver_id')) });
+            return await updateTrip(id, token, { status: 'Đã khởi hành', driverId: JSON.parse(localStorage.getItem('driverid')) });
         },
         onSuccess: (data) => {
             successMes(data?.message)
-            const index = listTrip.findIndex(item => item._id === data?.data._id)
+            const index = listTrip.findIndex(item => item.id === data?.data.id)
 
             if (index !== -1) {
                 const newListTrip = [...listTrip]
@@ -62,7 +62,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     });
 
     const handleStartTrip = (trip) => {
-        mutationStartTrip.mutate({ id: trip._id, token: user?.access_token })
+        mutationStartTrip.mutate({ id: trip.id, token: user?.access_token })
     }
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', padding: 24 }}>

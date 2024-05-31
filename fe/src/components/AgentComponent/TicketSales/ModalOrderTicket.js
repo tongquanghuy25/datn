@@ -32,10 +32,10 @@ const ModalOrderTicket = (props) => {
                 typeBus={trip?.busId.typeBus}
                 paymentRequire={trip?.paymentRequire}
                 prebooking={trip?.prebooking}
-                routeId={trip?.routeId._id}
+                routeId={trip?.routeId.id}
                 ticketPrice={trip?.ticketPrice}
                 departureTime={trip?.departureTime}
-                tripId={trip?._id}
+                tripId={trip?.id}
                 departureDate={trip?.departureDate}
                 busOwnerName={trip?.busOwnerId.busOwnerName}
                 routeName={`${trip?.routeId.placeStart} - ${trip?.routeId.placeEnd}`}

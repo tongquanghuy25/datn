@@ -1,4 +1,4 @@
-const User = require("../models/UserModel")
+const { User } = require("../models/index")
 const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 const { deleteImgCloud, generateRandomCode } = require("../utils");
@@ -7,11 +7,13 @@ const { sendEmailResetPassword } = require("./EmailService");
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
-        const { name, email, password, phone, avatar } = newUser
+        const { email, phone, name, dateOfBirth, gender, password, avatar, role } = newUser
         try {
             const checkUser = await User.findOne({
-                email: email
-            })
+                where: {
+                    email: email
+                }
+            });
             if (checkUser !== null) {
                 resolve({
                     status: 400,
@@ -21,12 +23,15 @@ const createUser = (newUser) => {
             }
             const hash = bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
-                name,
                 email,
                 password: hash,
                 phone,
-                avatar
-            })
+                name,
+                dateOfBirth,
+                gender,
+                avatar,
+                role
+            });
             if (createdUser) {
                 resolve({
                     status: 200,
@@ -35,6 +40,7 @@ const createUser = (newUser) => {
                 })
             }
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -45,7 +51,10 @@ const loginUser = (userLogin) => {
         const { email, password } = userLogin
         try {
             const checkUser = await User.findOne({
-                email: email
+                where: {
+                    email: email
+                },
+                raw: true
             })
             if (checkUser === null) {
                 resolve({
@@ -80,6 +89,7 @@ const loginUser = (userLogin) => {
                 refresh_token
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -88,9 +98,7 @@ const loginUser = (userLogin) => {
 const editUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkUser = await User.findOne({
-                _id: id
-            })
+            const checkUser = await User.findByPk(id);
             if (checkUser === null) {
                 resolve({
                     status: 404,
@@ -99,23 +107,30 @@ const editUser = (id, data) => {
                 return;
             }
 
-            const checkEmail = await User.findOne({
-                email: data?.email
-            })
-            if (checkEmail !== null && checkEmail.email !== data?.email) {
-                resolve({
-                    status: 400,
-                    message: 'Email đã tồn tại!'
-                })
-                return;
+            if (data.email) {
+                const checkEmail = await User.findOne({
+                    where: { email: data?.email },
+                    raw: true
+                });
+                if (checkEmail !== null && checkEmail.email !== data?.email) {
+                    resolve({
+                        status: 400,
+                        message: 'Email đã tồn tại!'
+                    })
+                    return;
+                }
             }
-            const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
+
+            await User.update(data, {
+                where: { id: id }
+            });
+
             resolve({
                 status: 200,
                 message: 'Chỉnh sửa người dùng thành công!',
-                data: updatedUser
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -124,9 +139,7 @@ const editUser = (id, data) => {
 const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkUser = await User.findOne({
-                _id: id
-            })
+            const checkUser = await User.findByPk(id, { raw: true });
             if (checkUser === null) {
                 resolve({
                     status: 404,
@@ -134,27 +147,33 @@ const updateUser = (id, data) => {
                 })
                 return;
             }
-
-            const checkEmail = await User.findOne({
-                email: data?.email
-            })
-            if (checkEmail !== null && checkEmail.email !== data?.email) {
-                resolve({
-                    status: 400,
-                    message: 'Email đã tồn tại!'
-                })
-                return;
+            if (data.email) {
+                const checkEmail = await User.findOne({
+                    where: { email: data?.email },
+                    raw: true
+                });
+                if (checkEmail !== null && checkEmail.email !== data?.email) {
+                    resolve({
+                        status: 400,
+                        message: 'Email đã tồn tại!'
+                    })
+                    return;
+                }
             }
-            const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
 
-            if (checkUser?.avatar && data.avatar && updatedUser.avatar) {
+            await User.update(data, {
+                where: { id: id }
+            });
+
+            if (checkUser?.avatar && data.avatar) {
                 deleteImgCloud({ path: checkUser?.avatar })
             }
-            console.log('updatedUser', updatedUser);
+
+            const updateUser = { ...checkUser, data }
             resolve({
                 status: 200,
                 message: 'Cập nhật thông tin người dùng thành công!',
-                data: updatedUser
+                data: updateUser
             })
         } catch (e) {
             reject(e)
@@ -166,11 +185,7 @@ const changePassword = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-
-            const checkUser = await User.findOne({
-                _id: id,
-            })
-
+            const checkUser = await User.findByPk(id);
             if (checkUser === null) {
                 resolve({
                     status: 404,
@@ -191,12 +206,10 @@ const changePassword = (id, data) => {
 
             const hashNew = bcrypt.hashSync(data.newPassword, 10)
 
-            const updatedUser = await User.findByIdAndUpdate(id, { password: hashNew }, { new: true })
-
+            await User.update({ password: hashNew }, { where: { id: id } });
             resolve({
                 status: 200,
                 message: 'Đổi mật khẩu thành công!',
-                data: updatedUser
             })
         } catch (e) {
             reject(e)
@@ -208,9 +221,8 @@ const resetPassword = (email, phone) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkUser = await User.findOne({
-                email: email,
-                phone: phone
-            })
+                where: { email: email, phone: phone }
+            });
             if (checkUser === null) {
                 resolve({
                     status: 404,
@@ -220,12 +232,12 @@ const resetPassword = (email, phone) => {
             }
 
             const password = generateRandomCode(8)
+            const hash = bcrypt.hashSync(password, 10)
+            const updatedUser = await User.update({ password: hash }, {
+                where: { id: checkUser.id },
+            })
 
             await sendEmailResetPassword(password)
-
-            const hash = bcrypt.hashSync(password, 10)
-
-            const updatedUser = await User.findByIdAndUpdate(checkUser._id, { password: hash }, { new: true })
 
             resolve({
                 status: 200,
@@ -243,8 +255,9 @@ const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkUser = await User.findOne({
-                _id: id
-            })
+                where: { id: id },
+                raw: true
+            });
             if (checkUser === null) {
                 resolve({
                     status: 400,
@@ -253,7 +266,8 @@ const deleteUser = (id) => {
                 return;
             }
 
-            await User.findByIdAndDelete(id)
+            await User.destroy({ where: { id: id } });
+            if (checkUser?.avatar) deleteImgCloud({ path: checkUser?.avatar })
             resolve({
                 status: 200,
                 message: 'Xóa người dùng thành công!',
@@ -264,25 +278,13 @@ const deleteUser = (id) => {
     })
 }
 
-const deleteManyUser = (ids) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            await User.deleteMany({ _id: ids })
-            resolve({
-                status: 200,
-                message: 'Delete user success',
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
 const getAllUser = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find().sort({ createdAt: -1, updatedAt: -1 })
+            const allUser = await User.findAll({
+                order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']],
+                raw: true
+            });
             resolve({
                 status: 200,
                 message: 'Success',
@@ -298,8 +300,9 @@ const getDetailsUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await User.findOne({
-                _id: id
-            })
+                where: { id: id },
+                raw: true
+            });
             if (user === null) {
                 resolve({
                     status: 404,
@@ -307,12 +310,14 @@ const getDetailsUser = (id) => {
                 })
                 return;
             }
+
             resolve({
                 status: 200,
                 message: 'SUCESS',
                 data: user
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -328,5 +333,4 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    deleteManyUser
 }

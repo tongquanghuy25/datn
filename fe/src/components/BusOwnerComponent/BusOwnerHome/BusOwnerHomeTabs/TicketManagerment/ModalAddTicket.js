@@ -77,8 +77,8 @@ const ModalAddTicket = (props) => {
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
-            queryKey: [`listStopPoint${trip?.routeId._id}`],
-            queryFn: () => getStopPointsByBusRoute(trip?.routeId._id),
+            queryKey: [`listStopPoint${trip?.routeId.id}`],
+            queryFn: () => getStopPointsByBusRoute(trip?.routeId.id),
         });
 
     useEffect(() => {
@@ -128,7 +128,7 @@ const ModalAddTicket = (props) => {
         const { arrivalDate: endDate, arrivalTime: endTime } = calculateArrivalDateAndTime(trip?.departureDate, trip?.departureTime, dropOffPoint.timeFromStart)
 
         const data = {
-            tripId: trip?._id,
+            tripId: trip?.id,
             name: values.name,
             email: values.email,
             phone: values.phone,

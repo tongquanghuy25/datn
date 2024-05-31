@@ -1,12 +1,22 @@
-const mongoose = require('mongoose')
+'use strict';
+const { Model } = require('sequelize');
 
-const locationSchema = new mongoose.Schema(
-    {
-        province: { type: String, required: true },
-        district: { type: String, required: true },
-        place: { type: String, required: true },
+module.exports = (sequelize, DataTypes) => {
+    class Location extends Model {
+        static associate(models) {
+            // Không có quan hệ cần định nghĩa
+        }
     }
-);
-const Location = mongoose.model('Location', locationSchema);
 
-module.exports = Location;
+    Location.init({
+        province: { type: DataTypes.STRING, allowNull: false },
+        district: { type: DataTypes.STRING, allowNull: false },
+        place: { type: DataTypes.STRING, allowNull: false }
+    }, {
+        sequelize,
+        modelName: 'Location',
+        timestamps: false
+    });
+
+    return Location;
+};

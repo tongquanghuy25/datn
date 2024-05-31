@@ -3,13 +3,13 @@ const ScheduleService = require('../services/ScheduleService');
 
 const createSchedule = async (req, res) => {
     try {
-        let { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule } = req.body
-        if (!busOwnerId || !routeId || !busId || !driverId || !departureTime || !ticketPrice || !availableSeats || !timeAllowCancel || !scheduleType) {
+        let { busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, totalSeats, paymentRequire, prebooking, timeAlowCancel, scheduleType, inforSchedule } = req.body
+        if (!busOwnerId || !routeId || !busId || !driverId || !departureTime || !ticketPrice || !totalSeats || !timeAlowCancel || !scheduleType) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         }
-        const response = await ScheduleService.createSchedule({ busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule })
+        const response = await ScheduleService.createSchedule({ busOwnerId, routeId, busId, driverId, departureTime, ticketPrice, totalSeats, paymentRequire, prebooking, timeAlowCancel, scheduleType, inforSchedule })
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -38,14 +38,13 @@ const getAllByBusOwner = async (req, res) => {
 const updateSchedule = async (req, res) => {
     try {
         const scheduleId = req.params.id
-        console.log('aaa', scheduleId);
-        let { busOwnerId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule } = req.body
-        if (!busOwnerId || !busId || !driverId || !departureTime || !ticketPrice || !timeAllowCancel || !scheduleType) {
+        let { busOwnerId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAlowCancel, scheduleType, inforSchedule } = req.body
+        if (!busOwnerId || !busId || !driverId || !departureTime || !ticketPrice || !timeAlowCancel || !scheduleType) {
             return res.status(400).json({
                 message: 'Thông tin nhập vào chưa đủ !'
             })
         }
-        const response = await ScheduleService.updateSchedule(scheduleId, { busOwnerId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAllowCancel, scheduleType, inforSchedule })
+        const response = await ScheduleService.updateSchedule(scheduleId, { busOwnerId, busId, driverId, departureTime, ticketPrice, availableSeats, paymentRequire, prebooking, timeAlowCancel, scheduleType, inforSchedule })
         return res.status(response.status).json(response)
 
     } catch (e) {

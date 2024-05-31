@@ -92,8 +92,8 @@ const ModalEditTicket = (props) => {
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
-            queryKey: [`listStopPoint${trip?.routeId._id}`],
-            queryFn: () => getStopPointsByBusRoute(trip?.routeId._id),
+            queryKey: [`listStopPoint${trip?.routeId.id}`],
+            queryFn: () => getStopPointsByBusRoute(trip?.routeId.id),
         });
 
     useEffect(() => {
@@ -168,7 +168,7 @@ const ModalEditTicket = (props) => {
             isPaid: values?.isPaid,
             payee: values?.isPaid ? user?.id : null,
         }
-        mutation.mutate({ id: ticket?._id, access_token: user?.access_token, dataUpdate })
+        mutation.mutate({ id: ticket?.id, access_token: user?.access_token, dataUpdate })
     };
 
 

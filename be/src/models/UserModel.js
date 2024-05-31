@@ -1,18 +1,23 @@
-const mongoose = require('mongoose')
-const userSchema = new mongoose.Schema(
-    {
-        name: { type: String },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
-        phone: { type: String, required: true },
-        avatar: { type: String },
-        role: { type: String, default: 'user', required: true },
-        gender: { type: String },
-        dateOfBirth: { type: Date }
-    },
-    {
-        timestamps: true
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+    class User extends Model {
+        static associate(models) {
+        }
     }
-);
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+    User.init({
+        name: { type: DataTypes.STRING, allowNull: true },
+        email: { type: DataTypes.STRING, allowNull: false, unique: true },
+        password: { type: DataTypes.STRING, allowNull: false },
+        phone: { type: DataTypes.STRING, allowNull: false },
+        avatar: { type: DataTypes.STRING, allowNull: true },
+        role: { type: DataTypes.ENUM('ADMIN', 'BUSOWNER', 'DRIVER', 'AGENT', 'USER'), allowNull: false, defaultValue: 'USER' },
+        gender: { type: DataTypes.STRING, allowNull: true },
+        dateOfBirth: { type: DataTypes.DATE, allowNull: true }
+    }, {
+        sequelize,
+        modelName: 'User',
+        timestamps: true
+    });
+    return User;
+};

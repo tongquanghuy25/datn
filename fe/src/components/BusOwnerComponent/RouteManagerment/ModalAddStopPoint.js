@@ -35,7 +35,7 @@ const ModalAddStopPoint = (props) => {
     useEffect(() => {
         queryClient.setQueryData(province, dataDistrict?.data);
         const listData = dataDistrict?.data?.map((district) => ({
-            value: district._id,
+            value: district.id,
             label: district.name,
         }));
         setListDistrict(listData)
@@ -45,7 +45,7 @@ const ModalAddStopPoint = (props) => {
         const cahceDistrict = queryClient.getQueryData(listProvince[provinceId - 1].label)
         if (cahceDistrict?.length > 0) {
             const listData4 = cahceDistrict?.map((district) => ({
-                value: district._id,
+                value: district.id,
                 label: district.name,
             }));
             setListDistrict(listData4)
@@ -64,14 +64,14 @@ const ModalAddStopPoint = (props) => {
         },
         onSuccess: (data) => {
             setListPlace(data?.data)
-            setOptions(data?.data.map(option => ({ value: option })));
+            setOptions(data?.data.map(option => ({ value: option?.place })));
         }
     });
+
     const onChangeDistrict = (value) => {
         const districtSelected = listDistrict.find(item => item.value === value).label
         setDistrict(districtSelected)
         mutationGetListPlace.mutate({ province, district: districtSelected, access_token: user?.access_token })
-
     }
 
 
@@ -85,7 +85,7 @@ const ModalAddStopPoint = (props) => {
             handleCancel()
             successMes(data.message)
             addDataToListPoint({
-                locationId: data.data?._id,
+                locationId: data.data?.id,
                 district: district,
                 province: province,
                 place: place,
@@ -113,11 +113,10 @@ const ModalAddStopPoint = (props) => {
         setExtraCost(values.extracost)
         setTimeFromStart(time)
         setPlace(values.place)
-
         setTimeFromStart(time)
         if (route) {
             mutationAddStopPoint.mutate({
-                routeId: route._id,
+                routeId: route.id,
                 district: district,
                 province: province,
                 place: values.place,
@@ -133,13 +132,14 @@ const ModalAddStopPoint = (props) => {
             access_token: user?.access_token
         })
     }
+
     //////////
 
     const handleSearch = (value) => {
         const filteredOptions = listPlace.filter(option =>
-            option.toLowerCase().includes(value.toLowerCase())
+            option.place.toLowerCase().includes(value.toLowerCase())
         );
-        setOptions(filteredOptions.map(option => ({ value: option })));
+        setOptions(filteredOptions.map(option => ({ value: option.place })));
     };
 
     return (

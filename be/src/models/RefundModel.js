@@ -1,16 +1,25 @@
-const mongoose = require('mongoose')
-const refundSchema = new mongoose.Schema(
-    {
-        busOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'BusOwner', required: true },
-        name: { type: String, required: true },
-        email: { type: String, required: true },
-        phone: { type: String, required: true },
-        refundAmount: { type: Number, required: true },
-        isRefund: { type: Boolean, default: false },
-    },
-    {
-        timestamps: true
+'use strict';
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class Refund extends Model {
+        static associate(models) {
+            // Refund.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
+        }
     }
-);
-const Refund = mongoose.model("Refund", refundSchema);
-module.exports = Refund;
+
+    Refund.init({
+        busOwnerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'BusOwners', key: 'id' } },
+        name: { type: DataTypes.STRING, allowNull: false },
+        email: { type: DataTypes.STRING, allowNull: false },
+        phone: { type: DataTypes.STRING, allowNull: false },
+        refundAmount: { type: DataTypes.INTEGER, allowNull: false },
+        isRefund: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
+    }, {
+        sequelize,
+        modelName: 'Refund',
+        timestamps: true,
+    });
+
+    return Refund;
+};

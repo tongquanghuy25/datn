@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, Popconfirm, Upload } from 'antd'
+import { Button, DatePicker, Form, Input, Popconfirm, Select, Upload } from 'antd'
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
-import { updateUser } from '../../../services/UserService';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
-import { deleteDriver } from '../../../services/DriverService';
+import { deleteDriver, updateDriver } from '../../../services/DriverService';
+import dayjs from 'dayjs';
 import { getBase64 } from '../../../utils';
+import { Option } from 'antd/es/mentions';
+import { useSelector } from 'react-redux';
 
 
 const DriverInformation = (props) => {
   const { driver, access_token, refetch } = props
+  const user = useSelector((state) => state.user)
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState();
   const [avatarFile, setIAvatarFile] = useState();
@@ -18,7 +21,7 @@ const DriverInformation = (props) => {
     {
       mutationFn: (data) => {
         const { id, access_token, ...rest } = data
-        return updateUser(id, rest, access_token)
+        return updateDriver(id, access_token, rest)
       },
       onSuccess: (data) => {
         successMes(data?.message)
@@ -33,13 +36,20 @@ const DriverInformation = (props) => {
 
   const onFinish = (values) => {
     let data = {}
-    if (values.email !== driver?.userId?.email) data = { ...data, email: values.email }
-    if (values.name !== driver?.userId?.name) data = { ...data, name: values.name }
-    if (values.phone !== driver?.userId?.phone) data = { ...data, phone: values.phone }
+    if (values.email !== driver?.user?.email) data = { ...data, email: values.email }
+    if (values.name !== driver?.user?.name) data = { ...data, name: values.name }
+    if (values.phone !== driver?.user?.phone) data = { ...data, phone: values.phone }
+
+    if (values.citizenId !== driver?.citizenId) data = { ...data, citizenId: values.citizenId }
+    if (values.address !== driver?.address) data = { ...data, address: values.address }
+    if (values.licenseType !== driver?.licenseType) data = { ...data, licenseType: values.licenseType }
+    if (values.dateOfBirth.format('YYYY-MM-DD') !== dayjs(driver?.user?.dateOfBirth).format('YYYY-MM-DD')) data = { ...data, dateOfBirth: values.dateOfBirth.format('YYYY-MM-DD') }
+    if (values.gender !== driver?.user?.gender) data = { ...data, gender: values.gender }
     if (avatarFile) data = { ...data, avatar: avatarFile }
 
     if (Object.keys(data).length > 0) {
-      mutation.mutate({ ...data, id: driver.userId._id, access_token })
+      data = { ...data, userId: driver.user.id }
+      mutation.mutate({ ...data, id: driver.id, access_token })
       loadingMes()
     }
   };
@@ -48,11 +58,16 @@ const DriverInformation = (props) => {
 
   useEffect(() => {
     form.setFieldsValue({
-      name: driver?.userId?.name,
-      email: driver?.userId?.email,
-      phone: driver?.userId?.phone
+      name: driver?.user?.name,
+      email: driver?.user?.email,
+      phone: driver?.user?.phone,
+      dateOfBirth: user?.dateOfBirth ? dayjs(driver?.user?.dateOfBirth) : '',
+      gender: driver?.user?.gender,
+      citizenId: driver?.citizenId,
+      address: driver?.address,
+      licenseType: driver?.licenseType,
     });
-    setImageUrl(driver?.userId?.avatar)
+    setImageUrl(driver?.user?.avatar)
   }, [driver])
 
 
@@ -84,7 +99,7 @@ const DriverInformation = (props) => {
 
 
   const handleDeleteDriver = () => {
-    mutationDelete.mutate({ id: driver.userId._id, access_token })
+    mutationDelete.mutate({ id: driver.user.id, access_token })
   }
 
   const me = <h1>Lưu ý</h1>
@@ -163,6 +178,70 @@ const DriverInformation = (props) => {
           ]}
         >
           <Input />
+        </Form.Item>
+        <Form.Item
+          name="address"
+          label="Địa chỉ"
+          rules={[
+            {
+              required: true,
+              message: "Địa chỉ không được bỏ trống !",
+            }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="dateOfBirth"
+          label="Ngày sinh"
+          rules={[
+            {
+              required: true,
+              message: "Ngày sinh không được bỏ trống !",
+            }
+          ]}
+        >
+          <DatePicker format='DD/MM/YYYY' style={{ width: '200px' }} />
+        </Form.Item>
+        <Form.Item
+          name="citizenId"
+          label="Số căn cước"
+          rules={[
+            {
+              required: true,
+              message: "Không được bỏ trống !",
+            }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="licenseType"
+          label="Loại bằng lái"
+          rules={[
+            {
+              required: true,
+              message: "Không được bỏ trống !",
+            }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="gender"
+          label="Giới tính"
+          rules={[
+            {
+              required: true,
+              message: "Không được bỏ trống !",
+            }
+          ]}
+        >
+          <Select style={{ width: '200px' }}>
+            <Option value="male">Nam</Option>
+            <Option value="female">Nữ</Option>
+            <Option value="other">Khác</Option>
+          </Select>
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 7, span: 18 }} style={{ textAlign: 'center', marginTop: '40px' }}>

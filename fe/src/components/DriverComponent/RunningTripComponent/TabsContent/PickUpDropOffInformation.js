@@ -78,7 +78,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
         let data = listStopPoint.map(item => {
             const ordersTicket = listTicketOrder.filter(elemet => elemet.pickUp === item.name || elemet.dropOff === item.name).map(it => {
                 return {
-                    id: it._id,
+                    id: it.id,
                     phone: it.phone,
                     seatCount: it.seatCount,
                     seats: it.seats,
@@ -91,7 +91,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
 
             const ordersGoods = listGoodsOrder.filter(elemet => elemet.sendPlace === item.name || elemet.receivePlace === item.name).map(it => {
                 return {
-                    id: it._id,
+                    id: it.id,
                     goodsName: it.goodsName,
                     goodsDescription: it.goodsDescription,
                     isPaid: it.isPaid,
@@ -122,11 +122,11 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
         onSuccess: (data) => {
 
             const listData = placeSelectedData
-            const index = listData?.ordersTicket?.findIndex(item => item.id === data.data._id)
+            const index = listData?.ordersTicket?.findIndex(item => item.id === data.data.id)
             listData.ordersTicket[index].status = data.data.status
             listData.ordersTicket[index].isPaid = data.data.isPaid
             setPlaceSelectedData(listData)
-            handleUpdateStatusSeat(data.data._id, data.data.status, data.data.isPaid)
+            handleUpdateStatusSeat(data.data.id, data.data.status, data.data.isPaid)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
@@ -141,11 +141,11 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
         onSuccess: (data) => {
 
             const listData = placeSelectedData
-            const index = listData?.ordersGoods?.findIndex(item => item.id === data.data._id)
+            const index = listData?.ordersGoods?.findIndex(item => item.id === data.data.id)
             listData.ordersGoods[index].status = data.data.status
             listData.ordersGoods[index].isPaid = data.data.isPaid
             setPlaceSelectedData(listData)
-            handleUpdateStatusGoods(data.data._id, data.data.status, data.data.isPaid)
+            handleUpdateStatusGoods(data.data.id, data.data.status, data.data.isPaid)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)

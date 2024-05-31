@@ -12,7 +12,6 @@ const ReviewRouter = require('./ReviewRouter')
 const ReportRouter = require('./ReportRouter')
 
 
-const ProductRouter = require('./ProductRouter')
 const PaymentRouter = require('./PaymentRouter')
 
 const routes = (app) => {
@@ -31,7 +30,6 @@ const routes = (app) => {
 
 
 
-    app.use('/api/product', ProductRouter)
     app.use('/api/payment', PaymentRouter)
 }
 
