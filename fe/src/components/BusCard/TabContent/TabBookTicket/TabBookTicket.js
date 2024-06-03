@@ -11,7 +11,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Paypal from './paypal';
 import { createTicketOrder, getSeatsBookedByTrip } from '../../../../services/OrderService';
 import { checkDiscount } from '../../../../services/DiscountService';
-import { getVnCurrency } from '../../../../utils';
+import { calculateArrivalDateAndTime, getVnCurrency } from '../../../../utils';
 const { Step } = Steps;
 
 
@@ -28,34 +28,35 @@ function calculateTime(startTime, minutes) {
     return `${formattedHours}h${formattedMins}`;
 }
 
-function calculateArrivalDateAndTime(departureDate, departureTime, durationInMinutes) {
+// function calculateArrivalDateAndTime(departureDate, departureTime, durationInMinutes) {
 
-    // Chia chuỗi ngày đi thành các thành phần ngày, tháng và năm
-    const [day, month, year] = departureDate.split('/').map(Number);
+//     // Chia chuỗi ngày đi thành các thành phần ngày, tháng và năm
+//     const [day, month, year] = departureDate.split('/').map(Number);
 
-    // Tách giờ và phút từ chuỗi giờ đi
-    const [hours, minutes] = departureTime.split(':')?.map(Number);
-    // const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/).map(Number);
+//     // Tách giờ và phút từ chuỗi giờ đi
+//     const [hours, minutes] = departureTime.split(':')?.map(Number);
+//     // const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/).map(Number);
 
-    // Kiểm tra xem các thành phần đã chuyển đổi thành số hợp lệ chưa
-    if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
-        console.log("Ngày hoặc giờ đi không hợp lệ");
-        return;
-    }
+//     // Kiểm tra xem các thành phần đã chuyển đổi thành số hợp lệ chưa
+//     if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+//         console.log("Ngày hoặc giờ đi không hợp lệ");
+//         return;
+//     }
 
-    // Tạo đối tượng Date từ các thành phần của ngày và giờ đi
-    const departureDateTime = new Date(year, month - 1, day, hours, minutes);
+//     // Tạo đối tượng Date từ các thành phần của ngày và giờ đi
+//     const departureDateTime = new Date(year, month - 1, day, hours, minutes);
 
-    // Thêm số phút di chuyển vào ngày và giờ đi
-    const arrivalDateTime = new Date(departureDateTime.getTime() + durationInMinutes * 60000);
+//     // Thêm số phút di chuyển vào ngày và giờ đi
+//     const arrivalDateTime = new Date(departureDateTime.getTime() + durationInMinutes * 60000);
 
-    // Lấy ngày đến nơi
-    const arrivalDate = `${arrivalDateTime.getDate()}/${arrivalDateTime.getMonth() + 1}/${arrivalDateTime.getFullYear()}`;
+//     // Lấy ngày đến nơi
+//     const arrivalDate = `${arrivalDateTime.getDate()}/${arrivalDateTime.getMonth() + 1}/${arrivalDateTime.getFullYear()}`;
 
-    // Lấy giờ đến nơi
-    const arrivalTime = `${arrivalDateTime.getHours()}:${arrivalDateTime.getMinutes().toString().padStart(2, '0')}`;
-    return { arrivalDate, arrivalTime };
-}
+//     // Lấy giờ đến nơi
+//     const arrivalTime = `${arrivalDateTime.getHours()}:${arrivalDateTime.getMinutes().toString().padStart(2, '0')}`;
+//     return { arrivalDate, arrivalTime };
+// }
+
 const TabSeatSelection = (props) => {
     const { typeBus, paymentRequire, prebooking, routeId, ticketPrice, departureTime, tripId, departureDate, isAgent, handleOrderSuccess, busOwnerId } = props
     const user = useSelector((state) => state.user);
@@ -220,11 +221,11 @@ const TabSeatSelection = (props) => {
                 return checkDiscount(data)
             },
             onSuccess: (data) => {
-                if (data?.data.discountType === 'percent') {
+                if (data?.data.discountType === 'Percent') {
                     const discount = totalPrice * data?.data.discountValue / 100
                     setDiscountValue(discount)
                     setTotalPricet(totalPrice - discount)
-                } else if (data?.data.discountType === 'fixed') {
+                } else if (data?.data.discountType === 'Fixed') {
                     setDiscountValue(data?.data.discountValue)
                     setTotalPricet(totalPrice - data?.data.discountValue)
                 }
@@ -265,6 +266,8 @@ const TabSeatSelection = (props) => {
             }
         }
     )
+
+
     const handleFinish = (paymentMethod, isPaid, paidAt, transactionId) => {
         const { arrivalDate, arrivalTime } = calculateArrivalDateAndTime(departureDate, departureTime, pickUpPoint.timeFromStart)
         const { arrivalDate: endDate, arrivalTime: endTime } = calculateArrivalDateAndTime(departureDate, departureTime, dropOffPoint.timeFromStart)
@@ -298,7 +301,7 @@ const TabSeatSelection = (props) => {
                 totalPrice,
 
                 payee: isPaid || isPaidAgent ? user?.id : null,
-                paymentMethod: isAgent,
+                paymentMethod: isPaid ? (isAgent ? 'Agent' : paymentMethod) : null,
                 transactionId,
                 paidAt,
                 isPaid: isAgent ? isPaidAgent : isPaid,
@@ -468,33 +471,7 @@ const TabSeatSelection = (props) => {
                             <Row justify={'center'}>
                                 <h2>Thông tin vé</h2>
                             </Row>
-                            <div style={{ width: '45%', marginBottom: '10px' }}>
-                                <label>Tên:</label>
-                                <Input
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Nhập tên"
-                                />
-                            </div>
-                            <Row justify={'space-between'}>
-                                <div style={{ width: '45%' }}>
-                                    <label>Email:</label>
-                                    <Input
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Nhập email"
-                                    />
-                                </div>
 
-                                <div style={{ width: '45%' }}>
-                                    <label>Số điện thoại:</label>
-                                    <Input
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
-                                        placeholder="Nhập số điện thoại"
-                                    />
-                                </div>
-                            </Row>
 
                             <div style={{ marginTop: '10px' }}>Số lượng vé: <span style={{ color: '#1710de' }}>{seatCount}</span></div>
                             {prebooking && <div style={{ marginTop: '10px' }}>Vị trí ghế:  <span style={{ color: '#de1074' }}>{selectedSeats?.map(seat => `${seat}, `)}</span></div>}
@@ -518,6 +495,51 @@ const TabSeatSelection = (props) => {
                                     {noteDropOff && <span style={{ color: '#105fde' }}>{`Ghi chú: ${noteDropOff}`}</span>}
                                 </Col>
                             </Row>
+
+                            <Row justify={'space-between'} style={{ marginTop: '10px' }}>
+                                <div style={{ width: '45%', marginBottom: '10px' }}>
+                                    <label>Tên:</label>
+                                    <Input
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="Nhập tên"
+                                    />
+                                </div>
+                                <div style={{ width: '45%' }}>
+                                    <label>Email:</label>
+                                    <Input
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="Nhập email"
+                                    />
+                                </div>
+
+
+                            </Row>
+                            <Row justify={'space-between'} style={{ marginTop: '10px' }}>
+
+                                <div style={{ width: '45%' }}>
+                                    <label>Số điện thoại:</label>
+                                    <Input
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        placeholder="Nhập số điện thoại"
+                                    />
+                                </div>
+                                <div style={{ width: '45%' }}>
+                                    <label>Nhập mã giảm giá</label>
+                                    <Input
+                                        placeholder="Nhập mã giảm giá"
+                                        value={codeDiscount}
+                                        onChange={e => setCodeDiscount(e.target.value)}
+                                        style={{ width: '150px', marginLeft: '10px' }} />
+                                    <Button disabled={isDiscounted} style={{ marginLeft: '10px' }} onClick={() => handleApplyDiscount()}>
+                                        Áp dụng
+                                    </Button>
+                                </div>
+
+                            </Row>
+
 
                         </div>
                         <Row style={{ borderTop: '1px solid #333', paddingTop: '20px', marginTop: '20px' }} justify={'space-between'}>
@@ -565,17 +587,17 @@ const TabSeatSelection = (props) => {
                             }
 
                         </Row>
-                        <Row justify={'end'}>
+                        {/* <Row justify={'end'}>
                             <span>Nhập mã giảm giá</span>
                             <Input
                                 placeholder="Nhập mã giảm giá"
                                 value={codeDiscount}
                                 onChange={e => setCodeDiscount(e.target.value)}
                                 style={{ width: '150px', marginLeft: '10px' }} />
-                            <Button disabled={isDiscounted} style={{ marginLeft: '10px' }} onClick={handleApplyDiscount}>
+                            <Button disabled={isDiscounted} style={{ marginLeft: '10px' }} onClick={() => handleApplyDiscount()}>
                                 Áp dụng
                             </Button>
-                        </Row>
+                        </Row> */}
                         <Row style={{ borderTop: '1px solid #333', paddingTop: '20px', marginTop: '20px' }} justify={'space-between'}>
                             <Button style={{ marginRight: '10px' }} onClick={prevStep}>
                                 Quay lại
@@ -591,7 +613,6 @@ const TabSeatSelection = (props) => {
                                         <Button type="primary" onClick={() => { handleFinish() }}>Đặt vé</Button>
                                         :
                                         (
-
                                             !paymentRequire && <Button type="primary" onClick={() => { handleFinish() }}>Đặt vé</Button>
                                         )
                                 }

@@ -277,9 +277,11 @@ const AdminUserComponent = () => {
                         })
                     }}
                 >
-                    <Option value="admin">Admin</Option>
-                    <Option value="busowner">Bus Owner</Option>
-                    <Option value="user">User</Option>
+                    <Option value="ADMIN">ADMIN</Option>
+                    <Option value="BUSOWNER">BUSOWNER</Option>
+                    <Option value="DRIVER">DRIVER</Option>
+                    <Option value="AGENT">AGENT</Option>
+                    <Option value="USER">USER</Option>
                 </Select>
 
             </Modal>

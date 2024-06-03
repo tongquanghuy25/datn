@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { Button, Checkbox, Col, InputNumber, Radio, Rate, Row, Slider, Space, TreeSelect } from 'antd'
-import React, { useState } from 'react'
+import { Button, Checkbox, Col, InputNumber, Radio, Rate, Row, Select, Slider, Space, TreeSelect } from 'antd'
+import React, { useEffect, useState } from 'react'
 import { getTripsByFilter } from '../../services/TripService';
 
 const { SHOW_PARENT } = TreeSelect;
@@ -71,15 +71,31 @@ function calculateArrivalTime(startTime, duration) {
     return { departureTime, arrivalTime };
 }
 
+const daysOfWeekOptions = [
+    { label: 'Thứ 2', value: 'Monday' },
+    { label: 'Thứ 3', value: 'Tuesday' },
+    { label: 'Thứ 4', value: 'Wednesday' },
+    { label: 'Thứ 5', value: 'Thursday' },
+    { label: 'Thứ 6', value: 'Friday' },
+    { label: 'Thứ 7', value: 'Saturday' },
+    { label: 'Chủ nhật', value: 'Sunday' },
+];
+
 const SideBarFilterComponent = (props) => {
 
-    const { listPlace, dataSearch, setListTrip, handleCancelFilter } = props
+    const { listDataFilter, dataSearch, setListTrip, handleCancelFilter } = props
 
+    const [listBusOwner, setListBusOwner] = useState([]);
     const [order, setOrder] = useState();
     const [priceRange, setPriceRange] = useState([1000, 2000000]);
     const [seatOption, setSeatOption] = useState([]);
+    const [busOwnerSelected, setBusOwnerSelected] = useState([]);
     const [minRating, setMinRating] = useState('');
 
+
+    useEffect(() => {
+        setListBusOwner(listDataFilter?.listBusOwner?.map(item => { return { label: item.busOwnerName, value: item.id } }))
+    }, [listDataFilter])
 
 
     const onChangeOrder = (e) => {
@@ -114,7 +130,7 @@ const SideBarFilterComponent = (props) => {
         setPlacesStart(newValue);
     };
 
-    const treeDataStart = listPlace?.listPlaceStart?.map(districtObj => ({
+    const treeDataStart = listDataFilter?.listPlaceStart?.map(districtObj => ({
         title: Object.keys(districtObj)[0],
         value: Object.keys(districtObj)[0],
         key: Object.keys(districtObj)[0],
@@ -124,6 +140,7 @@ const SideBarFilterComponent = (props) => {
             key: location.id
         }))
     }));
+
 
     const tPropsStart = {
         treeData: treeDataStart,
@@ -142,7 +159,7 @@ const SideBarFilterComponent = (props) => {
     const onChangeEnd = (newValue) => {
         setPlacesEnd(newValue);
     };
-    const treeDataEnd = listPlace?.listPlaceEnd?.map(districtObj => ({
+    const treeDataEnd = listDataFilter?.listPlaceEnd?.map(districtObj => ({
         title: Object.keys(districtObj)[0],
         value: Object.keys(districtObj)[0],
         key: Object.keys(districtObj)[0],
@@ -224,15 +241,21 @@ const SideBarFilterComponent = (props) => {
 
         result.order = order
         result.priceRange = priceRange
-        if (seatOption?.length === 1 && seatOption[0] === 'seat') {
-            result.isRecliningSeat = false
-        } else if (seatOption?.length === 1 && seatOption[0] === 'bed') {
-            result.isRecliningSeat = true
-        }
+
+        result.seatOption = seatOption
+
+        // if (seatOption?.length === 1 && seatOption[0] === 'seat') {
+        //     result.isRecliningSeat = false
+        // } else if (seatOption?.length === 1 && seatOption[0] === 'bed') {
+        //     result.isRecliningSeat = true
+        // }
 
         result.minRating = minRating
-        result.placesStart = handleGetResultPlace(placesStart, listPlace?.listPlaceStart)
-        result.placesEnd = handleGetResultPlace(placesEnd, listPlace?.listPlaceEnd)
+        result.busOwnerSelected = busOwnerSelected
+        result.placesStart = handleGetResultPlace(placesStart, listDataFilter?.listPlaceStart)
+        result.placesEnd = handleGetResultPlace(placesEnd, listDataFilter?.listPlaceEnd)
+
+        console.log('result', result);
 
         mutation.mutate(result)
     }
@@ -245,6 +268,7 @@ const SideBarFilterComponent = (props) => {
         setPriceRange([1000, 2000000])
         setSeatOption([])
         setMinRating('')
+        setBusOwnerSelected([])
         setPlacesStart([])
         setPlacesEnd([])
     }
@@ -299,8 +323,10 @@ const SideBarFilterComponent = (props) => {
             <div style={{ marginLeft: '20px' }}>
                 <h2>Chọn loại nội thất:</h2>
                 <Checkbox.Group onChange={handleCheckboxChange} value={seatOption}>
-                    <Checkbox value="seat">Ghế ngồi</Checkbox>
-                    <Checkbox value="bed">Giường nằm</Checkbox>
+                    <Checkbox value="Sitting">Ghế ngồi</Checkbox>
+                    <Checkbox value="Sleeper">Giường nằm</Checkbox>
+                    <Checkbox value="Massage">Ghế massage</Checkbox>
+                    <Checkbox value="BusinessClass">Ghế thương gia</Checkbox>
                 </Checkbox.Group>
             </div>
 
@@ -318,6 +344,21 @@ const SideBarFilterComponent = (props) => {
                     </Space>
                 </Radio.Group>
             </div>
+
+
+
+            <div style={{ marginLeft: '20px' }}>
+                <h2>Chọn nhà xe:</h2>
+                <Select
+                    mode="multiple"
+                    placeholder="Chọn nhà xe"
+                    options={listBusOwner}
+                    value={busOwnerSelected}
+                    onChange={value => { setBusOwnerSelected(value) }}
+                    style={{ width: '150px' }}
+                />
+            </div>
+
             <div style={{ marginLeft: '20px' }}>
                 <h2>Chọn điểm đi:</h2>
                 <TreeSelect {...tPropsStart} />

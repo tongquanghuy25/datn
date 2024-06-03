@@ -5,7 +5,6 @@ const { deleteImgCloud } = require('../utils');
 
 const createDriver = async (req, res) => {
     try {
-        console.log(req.body);
         const { name, citizenId, address, licenseType, dateOfBirth, gender, email, phone, password, confirmPassword, busOwnerId } = req.body
         const avatar = req.file?.path
 

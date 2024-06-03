@@ -1,5 +1,5 @@
-const BusOwner = require("../models/BusOwnerModel");
-const Discount = require("../models/DiscountModel");
+const { Discount } = require("../models/index");
+const { Sequelize } = require('sequelize');
 const { generateRandomCode, isDateInRange } = require("../utils");
 
 
@@ -9,8 +9,11 @@ const createDiscount = (newDiscount) => {
         try {
             if (newDiscount.code) {
                 const checkDiscount = await Discount.findOne({
-                    code: newDiscount.code
-                })
+                    where: {
+                        code: newDiscount.code
+                    }
+                });
+
                 if (checkDiscount !== null) {
 
                     resolve({
@@ -23,14 +26,15 @@ const createDiscount = (newDiscount) => {
                 while (!newDiscount.code) {
                     const code = generateRandomCode(8);
                     const checkDiscount = await Discount.findOne({
-                        code: code
-                    })
+                        where: {
+                            code: code
+                        }
+                    });
                     if (checkDiscount === null) {
                         newDiscount.code = code
                     }
                 }
             }
-
 
             const createdDiscount = await Discount.create(newDiscount)
 
@@ -48,11 +52,11 @@ const createDiscount = (newDiscount) => {
     })
 }
 
-
 const checkDiscount = (code, busOwnerId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const discount = await Discount.findOne({ code: code })
+            const discount = await Discount.findOne({ where: { code: code } });
+            console.log('discount', discount);
             if (discount === null || !isDateInRange(discount.startDate, discount.endDate) || discount.numberUses < 1) {
                 resolve({
                     status: 400,
@@ -70,26 +74,21 @@ const checkDiscount = (code, busOwnerId) => {
                 }
             }
 
-            const result = await Discount.findOneAndUpdate(
-                {
-                    code: code,
-                    numberUses: { $gte: 1 }
-                },
-                {
-                    $inc: {
-                        numberUses: -1
-                    }
-                },
-                { new: true }
+            const result = await Discount.update(
+                { numberUses: Sequelize.literal('numberUses - 1') },
+                { where: { code: code, numberUses: { [Sequelize.Op.gte]: 1 } } }
+            );
 
-            )
-            resolve({
-                status: 200,
-                message: 'Success',
-                data: { discountType: result.discountType, discountValue: result.discountValue }
-            })
+            if (result) {
+                resolve({
+                    status: 200,
+                    message: 'Success',
+                    data: { discountType: discount.discountType, discountValue: discount.discountValue }
+                })
+            }
 
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -100,17 +99,19 @@ const getByBusOwner = (busOwnerId) => {
         try {
             let allDiscounts = []
             if (busOwnerId !== 'ALL') {
-                allDiscounts = await Discount.find({
-                    busOwnerId: busOwnerId
-                })
-            } else {
-                allDiscounts = await Discount.find({
-                    $or: [
-                        { busOwnerId: null },
-                        { busOwnerId: { $exists: false } }
-                    ]
-                })
+                allDiscounts = await Discount.findAll({
+                    where: { busOwnerId: busOwnerId }
+                });
 
+            } else {
+                allDiscounts = await Discount.findAll({
+                    where: {
+                        [Sequelize.Op.or]: [
+                            { busOwnerId: null },
+                            { busOwnerId: { [Sequelize.Op.not]: { [Sequelize.Op.exists]: true } } }
+                        ]
+                    }
+                });
             }
 
             // const allDiscounts = await Discount.find({
@@ -133,11 +134,10 @@ const getByBusOwner = (busOwnerId) => {
 const deleteDiscount = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const discount = await Discount.findByIdAndDelete(id)
+            await Discount.destroy({ where: { id: id } });
             resolve({
                 status: 200,
                 message: 'Xóa mã giảm giá thành công!',
-                data: discount
             })
 
 
@@ -146,72 +146,6 @@ const deleteDiscount = (id) => {
         }
     })
 }
-
-
-
-const updateBus = (busId, data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkBus = await Bus.findOne({
-                id: busId
-            })
-            if (checkBus === null) {
-                resolve({
-                    status: 404,
-                    message: 'Xe không tồn tại!'
-                })
-                return;
-            }
-            const updatedBus = await Bus.findByIdAndUpdate(busId, { ...data }, { new: true })
-            if (updatedBus && data.deleteImages?.length > 0) {
-                for (const img of data.deleteImages) {
-                    await deleteImgCloud({ path: img })
-                }
-            }
-
-            console.log('updatedBus', updatedBus);
-            resolve({
-                status: 200,
-                message: 'Cập nhật thông tin xe thành công!',
-                data: updateBus
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
-
-const deleteBus = (busId) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkBus = await Bus.findOne({
-                id: busId
-            })
-            if (checkBus === null) {
-                resolve({
-                    status: 404,
-                    message: 'Xe không tồn tại!'
-                })
-                return;
-            }
-
-            await Bus.findByIdAndDelete(busId)
-            if (checkBus.avatar) await deleteImgCloud({ path: checkBus.avatar })
-            if (checkBus.images?.length > 0)
-                for (const img of checkBus.images) {
-                    await deleteImgCloud({ path: img })
-                }
-            resolve({
-                status: 200,
-                message: 'Xóa xe thành công!',
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
 
 
 

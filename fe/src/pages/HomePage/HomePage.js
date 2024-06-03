@@ -17,7 +17,7 @@ const HomePage = () => {
 
 
     const [listTrip, setListTrip] = useState([])
-    const [listPlace, setListPlace] = useState({})
+    const [listDataFilter, setListDatafilter] = useState({})
     const [dataSearch, setDataSearch] = useState()
     const [isSearch, setIsSearch] = useState(false)
 
@@ -57,46 +57,43 @@ const HomePage = () => {
             return await getTripsBySearch(data);
         },
         onSuccess: (data) => {
-            console.log('a', data?.data);
-            const listData = data.data?.map(trip => {
-                const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
-                return {
-                    id: trip.id,
-                    busOwnerId: trip.busOwnerId.id,
-                    busOwnerName: trip.busOwnerId.busOwnerName,
-                    avatar: trip.busId.avatar,
-                    rating: trip.busId.averageRating,
-                    reviewCount: trip.busId.reviewCount,
-                    images: trip.busId.images,
-                    convinients: trip.busId.convinients,
-                    typeBus: trip.busId.typeBus,
-                    availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
-                    routeId: trip.routeId.id,
-                    departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
-                    arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
-                    ticketPrice: trip.ticketPrice,
-                    paymentRequire: trip.paymentRequire,
-                    prebooking: trip.prebooking,
-                    departureDate: trip.departureDate,
-                    arrivalTime: arrivalTime,
-                    departureTime: departureTime,
-                }
-            })
-            setListTrip(listData)
+            // const listData = data.data?.map(trip => {
+            //     const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
+            //     return {
+            //         id: trip.id,
+            //         busOwnerId: trip.busOwnerId.id,
+            //         busOwnerName: trip.busOwnerId.busOwnerName,
+            //         avatar: trip.busId.avatar,
+            //         rating: trip.busId.averageRating,
+            //         reviewCount: trip.busId.reviewCount,
+            //         images: trip.busId.images,
+            //         convinients: trip.busId.convinients,
+            //         typeBus: trip.busId.typeBus,
+            //         availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+            //         routeId: trip.routeId.id,
+            //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
+            //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
+            //         ticketPrice: trip.ticketPrice,
+            //         paymentRequire: trip.paymentRequire,
+            //         prebooking: trip.prebooking,
+            //         departureDate: trip.departureDate,
+            //         arrivalTime: arrivalTime,
+            //         departureTime: departureTime,
+            //     }
+            // })
+            setListTrip(data?.data)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
         }
     });
 
-
-
     const mutationGetInforFilter = useMutation({
         mutationFn: async (data) => {
             return await getPlacesBySearchTrip(data);
         },
         onSuccess: (data) => {
-            setListPlace(data?.data)
+            setListDatafilter(data?.data)
         }
     });
 
@@ -120,9 +117,9 @@ const HomePage = () => {
 
                     {isSearch &&
                         <Row style={{ marginBottom: '20px' }}>
-                            <SideBarFilterComponent dataSearch={dataSearch} listPlace={listPlace} setListTrip={setListTrip} handleCancelFilter={handleCancelFilter}></SideBarFilterComponent>
+                            <SideBarFilterComponent dataSearch={dataSearch} listDataFilter={listDataFilter} setListTrip={setListTrip} handleCancelFilter={handleCancelFilter}></SideBarFilterComponent>
                             {
-                                listTrip.length > 0 ?
+                                listTrip?.length > 0 ?
                                     <Col span={18} style={{}}>
                                         <div style={{ overflowY: 'auto' }}>
                                             {listTrip.map(trip => (

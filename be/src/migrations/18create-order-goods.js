@@ -20,6 +20,7 @@ module.exports = {
                 onDelete: 'CASCADE'
             },
             departureDate: { type: Sequelize.DATE, allowNull: false },
+            code: { type: Sequelize.STRING, allowNull: false },
 
             nameSender: { type: Sequelize.STRING, allowNull: false },
             emailSender: { type: Sequelize.STRING, allowNull: false },

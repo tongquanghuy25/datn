@@ -155,7 +155,7 @@ const TicketManagerment = () => {
     }
 
     const onChangeDate = (time, timeString) => {
-        setDay(timeString)
+        setDay(time.format('YYYY-MM-DD'))
         resetSeat()
         setTrip()
     }
@@ -164,7 +164,7 @@ const TicketManagerment = () => {
     const { data, isSuccess, isError } = useQuery(
         {
             queryKey: [`trips`, day],
-            queryFn: () => getTripsByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token, day ? day : dayjs().format('DD/MM/YY')),
+            queryFn: () => getTripsByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token, day ? day : dayjs().format('YYYY-MM-DD')),
             // staleTime: 300000,
         });
     useEffect(() => {

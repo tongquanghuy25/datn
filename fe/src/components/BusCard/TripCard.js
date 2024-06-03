@@ -7,7 +7,7 @@ import TabPane from 'antd/es/tabs/TabPane';
 import TabBookTicket from './TabContent/TabBookTicket/TabBookTicket';
 import TabImagesComponent from './TabContent/TabImages/TabImagesComponent';
 import TabJourneysComponent from './TabContent/TabJourneys/TabJourneysComponent';
-import { getVnCurrency } from '../../utils';
+import { calculateArrivalTime, convertTimeToHourMinute, getVnCurrency } from '../../utils';
 import TabReview from './TabContent/TabReview/TabReview';
 import TextArea from 'antd/es/input/TextArea';
 import { createReport } from '../../services/ReportService';
@@ -62,25 +62,47 @@ const BusCard = ({ trip }) => {
         })
     }
 
+    //         id: trip.id,
+    //         busOwnerId: trip.busOwnerId.id,
+    //         busOwnerName: trip.busOwnerId.busOwnerName,
+    //         avatar: trip.busId.avatar,
+    //         rating: trip.busId.averageRating,
+    //         reviewCount: trip.busId.reviewCount,
+    //         images: trip.busId.images,
+    //         convinients: trip.busId.convinients,
+    //         typeBus: trip.busId.typeBus,
+    //         availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+    //         routeId: trip.routeId.id,
+    //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
+    //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
+    //         ticketPrice: trip.ticketPrice,
+    //         paymentRequire: trip.paymentRequire,
+    //         prebooking: trip.prebooking,
+    //         departureDate: trip.departureDate,
+    //         arrivalTime: arrivalTime,
+    //         departureTime: departureTime,
+
+    console.log('trip', trip);
+
 
     return (
         <div className="card-trip-container">
             <Card className="card-trip">
                 <div className="card-trip-content">
                     <div className="card-trip-avatar">
-                        <img src={trip.avatar} alt="Bus Avatar" />
+                        <img src={trip['bus.avatar']} alt="Bus Avatar" />
                     </div>
                     <div className="card-trip-info">
-                        <p className='name'>{trip.busOwnerName}</p>
-                        <p>Đánh giá: {trip.rating} <Rate disabled defaultValue={1} count={1} /> ({trip.rating})</p>
+                        <p className='name'>{trip['busOwner.busOwnerName']}</p>
+                        <p>Đánh giá: {trip['busOwner.averageRating']} <Rate disabled defaultValue={1} count={1} /> ({trip['busOwner.reviewCount']})</p>
                         <p className="price">Giá vé: {getVnCurrency(trip.ticketPrice)}</p>
-                        <p>Số chỗ còn trống: {trip.availableSeats}</p>
+                        <p>Số chỗ còn trống: {trip.totalSeats - trip.bookedSeats} / {trip.totalSeats}</p>
                     </div>
                     <div>
-                        <p>Giờ xuất phát: {trip.departureTime}</p>
-                        <p>Địa điểm xuất phát: {trip.departureLocation}</p>
-                        <p>Giờ đến: {trip.arrivalTime}</p>
-                        <p>Địa điểm đến: {trip.arrivalLocation}</p></div>
+                        <p>Giờ xuất phát: {convertTimeToHourMinute(trip.departureTime)}</p>
+                        <p>Địa điểm xuất phát: {`${trip['route.placeStart']}-${trip['route.districtStart']} `}</p>
+                        <p>Giờ đến: {convertTimeToHourMinute(calculateArrivalTime(trip.departureTime, trip['route.journeyTime']))}</p>
+                        <p>Địa điểm đến: {`${trip['route.placeEnd']}-${trip['route.districtEnd']} `}</p></div>
                 </div>
                 <div className="card-trip-actions">
                     <div
@@ -98,7 +120,7 @@ const BusCard = ({ trip }) => {
                 {showDetails && (
                     <Tabs activeKey={activeTab} onChange={handleTabChange}>
                         <TabPane tab="Hình ảnh" key="1">
-                            <TabImagesComponent images={trip.images}></TabImagesComponent>
+                            <TabImagesComponent images={JSON.parse(trip['bus.images'])}></TabImagesComponent>
                         </TabPane>
                         <TabPane tab="Đánh giá" key="2">
                             <TabReview busOwnerId={trip?.busOwnerId} />
@@ -117,7 +139,7 @@ const BusCard = ({ trip }) => {
                 {bookTickets && (
 
                     <TabBookTicket
-                        typeBus={trip.typeBus}
+                        typeBus={trip['bus.typeBus']}
                         paymentRequire={trip.paymentRequire}
                         prebooking={trip.prebooking}
                         routeId={trip.routeId}
@@ -126,8 +148,8 @@ const BusCard = ({ trip }) => {
                         tripId={trip.id}
                         departureDate={trip.departureDate}
                         busOwnerId={trip.busOwnerId}
-                        busOwnerName={trip.busOwnerName}
-                        routeName={`${trip.departureLocation} - ${trip.arrivalLocation}`}
+                        busOwnerName={trip['busOwner.busOwnerName']}
+                        routeName={`${`${trip['route.placeStart']}-${trip['route.districtStart']} `} - ${`${trip['route.placeEnd']}-${trip['route.districtEnd']} `}`}
                     />
 
                 )}

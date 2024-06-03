@@ -4,12 +4,12 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Refund extends Model {
         static associate(models) {
-            // Refund.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
+            Refund.belongsTo(models.BusOwner, { foreignKey: 'busOwnerId', as: 'busOwner' });
         }
     }
 
     Refund.init({
-        busOwnerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'BusOwners', key: 'id' } },
+        busOwnerId: { type: DataTypes.INTEGER, allowNull: false },
         name: { type: DataTypes.STRING, allowNull: false },
         email: { type: DataTypes.STRING, allowNull: false },
         phone: { type: DataTypes.STRING, allowNull: false },

@@ -7,6 +7,8 @@ import { getAllBusOwner } from '../../services/PartnerSevice';
 import { errorMes, successMes } from '../Message/Message';
 import { createDiscount, deleteDiscount, getAllDiscountByBusOwner } from '../../services/DiscountService';
 import { getVnCurrency } from '../../utils';
+import dayjs from 'dayjs';
+
 
 const { Option } = Select;
 
@@ -63,7 +65,7 @@ const AdminDiscountComponent = () => {
             title: 'Giá trị',
             key: 'discountValue',
             render: record => {
-                return record.discountType === 'percent' ? `${record.discountValue}%` : getVnCurrency(record.discountValue)
+                return record.discountType === 'Percent' ? `${record.discountValue}%` : getVnCurrency(record.discountValue)
             },
             align: 'center',
         },
@@ -72,12 +74,14 @@ const AdminDiscountComponent = () => {
             dataIndex: 'startDate',
             key: 'startDate',
             align: 'center',
+            render: record => dayjs(record).format('DD-MM-YYYY')
         },
         {
             title: 'Ngày hết hạn',
             dataIndex: 'endDate',
             key: 'endDate',
             align: 'center',
+            render: record => dayjs(record).format('DD-MM-YYYY')
         },
         {
             title: 'Mô tả',
@@ -133,8 +137,8 @@ const AdminDiscountComponent = () => {
                     code: values.code,
                     discountType: values.discountType,
                     discountValue: values.discountValue,
-                    startDate: values.startDate.format('DD-MM-YYYY'),
-                    endDate: values.endDate.format('DD-MM-YYYY'),
+                    startDate: values.startDate.format('YYYY-MM-DD'),
+                    endDate: values.endDate.format('YYYY-MM-DD'),
                     description: values.description,
                     numberUses: values.numberUses,
                     busOwnerId: values.busOwnerId === 'ALL' ? null : values.busOwnerId
@@ -245,8 +249,8 @@ const AdminDiscountComponent = () => {
                             rules={[{ required: true, message: 'Vui lòng chọn loại giảm giá!' }]}
                         >
                             <Select style={{ width: '200px' }}>
-                                <Option value="percent">Phần trăm</Option>
-                                <Option value="fixed">Giá trị cố định</Option>
+                                <Option value="Percent">Phần trăm</Option>
+                                <Option value="Fixed">Giá trị cố định</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item

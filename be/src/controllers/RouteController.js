@@ -1,4 +1,5 @@
 const RouteService = require('../services/RouteService');
+const TripService = require('../services/TripService');
 
 
 const addLocation = async (req, res) => {
@@ -192,7 +193,7 @@ const getAllPlace = async (req, res) => {
 const getPlacesBySearchTrip = async (req, res) => {
     try {
         const data = req.query
-        const response = await RouteService.getPlacesBySearchTrip(data)
+        const response = await TripService.getInforFilterTrip(data)
         return res.status(200).json(response)
     } catch (e) {
         return res.status(404).json({

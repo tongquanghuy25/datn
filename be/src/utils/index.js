@@ -119,18 +119,26 @@ function getCurrentDateString() {
     return `${day}/${month}/${year}`;
 }
 
-const parseDate = (str) => {
-    const [day, month, year] = str.split('-').map(Number);
-    // Giả sử năm là 20xx nếu yy < 50, và 19xx nếu yy >= 50
-    return new Date(year, month - 1, day); // Tháng trong JavaScript bắt đầu từ 0
-}
+// const parseDate = (str) => {
+//     const [day, month, year] = str.split('-').map(Number);
+//     // Giả sử năm là 20xx nếu yy < 50, và 19xx nếu yy >= 50
+//     return new Date(year, month - 1, day); // Tháng trong JavaScript bắt đầu từ 0
+// }
 
-function isDateInRange(startDateStr, endDateStr) {
+// function isDateInRange(startDateStr, endDateStr) {
+//     const currentDate = new Date();
+//     const startDate = parseDate(startDateStr);
+//     const endDate = parseDate(endDateStr);
+
+//     return currentDate >= startDate && currentDate <= endDate;
+// }
+
+function isDateInRange(startDate, endDate) {
     const currentDate = new Date();
-    const startDate = parseDate(startDateStr);
-    const endDate = parseDate(endDateStr);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-    return currentDate >= startDate && currentDate <= endDate;
+    return currentDate >= start && currentDate <= end;
 }
 
 module.exports = {

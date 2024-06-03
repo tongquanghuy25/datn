@@ -351,26 +351,27 @@ const getPlacesBySearchTrip = (data) => {
             if (data?.districtStart) {
                 listPlaceStart = await Location.findAll({
                     where: { province: data?.provinceStart, district: data?.districtStart },
-                    attributes: ['district', 'place']
+                    attributes: ['id', 'district', 'place']
                 });
             } else {
                 listPlaceStart = await Location.findAll({
                     where: { province: data?.provinceStart },
-                    attributes: ['district', 'place']
+                    attributes: ['id', 'district', 'place']
                 });
             }
 
             if (data?.districtEnd) {
                 listPlaceEnd = await Location.findAll({
                     where: { province: data?.provinceEnd, district: data?.districtEnd },
-                    attributes: ['district', 'place']
+                    attributes: ['id', 'district', 'place']
                 });
             } else {
                 listPlaceEnd = await Location.findAll({
                     where: { province: data?.provinceEnd },
-                    attributes: ['district', 'place']
+                    attributes: ['id', 'district', 'place']
                 });
             }
+
 
             listPlaceStart = formatArr(listPlaceStart)
             listPlaceEnd = formatArr(listPlaceEnd)

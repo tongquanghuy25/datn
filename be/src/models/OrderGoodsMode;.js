@@ -4,14 +4,15 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class OrderGoods extends Model {
         static associate(models) {
-            // OrderGoods.belongsTo(models.Trip, { foreignKey: 'tripId', as: 'trip' });
-            // OrderGoods.belongsTo(models.User, { foreignKey: 'Payee', as: 'payee' });
+            OrderGoods.belongsTo(models.Trip, { foreignKey: 'tripId', as: 'trip' });
+            OrderGoods.belongsTo(models.User, { foreignKey: 'Payee', as: 'payee' });
         }
     }
 
     OrderGoods.init({
-        tripId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'Trips', key: 'id' } },
+        tripId: { type: DataTypes.INTEGER, allowNull: false },
         departureDate: { type: DataTypes.STRING, allowNull: false },
+        code: { type: DataTypes.STRING, allowNull: false },
 
         nameSender: { type: DataTypes.STRING, allowNull: false },
         emailSender: { type: DataTypes.STRING, allowNull: false },

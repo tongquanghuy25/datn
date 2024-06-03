@@ -33,6 +33,8 @@ const BookedTicketsCard = (props) => {
         }
     });
 
+    console.log('ticket', ticket);
+
     const handleSubmit = () => {
         if (rating === 0 || content.trim() === '') {
             warningMes('Vui lòng nhập đầy đủ thông tin đánh giá!');
@@ -42,7 +44,7 @@ const BookedTicketsCard = (props) => {
             access_token: user?.access_token,
             userId: user?.id,
             ticketId: ticket?.id,
-            busOwnerId: ticket?.tripId.busOwnerId,
+            busOwnerId: ticket?.trip.busOwnerId,
             stars: rating,
             content,
             name: ticket?.name
@@ -67,7 +69,7 @@ const BookedTicketsCard = (props) => {
                     </Col>
                     <Col span={6}>
                         <div style={{ marginBottom: '8px' }}><strong>Số ghế:</strong> {ticket.seatCount}</div>
-                        <div style={{ marginBottom: '8px' }}><strong>Vị trí ghế:</strong> {ticket.seats?.join(', ')}</div>
+                        <div style={{ marginBottom: '8px' }}><strong>Vị trí ghế:</strong> {JSON.parse(ticket.seats)?.join(', ')}</div>
                     </Col>
                     <Col span={10}>
                         <div style={{ marginBottom: '8px' }}><strong>Tổng số tiền:</strong> {ticket.totalPrice} VND

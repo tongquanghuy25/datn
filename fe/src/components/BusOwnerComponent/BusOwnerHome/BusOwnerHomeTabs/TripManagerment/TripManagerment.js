@@ -221,7 +221,6 @@ const TripManagerment = () => {
             queryFn: () => getTripsByBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token, day ? day : dayjs().format('YYYY-MM-DD')),
         });
 
-    console.log('l', listTrip);
 
     useEffect(() => {
         if (isSuccess) {
@@ -231,6 +230,8 @@ const TripManagerment = () => {
         }
 
     }, [isSuccess, isError, data])
+
+    console.log('lll', listTrip);
 
     const onChangeDate = (date, dateString) => {
         setDay(date.format('YYYY-MM-DD'))

@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react'
 import { getStopPointsByBusRoute } from '../../../../services/RouteService';
-import { Timeline } from 'antd';
+import { Col, Row, Timeline } from 'antd';
+import { calculateEndTime } from '../../../../utils';
 
 
 function calculateTime(startTime, minutes) {
@@ -33,26 +34,31 @@ const TabJourneysComponent = ({ departureTime, routeId }) => {
 
     useEffect(() => {
         setListPickUpPoint(dataStopPoint?.data?.listPickUpPoint.sort((a, b) => a.timeFromStart - b.timeFromStart).map(item => {
-            return { label: calculateTime(departureTime, item.timeFromStart), children: item.place }
+            return { label: calculateEndTime(departureTime, item.timeFromStart), children: item.place }
         }))
         setListDropOffPoint(dataStopPoint?.data?.listDropOffPoint.sort((a, b) => a.timeFromStart - b.timeFromStart).map(item => {
-            return { label: calculateTime(departureTime, item.timeFromStart), children: item.place }
+            return { label: calculateEndTime(departureTime, item.timeFromStart), children: item.place }
         }))
     }, [dataStopPoint])
     console.log('listPickUpPoint', listPickUpPoint, listDropOffPoint);
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px', maxHeight: '350px', overflowY: 'auto' }}>
-            <Timeline
-                style={{ paddingTop: '10px' }}
-                mode='left'
-                items={listPickUpPoint}
-            />
-            <Timeline
-                style={{ paddingTop: '10px' }}
-                mode='left'
-                items={listDropOffPoint}
-            />
-        </div>
+        <Row justify={'space-around'} style={{ marginTop: '20px', maxHeight: '350px', width: '100%', overflowY: 'auto' }}>
+            <Col span={10}>
+                <Timeline
+                    style={{ paddingTop: '10px' }}
+                    mode='left'
+                    items={listPickUpPoint}
+                />
+            </Col>
+            <Col span={10}>
+                <Timeline
+                    style={{ paddingTop: '10px' }}
+                    mode='left'
+                    items={listDropOffPoint}
+                />
+            </Col>
+
+        </Row>
     )
 }
 

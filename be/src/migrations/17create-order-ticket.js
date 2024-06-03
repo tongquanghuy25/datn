@@ -32,6 +32,7 @@ module.exports = {
             email: { type: Sequelize.STRING, allowNull: false },
             phone: { type: Sequelize.STRING, allowNull: false },
             departureDate: { type: Sequelize.DATE, allowNull: false },
+            code: { type: Sequelize.STRING, allowNull: false },
 
             pickUp: { type: Sequelize.STRING, allowNull: false },
             notePickUp: { type: Sequelize.TEXT, allowNull: true },

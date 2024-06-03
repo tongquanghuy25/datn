@@ -1,12 +1,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
 // const mongoose = require('mongoose');
-const { Sequelize } = require('sequelize');
+// const { Sequelize } = require('sequelize');
 const routes = require('./routes');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { generateRandomCode, isDateInRange } = require('./utils');
 dotenv.config();
 
 
@@ -20,23 +19,25 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 routes(app);
 
-const sequelize = new Sequelize('datn', 'root', null, {
-    host: 'localhost',
-    dialect: 'mysql',
-    logging: false,
-})
+require('./config/database');
 
-async function connectToDatabase() {
-    try {
-        await sequelize.authenticate();
-        console.log('Connect Db success');
-    } catch (error) {
-        console.log('Connect Db failed', error);
-    }
-}
+// const sequelize = new Sequelize('datn', 'root', null, {
+//     host: 'localhost',
+//     dialect: 'mysql',
+//     logging: false,
+// })
 
-// Gọi hàm connectToDatabase
-connectToDatabase();
+// async function connectToDatabase() {
+//     try {
+//         await sequelize.authenticate();
+//         console.log('Connect Db success');
+//     } catch (error) {
+//         console.log('Connect Db failed', error);
+//     }
+// }
+
+// // Gọi hàm connectToDatabase
+// connectToDatabase();
 
 // mongoose.connect(`${process.env.MONGO_DB}`)
 //     .then(() => {

@@ -8,6 +8,7 @@ import { deleteUser, editUser, getAllUser, updateUser } from '../../services/Use
 import { Select } from 'antd';
 import { errorMes, successMes } from '../Message/Message';
 import { getAllReport } from '../../services/ReportService';
+import dayjs from 'dayjs';
 const { Option } = Select;
 
 
@@ -48,8 +49,8 @@ const AdminReportComponent = () => {
         },
         {
             title: "Tên nhà xe",
-            dataIndex: 'busOwnerId',
-            key: 'busOwnerId',
+            dataIndex: 'busOwner',
+            key: 'busOwner',
             render: (record) => record.busOwnerName
         },
         {
@@ -69,9 +70,16 @@ const AdminReportComponent = () => {
             key: 'content',
         },
         {
+            title: "Ngày",
+            dataIndex: 'createdAt',
+            key: 'content',
+            render: record => dayjs(record).format('DD-MM-YYYY')
+        },
+        {
             title: "Trạng thái",
             dataIndex: 'status',
             key: 'status',
+            render: record => record === 'processing' ? 'Đang xử lý' : 'Đã xử lý'
         },
         {
             title: "Sửa",

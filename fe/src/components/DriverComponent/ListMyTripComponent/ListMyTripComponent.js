@@ -18,7 +18,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     const { data, isSuccess, isError, refetch } = useQuery(
         {
             queryKey: ['tripsdriver', day],
-            queryFn: () => getTripsByDriver(JSON.parse(localStorage.getItem('driverid')), user?.access_token, day ? day : dayjs().format('DD/MM/YY')),
+            queryFn: () => getTripsByDriver(JSON.parse(localStorage.getItem('driverid')), user?.access_token, day ? day : dayjs().format('YYYY-MM-DD')),
         });
 
 
@@ -33,7 +33,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     }, [isSuccess, isError, data])
 
     const onChangeDate = (time, timeString) => {
-        setDay(timeString)
+        setDay(time.format('YYYY-MM-DD'))
     }
 
     const onClickDetail = (trip) => {
