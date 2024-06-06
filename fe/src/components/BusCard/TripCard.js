@@ -7,7 +7,7 @@ import TabPane from 'antd/es/tabs/TabPane';
 import TabBookTicket from './TabContent/TabBookTicket/TabBookTicket';
 import TabImagesComponent from './TabContent/TabImages/TabImagesComponent';
 import TabJourneysComponent from './TabContent/TabJourneys/TabJourneysComponent';
-import { calculateArrivalTime, convertTimeToHourMinute, getVnCurrency } from '../../utils';
+import { calculateArrivalTime, formatTimeVn, getVnCurrency } from '../../utils';
 import TabReview from './TabContent/TabReview/TabReview';
 import TextArea from 'antd/es/input/TextArea';
 import { createReport } from '../../services/ReportService';
@@ -99,9 +99,9 @@ const BusCard = ({ trip }) => {
                         <p>Số chỗ còn trống: {trip.totalSeats - trip.bookedSeats} / {trip.totalSeats}</p>
                     </div>
                     <div>
-                        <p>Giờ xuất phát: {convertTimeToHourMinute(trip.departureTime)}</p>
+                        <p>Giờ xuất phát: {formatTimeVn(trip.departureTime)}</p>
                         <p>Địa điểm xuất phát: {`${trip['route.placeStart']}-${trip['route.districtStart']} `}</p>
-                        <p>Giờ đến: {convertTimeToHourMinute(calculateArrivalTime(trip.departureTime, trip['route.journeyTime']))}</p>
+                        <p>Giờ đến: {formatTimeVn(calculateArrivalTime(trip.departureTime, trip['route.journeyTime']))}</p>
                         <p>Địa điểm đến: {`${trip['route.placeEnd']}-${trip['route.districtEnd']} `}</p></div>
                 </div>
                 <div className="card-trip-actions">

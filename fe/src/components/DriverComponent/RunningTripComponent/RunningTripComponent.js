@@ -13,6 +13,7 @@ import SeatInformation from './TabsContent/SeatInformation';
 import PickUpDropOffInformation from './TabsContent/PickUpDropOffInformation';
 import nodata from '../../../acess/nodata.jpg'
 import GoodsInformation from './TabsContent/GoodsInformation';
+import { formatTimeVn } from '../../../utils';
 
 
 
@@ -44,7 +45,7 @@ const RunningTripComponent = () => {
             //Get seat
             const listSeat = []
             data?.data?.listTicketOrder?.forEach(item => {
-                item.seats?.forEach(element => {
+                JSON.parse(item.seats)?.forEach(element => {
                     const seat = {
                         id: element,
                         orderId: item.id,
@@ -125,17 +126,17 @@ const RunningTripComponent = () => {
             {trip ?
                 <div style={{ padding: '0 20px', maxHeight: '100vh' }}>
                     <Row justify={'center'} style={{ marginTop: '20px', marginBottom: '20px' }}>
-                        <div style={{ fontWeight: 'bold', fontSize: '24px' }}>{trip?.routeId.placeStart}, {trip?.routeId.districtStart}  - {trip?.routeId.placeEnd}, {trip?.routeId.districtEnd}</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '24px' }}>{trip?.route.placeStart}, {trip?.route.districtStart}  - {trip?.route.placeEnd}, {trip?.route.districtEnd}</div>
                     </Row>
                     <Row >
                         <Col span={5}>
-                            <div><strong>Ngày xuất phát:  </strong>{trip?.departureDate}</div>
-                            <div><strong>Giờ xuất phát:  </strong>{trip?.departureTime}</div>
+                            <div><strong>Ngày xuất phát:  </strong>{dayjs(trip?.departureDate).format('DD-MM-YYYY')}</div>
+                            <div><strong>Giờ xuất phát:  </strong>{formatTimeVn(trip?.departureTime)}</div>
                             <div><strong>Giá vé:  </strong>{trip?.ticketPrice}</div>
                         </Col>
                         <Col span={5}>
-                            <div><strong>Loại xe:  </strong>{trip?.busId.typeBus}</div>
-                            <div><strong>Biển số xe:  </strong>{trip?.busId.licensePlate}</div>
+                            <div><strong>Loại xe:  </strong>{trip?.bus.typeBus}</div>
+                            <div><strong>Biển số xe:  </strong>{trip?.bus.licensePlate}</div>
                             <div><strong></strong></div>
                         </Col>
                         <Col span={5}>
@@ -161,60 +162,60 @@ const RunningTripComponent = () => {
                                 <GoodsInformation listGoodsOrder={listGoodsOrder}></GoodsInformation>
                             </TabPane>
                             <TabPane tab="Thông tin đón/trả" key="3">
-                                <PickUpDropOffInformation handleUpdateStatusGoods={handleUpdateStatusGoods} listGoodsOrder={listGoodsOrder} listTicketOrder={listTicketOrder} handleUpdateStatusSeat={handleUpdateStatusSeat} departureTime={trip?.departureTime} routeId={trip?.routeId.id}></PickUpDropOffInformation>
+                                <PickUpDropOffInformation handleUpdateStatusGoods={handleUpdateStatusGoods} listGoodsOrder={listGoodsOrder} listTicketOrder={listTicketOrder} handleUpdateStatusSeat={handleUpdateStatusSeat} departureTime={trip?.departureTime} routeId={trip?.route.id}></PickUpDropOffInformation>
                             </TabPane>
                         </Tabs>
                     </Row>
-                    <Modal
-                        title={<div style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Chi tiết vé</div>}
-                        open={visible}
-                        footer={null}
-                        width={600}
+                    {visible &&
+                        <Modal
+                            title={<div style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Chi tiết vé</div>}
+                            open={visible}
+                            footer={null}
+                            width={600}
+                            onCancel={() => {
+                                setVisible(false)
+                            }}
+                        >
+                            {/* <p><strong>Người Đặt:</strong> {trip.userOrder}</p> */}
+                            <div style={{ fontSize: '16px' }}>
 
-                        onCancel={() => {
-                            setVisible(false)
-                        }}
+                                <Row style={{ fontSize: '16px', margin: '20px 0 10px 0' }}>
+                                    <div><strong>Email:</strong> {ticketOrderDetail?.email}</div>
+                                    <div style={{ marginLeft: '30px' }}><strong>Điện Thoại:</strong> {ticketOrderDetail?.phone}</div>
+                                </Row>
+                                <div ><strong>Ngày Khởi Hành:</strong> {dayjs(ticketOrderDetail?.departureDate).format('DD-MM-YYYY')}</div>
 
-                    >
-                        {/* <p><strong>Người Đặt:</strong> {trip.userOrder}</p> */}
-                        <div style={{ fontSize: '16px' }}>
-
-                            <Row style={{ fontSize: '16px', margin: '20px 0 10px 0' }}>
-                                <div><strong>Email:</strong> {ticketOrderDetail?.email}</div>
-                                <div style={{ marginLeft: '30px' }}><strong>Điện Thoại:</strong> {ticketOrderDetail?.phone}</div>
-                            </Row>
-                            <div ><strong>Ngày Khởi Hành:</strong> {ticketOrderDetail?.departureDate}</div>
-
-                            <Row style={{ margin: '10px 0' }} >
-                                <Col span={12} style={{ fontSize: '16px' }}>
-                                    <div><strong>Nơi Đón:</strong> {ticketOrderDetail?.pickUp}</div>
-                                    <div><strong>Thời Gian Đón:</strong> {ticketOrderDetail?.timePickUp}</div>
-                                    <div><strong>Ngày Đón:</strong> {ticketOrderDetail?.datePickUp}</div>
-                                    <div><strong>Ghi Chú Nơi Đón:</strong> {ticketOrderDetail?.notePickUp}</div>
-                                </Col>
-                                <Col span={12} style={{ fontSize: '16px' }}>
-                                    <div><strong>Nơi Trả:</strong> {ticketOrderDetail?.dropOff}</div>
-                                    <div><strong>Thời Gian Trả:</strong> {ticketOrderDetail?.timeDropOff}</div>
-                                    <div><strong>Ngày Trả:</strong> {ticketOrderDetail?.dateDropOff}</div>
-                                    <div><strong>Ghi Chú Nơi Trả:</strong> {ticketOrderDetail?.noteDropOff}</div>
-                                </Col>
-                            </Row>
-
+                                <Row style={{ margin: '10px 0' }} >
+                                    <Col span={12} style={{ fontSize: '16px' }}>
+                                        <div><strong>Nơi Đón:</strong> {ticketOrderDetail?.pickUp}</div>
+                                        <div><strong>Thời Gian Đón:</strong> {formatTimeVn(ticketOrderDetail?.timePickUp)}</div>
+                                        <div><strong>Ngày Đón:</strong> {dayjs(ticketOrderDetail?.datePickUp).format('DD-MM-YYYY')}</div>
+                                        <div><strong>Ghi Chú Nơi Đón:</strong> {ticketOrderDetail?.notePickUp}</div>
+                                    </Col>
+                                    <Col span={12} style={{ fontSize: '16px' }}>
+                                        <div><strong>Nơi Trả:</strong> {ticketOrderDetail?.dropOff}</div>
+                                        <div><strong>Thời Gian Trả:</strong> {formatTimeVn(ticketOrderDetail?.timeDropOff)}</div>
+                                        <div><strong>Ngày Trả:</strong> {dayjs(ticketOrderDetail?.dateDropOff).format('DD-MM-YYYY')}</div>
+                                        <div><strong>Ghi Chú Nơi Trả:</strong> {ticketOrderDetail?.noteDropOff}</div>
+                                    </Col>
+                                </Row>
 
 
-                            <div><strong>Số Lượng Ghế:</strong> {ticketOrderDetail?.seatCount}</div>
-                            <div style={{ marginBottom: '10px' }}><strong>Ghế Đặt:</strong> {ticketOrderDetail?.seats.toString()}</div>
 
-                            <div><strong>Giá Vé:</strong> {ticketOrderDetail?.ticketPrice}</div>
-                            <div><strong>Phụ Phí:</strong> {ticketOrderDetail?.extraCosts}</div>
-                            <div><strong>Giảm Giá:</strong> {ticketOrderDetail?.discount}</div>
-                            <div style={{ marginBottom: '10px' }}><strong>Tổng Tiền:</strong> {ticketOrderDetail?.totalPrice}</div>
+                                <div><strong>Số Lượng Ghế:</strong> {ticketOrderDetail?.seatCount}</div>
+                                <div style={{ marginBottom: '10px' }}><strong>Ghế Đặt:</strong> {ticketOrderDetail?.seats.toString()}</div>
 
-                            <div><strong>Phương Thức Thanh Toán:</strong> {ticketOrderDetail?.paymentMethod}</div>
-                            <div><strong>Thanh Toán:</strong> {ticketOrderDetail?.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</div>
-                            <div><strong>Trạng Thái:</strong> {ticketOrderDetail?.status}</div>
-                        </div>
-                    </Modal>
+                                <div><strong>Giá Vé:</strong> {ticketOrderDetail?.ticketPrice}</div>
+                                <div><strong>Phụ Phí:</strong> {ticketOrderDetail?.extraCosts}</div>
+                                <div><strong>Giảm Giá:</strong> {ticketOrderDetail?.discount}</div>
+                                <div style={{ marginBottom: '10px' }}><strong>Tổng Tiền:</strong> {ticketOrderDetail?.totalPrice}</div>
+
+                                <div><strong>Phương Thức Thanh Toán:</strong> {ticketOrderDetail?.paymentMethod}</div>
+                                <div><strong>Thanh Toán:</strong> {ticketOrderDetail?.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</div>
+                                <div><strong>Trạng Thái:</strong> {ticketOrderDetail?.status}</div>
+                            </div>
+                        </Modal>
+                    }
                 </div>
                 :
                 <div style={{ height: '100vh', fontSize: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

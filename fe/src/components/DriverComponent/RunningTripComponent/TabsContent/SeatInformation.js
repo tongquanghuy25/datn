@@ -16,9 +16,9 @@ const SeatInformation = ({ listSeat, setVisible, getTicketOrderDetail }) => {
                                 <div style={{ fontSize: '24px', fontWeight: 'bold', marginLeft: '10px' }}> {seat.id}</div>
                                 <b style={{ color: 'orange', fontSize: '20px' }}>(G{seat.seatCount})</b>
                                 <Tag
-                                    color={seat.status === 'Đã lên xe' ? 'blue' : (seat.status === 'Đã hoàn thành' ? 'success' : 'warning')}
+                                    color={seat.status === 'Boarded' ? 'blue' : (seat.status === 'Completed' ? 'success' : 'warning')}
                                 >
-                                    {seat.status === 'Đã lên xe' ? seat.status : (seat.status === 'Đã hoàn thành' ? seat.status : 'Chưa lên xe')}
+                                    {seat.status === 'Boarded' ? 'Đã lên xe' : (seat.status === 'Completed' ? 'Đã hoàn thành' : 'Chưa lên xe')}
                                 </Tag>
                             </div>
                             <div style={{ fontSize: '20px', fontWeight: '500', marginTop: '5px' }}>{seat.phone}</div>

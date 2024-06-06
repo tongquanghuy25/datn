@@ -6,49 +6,7 @@ import { errorMes, loadingMes, successMes } from '../../../../Message/Message';
 import { Option } from 'antd/es/mentions';
 import { getStopPointsByBusRoute } from '../../../../../services/RouteService';
 import { createGoodsOrder, createTicketOrder, updateTicketOrder } from '../../../../../services/OrderService';
-import { getVnCurrency } from '../../../../../utils';
-
-
-function calculateTime(startTime, minutes) {
-    const [startHour] = startTime?.split('giờ')?.map(str => parseInt(str.trim()));
-    const totalMins = startHour * 60 + minutes;
-    let endHours = Math.floor(totalMins / 60) % 24;
-    let endMins = totalMins % 60;
-
-    // Định dạng giờ và phút thành chuỗi 'hh:mm'
-    const formattedHours = endHours < 10 ? `0${endHours}` : `${endHours}`;
-    const formattedMins = endMins < 10 ? `0${endMins}` : `${endMins}`;
-
-    return `${formattedHours}h${formattedMins}`;
-}
-
-function calculateArrivalDateAndTime(departureDate, departureTime, durationInMinutes) {
-    // Chia chuỗi ngày đi thành các thành phần ngày, tháng và năm
-    const [day, month, year] = departureDate?.split('/')?.map(Number);
-
-    // Tách giờ và phút từ chuỗi giờ đi
-    // const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/)?.map(Number);
-    const [hours, minutes] = departureTime.split(':')
-
-    // Kiểm tra xem các thành phần đã chuyển đổi thành số hợp lệ chưa
-    if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
-        console.log("Ngày hoặc giờ đi không hợp lệ");
-        return;
-    }
-
-    // Tạo đối tượng Date từ các thành phần của ngày và giờ đi
-    const departureDateTime = new Date(year, month - 1, day, hours, minutes);
-
-    // Thêm số phút di chuyển vào ngày và giờ đi
-    const arrivalDateTime = new Date(departureDateTime.getTime() + durationInMinutes * 60000);
-
-    // Lấy ngày đến nơi
-    const arrivalDate = `${arrivalDateTime.getDate()}/${arrivalDateTime.getMonth() + 1}/${arrivalDateTime.getFullYear()}`;
-
-    // Lấy giờ đến nơi
-    const arrivalTime = `${arrivalDateTime.getHours()}:${arrivalDateTime.getMinutes().toString().padStart(2, '0')}`;
-    return { arrivalDate, arrivalTime };
-}
+import { calculateArrivalDateAndTime, calculateEndTime, getVnCurrency } from '../../../../../utils';
 
 
 const ModalEditTicket = (props) => {
@@ -92,8 +50,8 @@ const ModalEditTicket = (props) => {
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
-            queryKey: [`listStopPoint${trip?.routeId.id}`],
-            queryFn: () => getStopPointsByBusRoute(trip?.routeId.id),
+            queryKey: [`listStopPoint${trip?.route.id}`],
+            queryFn: () => getStopPointsByBusRoute(trip?.route.id),
         });
 
     useEffect(() => {
@@ -139,6 +97,7 @@ const ModalEditTicket = (props) => {
             }
         }
     )
+
     const handleFinish = (values) => {
         const { arrivalDate, arrivalTime } = calculateArrivalDateAndTime(trip?.departureDate, trip?.departureTime, pickUpPoint.timeFromStart)
         const { arrivalDate: endDate, arrivalTime: endTime } = calculateArrivalDateAndTime(trip?.departureDate, trip?.departureTime, dropOffPoint.timeFromStart)
@@ -158,7 +117,7 @@ const ModalEditTicket = (props) => {
             timeDropOff: endTime,
             dateDropOff: endDate,
 
-            seats: ticket?.seats,
+            seats: JSON.parse(ticket?.seats),
             seatCount: ticket?.seatCount,
 
             ticketPrice: trip?.ticketPrice,
@@ -212,7 +171,7 @@ const ModalEditTicket = (props) => {
                                     {listPickUpPoint?.map(item => {
                                         return <Option value={item?.id}
                                         >
-                                            {calculateTime(trip?.departureTime, item.timeFromStart)} {item.place} {item?.extracost ? `( Phụ phí ${getVnCurrency(item?.extracost)} )` : ''}
+                                            {calculateEndTime(trip?.departureTime, item.timeFromStart)} {item.place} {item?.extracost ? `( Phụ phí ${getVnCurrency(item?.extracost)} )` : ''}
                                         </Option>
                                     }
                                     )}
@@ -227,7 +186,7 @@ const ModalEditTicket = (props) => {
                                 <Select onSelect={onSelectDropOffPoint} placeholder='Chọn điểm trả' style={{ width: '100%' }} >
                                     {listDropOffPoint?.map(item => {
                                         return <Option value={item?.id}>
-                                            {calculateTime(trip?.departureTime, item.timeFromStart)} {item.place} {item?.extracost ? `( Phụ phí ${getVnCurrency(item?.extracost)} )` : ''}
+                                            {calculateEndTime(trip?.departureTime, item.timeFromStart)} {item.place} {item?.extracost ? `( Phụ phí ${getVnCurrency(item?.extracost)} )` : ''}
                                         </Option>
                                     }
                                     )}
@@ -244,7 +203,7 @@ const ModalEditTicket = (props) => {
                         <Col span={12}>
 
                             <div>
-                                <span>Vị Trí Ghế : <b>{ticket?.seats.join(', ')}</b></span>
+                                <span>Vị Trí Ghế : <b>{JSON.parse(ticket?.seats)?.join(', ')}</b></span>
 
                             </div>
                             <span>Số Lượng Ghế : <b>{ticket?.seatCount}</b></span>

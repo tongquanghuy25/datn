@@ -99,7 +99,7 @@ const AdminPartnerComponent = () => {
                 return <SearchOutlined style={{ marginLeft: '10px' }} />
             },
             onFilter: (value, record) =>
-                record.userId.email?.toString().toLowerCase().includes(value.toLowerCase()),
+                record.user.email?.toString().toLowerCase().includes(value.toLowerCase()),
         },
 
         {
@@ -125,7 +125,7 @@ const AdminPartnerComponent = () => {
                 return <SearchOutlined style={{ marginLeft: '10px' }} />
             },
             onFilter: (value, record) =>
-                record.userId.phone.toString().toLowerCase().includes(value.toLowerCase()),
+                record.user.phone.toString().toLowerCase().includes(value.toLowerCase()),
         },
         {
             title: "Địa chỉ",

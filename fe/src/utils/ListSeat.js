@@ -34,7 +34,7 @@ const getListSeat1Floor = (numberSeat, listTicketSold) => {
     const seats = Array.from({ length: numberSeat }, (_, index) => ({
         id: `A${index + 1}`,
         data: listTicketSold?.find(item => {
-            const result = item.seats?.find(it => it === `A${index + 1}`)
+            const result = JSON.parse(item.seats)?.find(it => it === `A${index + 1}`)
 
             return result
         })
@@ -47,7 +47,7 @@ const getListSeat2Floor = (numberSeat1, numberSeat2, listTicketSold) => {
     const seats1 = Array.from({ length: numberSeat1 }, (_, index) => ({
         id: `A${index + 1}`,
         data: listTicketSold?.find(item => {
-            const result = item.seats?.find(it => it === `A${index + 1}`)
+            const result = JSON.parse(item.seats)?.find(it => it === `A${index + 1}`)
             return result
 
             // if (!result) return item
@@ -58,7 +58,7 @@ const getListSeat2Floor = (numberSeat1, numberSeat2, listTicketSold) => {
     const seats2 = Array.from({ length: numberSeat2 }, (_, index) => ({
         id: `B${index + 1}`,
         data: listTicketSold?.find(item => {
-            const result = item.seats?.find(it => it === `B${index + 1}`)
+            const result = JSON.parse(item.seats)?.find(it => it === `B${index + 1}`)
             return result
 
             // if (!result) return item

@@ -63,7 +63,7 @@ const BusOwnerCard = (props) => {
         mutationRefuse.mutate({
             id: data?.id,
             access_token,
-            userId: data?.userId.id,
+            userId: data?.user.id,
             isBusOwner: data.busOwnerName ? true : false
         })
     }

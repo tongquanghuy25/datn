@@ -77,7 +77,7 @@ const BookedTicketsCard = (props) => {
                                 {ticket.sPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                             </Tag>
                         </div>
-                        {ticket.status === 'Đã hoàn thành' ?
+                        {ticket.status === 'Completed' ?
                             <div style={{ marginBottom: '8px' }}><strong>Trạng thái:</strong> {ticket.status}</div>
                             :
                             <>

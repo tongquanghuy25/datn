@@ -6,6 +6,7 @@ import { errorMes, successMes } from '../../Message/Message';
 import { getTripsByDriver, updateTrip } from '../../../services/TripService';
 import { useSelector } from 'react-redux';
 import ModalTripDeitail from './ModalTripDeitail';
+import { formatTime } from '../../../utils';
 
 
 const ListMyTripComponent = ({ setSelectedKeys }) => {
@@ -43,7 +44,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     const mutationStartTrip = useMutation({
         mutationFn: async (data) => {
             const { id, token } = data;
-            return await updateTrip(id, token, { status: 'Đã khởi hành', driverId: JSON.parse(localStorage.getItem('driverid')) });
+            return await updateTrip(id, token, { status: 'Started', driverId: JSON.parse(localStorage.getItem('driverid')) });
         },
         onSuccess: (data) => {
             successMes(data?.message)
@@ -51,7 +52,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
 
             if (index !== -1) {
                 const newListTrip = [...listTrip]
-                newListTrip[index] = { ...listTrip[index], status: 'Đã khởi hành' }
+                newListTrip[index] = { ...listTrip[index], status: 'Started' }
                 setListTrip(newListTrip)
             }
             setSelectedKeys('1')
@@ -81,30 +82,30 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
             <Row style={{ flex: 1, overflowY: 'auto' }}>
                 {
                     listTrip.map(trip => (
-                        <Card style={{ width: 'calc(100% - 64px)', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: 20, backgroundColor: '#faf3de' }}>
+                        <Card style={{ width: 'calc(100% - 64px)', height: '180px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: 20, backgroundColor: '#faf3de' }}>
                             <Row style={{ display: 'flex', alignItems: 'center' }}>
-                                <Col span={4} style={{ fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{trip.departureTime}</Col>
+                                <Col span={4} style={{ fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{formatTime(trip.departureTime)}</Col>
                                 <Col span={6} style={{ fontSize: '16px', color: '#666', textAlign: 'left' }}>
-                                    <div><strong>Biển số xe:</strong> {trip.busId.licensePlate}</div>
-                                    <div><strong>Loại xe:</strong> {trip.busId.typeBus} chỗ</div>
+                                    <div><strong>Biển số xe:</strong> {trip.bus.licensePlate}</div>
+                                    <div><strong>Loại xe:</strong> {trip.bus.typeBus} chỗ</div>
                                     <div><strong>Số ghế trống:</strong> {trip.availableSeats}</div>
                                     <div><strong>Số ghế đã đặt:</strong> {trip.bookedSeats}</div>
                                     <div><strong>Trạng thái: </strong>
                                         <Tag
-                                            color={trip.status === 'Chưa khởi hành' ? 'error' : (trip.status === 'Đã kết thúc' ? 'success' : 'warning')}
+                                            color={trip.status === 'NotStarted' ? 'error' : (trip.status === 'Ended' ? 'success' : 'warning')}
                                         >
-                                            {trip.status}
+                                            {trip.status === 'NotStarted' ? 'Chưa khởi hành' : (trip.status === 'Started' ? 'Đã khởi hành' : 'Đã kết thúc')}
                                         </Tag>
                                     </div>
                                 </Col>
                                 <Col span={10} style={{ fontSize: '16px', color: '#666', textAlign: 'left' }}>
-                                    <div><strong>Điểm xuất phát:</strong> {trip.routeId.placeStart} - {trip.routeId.districtStart}</div>
-                                    <div><strong>Thời gian di chuyển:</strong> {trip.routeId.journeyTime}</div>
-                                    <div><strong>Điểm đến:</strong> {trip.routeId.placeEnd} - {trip.routeId.districtEnd}</div>
+                                    <div><strong>Điểm xuất phát:</strong> {trip.route.placeStart} - {trip.route.districtStart}</div>
+                                    <div><strong>Thời gian di chuyển:</strong> {trip.route.journeyTime}</div>
+                                    <div><strong>Điểm đến:</strong> {trip.route.placeEnd} - {trip.route.districtEnd}</div>
                                 </Col>
                                 <Col span={4} style={{ fontSize: '16px', color: '#666' }}>
                                     <Button onClick={() => onClickDetail(trip)} style={{ marginBottom: '16px' }} >Chi tiết</Button>
-                                    {trip.status === 'Chưa khởi hành' && <Button onClick={() => handleStartTrip(trip)} type="primary" >Bắt đầu chuyến</Button>}
+                                    {trip.status === 'NotStarted' && <Button onClick={() => handleStartTrip(trip)} type="primary" >Bắt đầu chuyến</Button>}
                                 </Col>
                             </Row>
                         </Card>

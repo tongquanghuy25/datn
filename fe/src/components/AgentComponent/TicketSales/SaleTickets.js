@@ -5,38 +5,7 @@ import { getTripsBySearch } from '../../../services/TripService'
 import { errorMes } from '../../Message/Message';
 import { Button, Card, Col, Divider, List, Row, Tag } from 'antd';
 import ModalOrderTicket from './ModalOrderTicket';
-
-
-
-function calculateArrivalTime(startTime, duration) {
-    // Chuyển đổi chuỗi 'hh:mm' thành giờ và phút
-    const [startHour, startMinute] = startTime.split(':').map(Number);
-    const [durationHour, durationMinute] = duration.split(':').map(Number);
-
-    // Tính toán thời gian đến
-    let arrivalHour = startHour + durationHour;
-    let arrivalMinute = startMinute + durationMinute;
-
-    // Xử lý trường hợp khi phút vượt quá 60
-    if (arrivalMinute >= 60) {
-        arrivalHour += Math.floor(arrivalMinute / 60);
-        arrivalMinute %= 60;
-    }
-
-    if (arrivalMinute > 24) {
-        arrivalMinute = arrivalMinute % 24
-    }
-
-    // Định dạng thời gian đến
-    const formattedArrivalMinute = arrivalMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-    const arrivalTime = `${arrivalHour} giờ ${formattedArrivalMinute}`;
-
-    // Định dạng thời gian xuất phát
-    const formattedStartMinute = startMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-    const departureTime = `${startHour} giờ ${formattedStartMinute}`;
-
-    return { departureTime, arrivalTime };
-}
+import { formatTimeVn } from '../../../utils';
 
 const SaleTickets = () => {
     const [dataSearch, setDataSearch] = useState()
@@ -95,6 +64,8 @@ const SaleTickets = () => {
         setIsOrdering(true)
     }
 
+    console.log('listtrip', listTrip);
+
     return (
         <div>
             <SearchBusComponent handleSearch={handleSearch}></SearchBusComponent>
@@ -103,26 +74,26 @@ const SaleTickets = () => {
                     listTrip.map(trip => (
                         <Card style={{ width: '80%', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: 20, backgroundColor: '#faf3de' }}>
                             <Row>
-                                <Col offset={4} style={{ fontSize: 24, fontWeight: 'bold', marginBottom: '10px', color: '#1890ff' }}>{trip.busOwnerId.busOwnerName}</Col>
+                                <Col offset={4} style={{ fontSize: 24, fontWeight: 'bold', marginBottom: '10px', color: '#1890ff' }}>{trip['busOwner.busOwnerName']}</Col>
                             </Row>
                             <Row style={{ display: 'flex', alignItems: 'center' }} >
-                                <Col span={4} style={{ alignSelf: 'flex-start', fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{trip.departureTime}</Col>
+                                <Col span={4} style={{ alignSelf: 'flex-start', fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{formatTimeVn(trip.departureTime)}</Col>
                                 <Col span={6} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666', textAlign: 'left' }}>
-                                    <div><strong>Số Điện Thoại:</strong> {trip.busOwnerId.userId.phone}</div>
-                                    <div><strong>Loại xe:</strong> {trip.busId.typeBus} chỗ</div>
+                                    <div><strong>Số Điện Thoại:</strong> {trip['busOwner.user.phone']}</div>
+                                    <div><strong>Loại xe:</strong> {trip['bus.typeBus']} chỗ</div>
                                     <div><strong>Số ghế trống:</strong> {trip.availableSeats}</div>
                                     <div><strong>Trạng thái: </strong>
                                         <Tag
-                                            color={trip.status === 'Chưa khởi hành' ? 'error' : (trip.status === 'Đã kết thúc' ? 'success' : 'warning')}
+                                            color={trip.status === 'NotStarted' ? 'error' : (trip.status === 'Ended' ? 'success' : 'warning')}
                                         >
-                                            {trip.status}
+                                            {trip.status === 'NotStarted' ? 'Chưa khởi hành' : (trip.status === 'Started' ? 'Đã khởi hành' : 'Đã kết thúc')}
                                         </Tag>
                                     </div>
                                 </Col>
                                 <Col span={10} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666', textAlign: 'left' }}>
-                                    <div><strong>Điểm xuất phát:</strong> {trip.routeId.placeStart} - {trip.routeId.districtStart}</div>
-                                    <div><strong>Thời gian di chuyển:</strong> {trip.routeId.journeyTime}</div>
-                                    <div><strong>Điểm đến:</strong> {trip.routeId.placeEnd} - {trip.routeId.districtEnd}</div>
+                                    <div><strong>Điểm xuất phát:</strong> {trip['route.placeStart']} - {trip['route.districtStart']}</div>
+                                    <div><strong>Thời gian di chuyển:</strong> {formatTimeVn(trip['route.journeyTime'])}</div>
+                                    <div><strong>Điểm đến:</strong> {trip['route.placeEnd']} - {trip['route.districtEnd']}</div>
                                 </Col>
                                 <Col span={4} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666' }} >
                                     <div><strong>Giá vé:</strong> {trip.ticketPrice}</div>

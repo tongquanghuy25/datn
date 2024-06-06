@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
         timeReceive: { type: DataTypes.TIME, allowNull: false },
         dateReceive: { type: DataTypes.DATE, allowNull: false },
 
-        weight: { type: DataTypes.INTEGER, allowNull: false },
+        // weight: { type: DataTypes.INTEGER, allowNull: false },
+        goodsName: { type: DataTypes.TEXT, allowNull: false },
         goodsDescription: { type: DataTypes.TEXT, allowNull: false },
 
         price: { type: DataTypes.INTEGER, allowNull: false },

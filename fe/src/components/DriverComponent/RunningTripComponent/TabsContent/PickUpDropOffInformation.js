@@ -5,37 +5,38 @@ import { getStopPointsByBusRoute } from '../../../../services/RouteService';
 import { updateStatusGoodsOrder, updateTicketOrder } from '../../../../services/OrderService';
 import { errorMes, successMes } from '../../../Message/Message';
 import { useSelector } from 'react-redux'
+import { calculateArrivalTime, calculateEndTime, formatTime } from '../../../../utils';
 
 
 
-function calculateArrivalTime(startTime, duration) {
-    // Chuyển đổi chuỗi 'hh:mm' thành giờ và phút
-    const [startHour, startMinute] = startTime?.split(':').map(Number);
-    // const [durationHour, durationMinute] = duration?.split(':').map(Number);
-    const durationHour = parseInt(duration / 60)
-    const durationMinute = duration % 60
-    // Tính toán thời gian đến
-    let arrivalHour = startHour + durationHour;
-    let arrivalMinute = startMinute + durationMinute;
+// function calculateArrivalTime(startTime, duration) {
+//     // Chuyển đổi chuỗi 'hh:mm' thành giờ và phút
+//     const [startHour, startMinute] = startTime?.split(':').map(Number);
+//     // const [durationHour, durationMinute] = duration?.split(':').map(Number);
+//     const durationHour = parseInt(duration / 60)
+//     const durationMinute = duration % 60
+//     // Tính toán thời gian đến
+//     let arrivalHour = startHour + durationHour;
+//     let arrivalMinute = startMinute + durationMinute;
 
-    // Xử lý trường hợp khi phút vượt quá 60
-    if (arrivalMinute >= 60) {
-        arrivalHour += Math.floor(arrivalMinute / 60);
-        arrivalMinute %= 60;
-    }
+//     // Xử lý trường hợp khi phút vượt quá 60
+//     if (arrivalMinute >= 60) {
+//         arrivalHour += Math.floor(arrivalMinute / 60);
+//         arrivalMinute %= 60;
+//     }
 
-    if (arrivalHour > 24) {
-        arrivalHour = arrivalHour % 24
-    }
+//     if (arrivalHour > 24) {
+//         arrivalHour = arrivalHour % 24
+//     }
 
-    // Định dạng thời gian đến
-    const formattedArrivalMinute = arrivalMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-    const formattedArrivalHour = arrivalHour.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-    const arrivalTime = `${formattedArrivalHour}:${formattedArrivalMinute}`;
+//     // Định dạng thời gian đến
+//     const formattedArrivalMinute = arrivalMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
+//     const formattedArrivalHour = arrivalHour.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
+//     const arrivalTime = `${formattedArrivalHour}:${formattedArrivalMinute}`;
 
 
-    return arrivalTime;
-}
+//     return arrivalTime;
+// }
 
 const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdateStatusSeat, departureTime, routeId, handleUpdateStatusGoods }) => {
 
@@ -63,7 +64,6 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
             return {
                 name: item.place,
                 timeFromStart: item.timeFromStart
-
             }
         })
         let point = []
@@ -114,19 +114,19 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
 
     }, [listTicketOrder, listStopPoint])
 
+
     const mutationUpdate = useMutation({
         mutationFn: async (data) => {
             const { id, token, ...rest } = data;
             return await updateTicketOrder(id, token, rest);
         },
         onSuccess: (data) => {
-
             const listData = placeSelectedData
-            const index = listData?.ordersTicket?.findIndex(item => item.id === data.data.id)
-            listData.ordersTicket[index].status = data.data.status
-            listData.ordersTicket[index].isPaid = data.data.isPaid
+            const index = listData?.ordersTicket?.findIndex(item => item.id === data.data?.id)
+            listData.ordersTicket[index].status = data.data?.status
+            listData.ordersTicket[index].isPaid = data.data?.isPaid
             setPlaceSelectedData(listData)
-            handleUpdateStatusSeat(data.data.id, data.data.status, data.data.isPaid)
+            handleUpdateStatusSeat(data.data?.id, data.data?.status, data.data?.isPaid)
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
@@ -148,6 +148,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
             handleUpdateStatusGoods(data.data.id, data.data.status, data.data.isPaid)
         },
         onError: (data) => {
+            console.log('aaa', data);
             errorMes(data?.response?.data?.message)
         }
     });
@@ -164,7 +165,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                     setPlaceSelectedData(listData?.find(it => it?.placeName === item.name)?.data)
                                 }}
                                 style={{ marginLeft: 10, fontSize: '18px', padding: 10, border: '1px solid #333', marginBottom: '10px', borderRadius: '10px', cursor: 'pointer', backgroundColor: item.name === placeSelected ? '#fa8282' : '#ede9e4' }}>
-                                {calculateArrivalTime(departureTime, item.timeFromStart)} - {item.name}
+                                {calculateEndTime(departureTime, item.timeFromStart)} - {item.name}
                             </div>
                         ))
                     }
@@ -181,7 +182,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                                 style={{ height: '80px', marginLeft: 10, padding: 10, border: '1px solid #333', marginBottom: '10px', borderRadius: '10px', backgroundColor: '#dcf7ec' }}>
                                                 <Col span={9} style={{ fontSize: '16px' }}>
                                                     <div><strong>Số lượng hành khách: </strong>{item.seatCount}</div>
-                                                    <div><strong>Vị trí ghế: </strong>{item.seats.toString()}</div>
+                                                    <div><strong>Vị trí ghế: </strong>{JSON.parse(item.seats).toString()}</div>
                                                 </Col>
 
                                                 <Col span={10} style={{ fontSize: '16px' }}>
@@ -193,18 +194,18 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                                     {
                                                         item?.isPickUp ?
                                                             (
-                                                                item?.status === 'Đã lên xe' ?
+                                                                item?.status === 'Boarded' ?
                                                                     <Tag color='blue'>Đã đón khách</Tag>
                                                                     :
-                                                                    <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã lên xe' }) }} type='primary' size='small' danger>Xác nhận đón</Button>
+                                                                    <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Boarded' }) }} type='primary' size='small' danger>Xác nhận đón</Button>
                                                             )
                                                             :
                                                             (
-                                                                item?.status === 'Đã hoàn thành' ?
+                                                                item?.status === 'Completed' ?
                                                                     <Tag color='green'>Đã trả khách</Tag>
                                                                     :
                                                                     (
-                                                                        item?.status === 'Đã lên xe' ? <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Đã hoàn thành' }) }} type='primary' size='small'>Xác nhận trả</Button>
+                                                                        item?.status === 'Boarded' ? <Button onClick={() => { mutationUpdate.mutate({ id: item.id, token: user?.access_token, status: 'Completed' }) }} type='primary' size='small'>Xác nhận trả</Button>
                                                                             : <div></div>
                                                                     )
                                                             )
@@ -241,18 +242,18 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                                 <Col span={5} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                                     {
                                                         item?.isSend ? (
-                                                            item?.status === 'Đã nhận hàng' ?
+                                                            item?.status === 'Received' ?
                                                                 <Tag color='blue'>Đã nhận hàng</Tag>
                                                                 :
-                                                                <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã nhận hàng' }) }} type='primary' size='small' danger>Nhận hàng</Button>
+                                                                <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Received' }) }} type='primary' size='small' danger>Nhận hàng</Button>
                                                         )
                                                             :
                                                             (
-                                                                item?.status === 'Đã trả hàng' ?
+                                                                item?.status === 'Delivered' ?
                                                                     <Tag>Đã trả hàng</Tag>
                                                                     :
                                                                     (
-                                                                        item?.status === 'Đã nhận hàng' ? <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Đã trả hàng' }) }} size='small' type='primary'>Trả hàng</Button>
+                                                                        item?.status === 'Received' ? <Button onClick={() => { mutationUpdateGoods.mutate({ id: item.id, token: user?.access_token, status: 'Delivered' }) }} size='small' type='primary'>Trả hàng</Button>
                                                                             : <div></div>
                                                                     )
                                                             )

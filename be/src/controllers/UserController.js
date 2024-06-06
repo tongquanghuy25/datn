@@ -3,11 +3,6 @@ const JwtService = require('../services/JwtService')
 const uploadCloud = require('../middleware/uploader');
 const { deleteImgCloud } = require('../utils');
 
-const Bus = require("../models/BusModel");
-const Trip = require('../models/TripModel');
-const OrderTicket = require('../models/OrderTicketModel');
-const OrderGoods = require('../models/OrderGoodsMode;');
-
 
 
 

@@ -101,7 +101,7 @@ const getTicketById = async (req, res) => {
 
 const deleteTicketOrder = async (req, res) => {
     try {
-        const { isOnTimeAllow, isPaid } = req.query.data
+        const { busOwnerId, isOnTimeAllow, isPaid } = req.query.data
         const ticketOrederId = req.params.id
 
         if (!ticketOrederId) {
@@ -111,7 +111,7 @@ const deleteTicketOrder = async (req, res) => {
         }
 
 
-        const response = await OrderService.deleteTicketOrder(ticketOrederId, isOnTimeAllow, isPaid)
+        const response = await OrderService.deleteTicketOrder(ticketOrederId, busOwnerId, isOnTimeAllow, isPaid)
 
         return res.status(response.status).json(response)
 
@@ -145,14 +145,14 @@ const changeSeat = async (req, res) => {
 
 const deleteSeat = async (req, res) => {
     try {
-        const { ticketOrder, seatDelete, isOnTimeAllow } = req.body
+        const { ticketOrder, seatDelete, busOwnerId, isOnTimeAllow } = req.body
         if (!ticketOrder) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Đơn vé bị trống!'
             })
         }
-        const response = await OrderService.deleteSeat(ticketOrder, seatDelete, isOnTimeAllow)
+        const response = await OrderService.deleteSeat(ticketOrder, seatDelete, busOwnerId, isOnTimeAllow)
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -165,7 +165,6 @@ const updateTicketOrder = async (req, res) => {
     try {
         const { name, email, phone, pickUp, notePickUp, timePickUp, datePickUp, dropOff, noteDropOff, timeDropOff, dateDropOff,
             seats, ticketPrice, extraCosts, discount, totalPrice, payee, paidAt, isPaid, paymentMethod, status } = req.body
-
         const ticketOrderId = req.params.id
         if (!ticketOrderId) {
             return res.status(200).json({
@@ -181,7 +180,6 @@ const updateTicketOrder = async (req, res) => {
         )
         return res.status(response.status).json(response)
     } catch (e) {
-        console.log('e', e);
         return res.status(404).json({
             message: e
         })
@@ -206,54 +204,7 @@ const getTicketOrderByTrip = async (req, res) => {
     }
 }
 
-//
-const getDetailsOrder = async (req, res) => {
-    try {
-        const orderId = req.params.id
-        if (!orderId) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'The userId is required'
-            })
-        }
-        const response = await OrderService.getOrderDetails(orderId)
-        return res.status(200).json(response)
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
 
-const cancelOrderDetails = async (req, res) => {
-    try {
-        const data = req.body.orderItems
-        const orderId = req.body.orderId
-        if (!orderId) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'The orderId is required'
-            })
-        }
-        const response = await OrderService.cancelOrderDetails(orderId, data)
-        return res.status(200).json(response)
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
-
-const getAllOrder = async (req, res) => {
-    try {
-        const data = await OrderService.getAllOrder()
-        return res.status(200).json(data)
-    } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
-    }
-}
 
 // GOODS
 const createGoodsOrder = async (req, res) => {
@@ -320,7 +271,7 @@ const updateGoodsOrder = async (req, res) => {
 const deleteGoodsOrder = async (req, res) => {
     try {
         const goodsOrederId = req.params.id
-
+        const { busOwnerId } = req.body
 
         if (!goodsOrederId) {
             return res.status(400).json({
@@ -329,7 +280,7 @@ const deleteGoodsOrder = async (req, res) => {
         }
 
 
-        const response = await OrderService.deleteGoodsOrder(goodsOrederId)
+        const response = await OrderService.deleteGoodsOrder(goodsOrederId, busOwnerId)
 
         return res.status(response.status).json(response)
 
@@ -393,8 +344,4 @@ module.exports = {
     deleteSeat,
     getSeatsBookedByTrip,
     deleteTicketOrder,
-
-    getDetailsOrder,
-    cancelOrderDetails,
-    getAllOrder
 }

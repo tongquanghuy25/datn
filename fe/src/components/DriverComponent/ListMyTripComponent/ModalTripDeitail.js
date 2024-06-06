@@ -10,20 +10,20 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
         setActiveTab(key);
     };
 
+    console.log('sdfsad', tripSelected);
+
     const {
         availableSeats,
-        busId,
+        bus,
         departureDate,
         departureTime,
         paymentRequire,
         prebooking,
-        routeId,
+        route,
         status,
         ticketPrice,
         ticketsSold
     } = tripSelected;
-
-
 
     const totalSeats = 20;
     const bookedSeats = [
@@ -64,8 +64,8 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
                                         <Col span={12}>
                                             {/* <p><strong>Ngày khởi hành:</strong> {dayjs(departureDate).format('DD/MM/YYYY')}</p> */}
                                             <p><strong>Giờ khởi hành:</strong> {departureTime}</p>
-                                            <p><strong>Địa điểm xuất phát:</strong> {routeId.provinceStart}, {routeId.districtStart}, {routeId.placeStart}</p>
-                                            <p><strong>Địa điểm đến:</strong> {routeId.provinceEnd}, {routeId.districtEnd}, {routeId.placeEnd}</p>
+                                            <p><strong>Địa điểm xuất phát:</strong> {route.provinceStart}, {route.districtStart}, {route.placeStart}</p>
+                                            <p><strong>Địa điểm đến:</strong> {route.provinceEnd}, {route.districtEnd}, {route.placeEnd}</p>
                                         </Col>
                                         <Col span={12}>
                                             <p><strong>Trạng thái:</strong> <Tag color={status === 'active' ? 'green' : 'red'}>{status}</Tag></p>
@@ -82,14 +82,14 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
                                             <Divider />
                                         </Col>
                                         <Col span={12}>
-                                            <p><strong>Biển số xe:</strong> {busId.licensePlate}</p>
-                                            <p><strong>Loại xe:</strong> {busId.typeBus}</p>
-                                            <p><strong>Màu sắc:</strong> {busId.color}</p>
+                                            <p><strong>Biển số xe:</strong> {bus.licensePlate}</p>
+                                            <p><strong>Loại xe:</strong> {bus.typeBus}</p>
+                                            <p><strong>Màu sắc:</strong> {bus.color}</p>
                                         </Col>
                                         <Col span={12}>
-                                            <p><strong>Số ghế:</strong> {busId.numberSeat}</p>
-                                            <p><strong>Yên nằm:</strong> {busId.isRecliningSeat ? 'Có' : 'Không'}</p>
-                                            <p><strong>Trang bị:</strong> {busId.convinients.join(', ')}</p>
+                                            <p><strong>Số ghế:</strong> {bus.numberSeat}</p>
+                                            <p><strong>Yên nằm:</strong> {bus.isRecliningSeat ? 'Có' : 'Không'}</p>
+                                            <p><strong>Trang bị:</strong> {JSON.parse(bus?.convinients)?.join(', ')}</p>
                                         </Col>
                                     </Row>
                                 </Col>

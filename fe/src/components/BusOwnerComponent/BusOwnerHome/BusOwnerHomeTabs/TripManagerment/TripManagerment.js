@@ -11,7 +11,7 @@ import ModalUpdateTrip from './ModalUpdateTrip';
 import { getBussByBusOwner } from '../../../../../services/BusService';
 import { getDriversByBusOwner } from '../../../../../services/DriverService';
 import { getRouteByBusOwner } from '../../../../../services/RouteService';
-import { convertTimeToHourMinute, getVnCurrency } from '../../../../../utils';
+import { formatTimeVn, getVnCurrency } from '../../../../../utils';
 
 const TripManagerment = () => {
 
@@ -49,7 +49,7 @@ const TripManagerment = () => {
             width: 100,
             align: 'center',
             render: (departureTime) => {
-                return convertTimeToHourMinute(departureTime)
+                return formatTimeVn(departureTime)
             }
         },
         {

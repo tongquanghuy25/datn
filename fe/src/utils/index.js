@@ -8,17 +8,26 @@ export const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 };
 
-export const convertTimeToHourMinute = (timeString) => {
-    var timeParts = timeString.split(":");
+//hh:mm:ss => hh giờ mm
+export const formatTimeVn = (timeString) => {
+    var timeParts = timeString?.split(":");
     var hours = parseInt(timeParts[0], 10);
     var minutes = parseInt(timeParts[1], 10);
     return `${hours} giờ ${minutes < 10 ? `0${minutes}` : minutes}`
 }
 
+//hh:mm:ss => hh h mm
+export const formatTime = (time) => {
+    // Chuyển thời gian bắt đầu thành đối tượng Date
+    let [startHours, startMinutes, startSeconds] = time?.split(':').map(Number);
+    return `${startHours}h${startMinutes < 10 ? `0${startMinutes}` : startMinutes}`;
+}
+
+// => hh:mm:ss
 export const calculateArrivalTime = (startTime, duration) => {
     // Chuyển giờ xuất phát và thời gian di chuyển thành đối tượng Date
-    let [startHours, startMinutes, startSeconds] = startTime.split(':').map(Number);
-    let [durationHours, durationMinutes, durationSeconds] = duration.split(':').map(Number);
+    let [startHours, startMinutes, startSeconds] = startTime?.split(':').map(Number);
+    let [durationHours, durationMinutes, durationSeconds] = duration?.split(':').map(Number);
 
     // Tạo đối tượng Date với giờ xuất phát
     let startDate = new Date();
@@ -39,9 +48,10 @@ export const calculateArrivalTime = (startTime, duration) => {
     return `${endHours}:${endMinutes}:${endSeconds}`;
 }
 
+// => hh h mm
 export const calculateEndTime = (startTime, durationMinutes) => {
     // Chuyển thời gian bắt đầu thành đối tượng Date
-    let [startHours, startMinutes, startSeconds] = startTime.split(':').map(Number);
+    let [startHours, startMinutes, startSeconds] = startTime?.split(':').map(Number);
 
     // Tạo đối tượng Date với thời gian bắt đầu
     let startDate = new Date();
@@ -56,12 +66,13 @@ export const calculateEndTime = (startTime, durationMinutes) => {
     let endHours = String(startDate.getHours()).padStart(2, '0');
     let endMinutes = String(startDate.getMinutes()).padStart(2, '0');
 
-    return `${endHours} h ${endMinutes}`;
+    return `${endHours}h${endMinutes}`;
 }
 
+//(date, time , number minute => arrivalDate, time)
 export const calculateArrivalDateAndTime = (departureDate, departureTime, durationMinutes) => {
     // Chuyển đổi departureDate và departureTime thành đối tượng Date
-    let [startHours, startMinutes, startSeconds] = departureTime.split(':').map(Number);
+    let [startHours, startMinutes, startSeconds] = departureTime?.split(':').map(Number);
 
     // Tạo đối tượng Date với departureDate và departureTime
     let startDate = new Date(departureDate);
@@ -73,9 +84,10 @@ export const calculateArrivalDateAndTime = (departureDate, departureTime, durati
     startDate.setUTCMinutes(startDate.getUTCMinutes() + durationMinutes);
 
     // Lấy ngày và thời gian đến từ đối tượng Date
-    let arrivalDate = startDate.toISOString().split('T')[0];
-    let arrivalTime = startDate.toISOString().split('T')[1].split(':');
+    let arrivalDate = startDate.toISOString()?.split('T')[0];
+    let arrivalTime = startDate.toISOString()?.split('T')[1].split(':');
     let formattedArrivalTime = `${arrivalTime[0]}:${arrivalTime[1]}`;
 
     return { arrivalDate, arrivalTime: formattedArrivalTime };
 }
+

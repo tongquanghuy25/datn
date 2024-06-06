@@ -11,6 +11,7 @@ import { errorMes, successMes } from '../../../../Message/Message';
 import { Option } from 'antd/es/mentions';
 import { deleteGoodsOrder, getGoodsOrderByTrip } from '../../../../../services/OrderService';
 import ModalUpdateGoodsOrder from './ModalUpdateGoodsOrder';
+import { formatTime } from '../../../../../utils';
 const { Search } = Input;
 
 
@@ -86,8 +87,8 @@ const GoodsManagerment = () => {
 
     const mutationDelete = useMutation({
         mutationFn: async (data) => {
-            const { goodsOrderId, token } = data;
-            return await deleteGoodsOrder(goodsOrderId, token);
+            const { goodsOrderId, token, busOwnerId } = data;
+            return await deleteGoodsOrder(goodsOrderId, token, { busOwnerId });
         },
         onSuccess: (data) => {
             successMes(data?.message)
@@ -100,7 +101,7 @@ const GoodsManagerment = () => {
         }
     });
     const handelDeleteGoods = () => {
-        mutationDelete.mutate({ goodsOrderId: goodsOrder.id, token: user?.access_token })
+        mutationDelete.mutate({ goodsOrderId: goodsOrder.id, token: user?.access_token, busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')) })
     }
 
 
@@ -123,9 +124,9 @@ const GoodsManagerment = () => {
                     <Select placeholder='Chọn chuyến xe' style={{ width: '400px' }} onSelect={(value) => { handleSelectTrip(value) }}>
                         {listTrip?.map(item => {
                             return <Option value={item.id}>
-                                <Tag color='error'>{item.departureTime}</Tag>
-                                <Tag color='warning'>{item.busId.licensePlate}</Tag>
-                                {item.routeId.districtStart}-{item.routeId.districtEnd}
+                                <Tag color='error'>{formatTime(item.departureTime)}</Tag>
+                                <Tag color='warning'>{item.bus.licensePlate}</Tag>
+                                {item.route.districtStart}-{item.route.districtEnd}
                             </Option>
                         }
                         )}
@@ -155,18 +156,18 @@ const GoodsManagerment = () => {
                     </div>
                     {isCreateGoods && <ModalCreateGoodsOrder trip={listTrip.find(item => item.id === tripId)} isCreateGoods={isCreateGoods} setIsCreateGoods={setIsCreateGoods}></ModalCreateGoodsOrder>}
                 </Row>
-                <Row style={{ overflowY: 'auto', height: 'calc(100vh - 200px)' }}>
+                <Row style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
                     {listGoodsOrder?.length > 0 ?
                         listGoodsOrder?.map(goodsOrder => {
                             return (
                                 <>
-                                    <Row style={{ margin: '10px', padding: '10px', width: '100%', borderRadius: '20px', border: '1px solid #666', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: 'white' }}>
+                                    <Row style={{ margin: '10px', padding: '10px', width: '100%', height: '150px', borderRadius: '20px', border: '1px solid #666', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: 'white' }}>
                                         <Col span={6}>
                                             <div><strong>Tên người gửi:</strong> {goodsOrder.nameSender}</div>
                                             <div><strong>Số điện thoại người gửi:</strong> {goodsOrder.phoneSender}</div>
                                             <div><strong>Địa điểm gửi hàng:</strong> {goodsOrder.sendPlace}</div>
                                             <div><strong>Ghi chú:</strong> {goodsOrder.noteSend}</div>
-                                            <div><strong>Thời gian gửi hàng:</strong> {goodsOrder.timeSend} {goodsOrder.dateSend}</div>
+                                            <div><strong>Thời gian gửi hàng:</strong> {formatTime(goodsOrder.timeSend)} ngày {dayjs(goodsOrder.dateSend).format('DD-MM-YYYY')}</div>
                                         </Col>
 
                                         <Col span={6}>
@@ -174,11 +175,11 @@ const GoodsManagerment = () => {
                                             <div><strong>Số điện thoại người nhận:</strong> {goodsOrder.phoneReceiver}</div>
                                             <div><strong>Địa điểm nhận hàng:</strong> {goodsOrder.receivePlace}</div>
                                             <div><strong>Ghi chú:</strong> {goodsOrder.noteReceive}</div>
-                                            <div><strong>Thời gian nhận hàng:</strong> {goodsOrder.timeReceive} {goodsOrder.dateReceive}</div>
+                                            <div><strong>Thời gian nhận hàng:</strong> {formatTime(goodsOrder.timeReceive)} ngày {dayjs(goodsOrder.dateReceive).format('DD-MM-YYYY')}</div>
                                         </Col>
 
                                         <Col span={8}>
-                                            <div><strong>Tên hàng hóa:</strong> {goodsOrder.goodsName}fdasdf dsfasdf asdfasdf sfasfsafs fsf s</div>
+                                            <div><strong>Tên hàng hóa:</strong> {goodsOrder.goodsName}</div>
                                             <div><strong>Mô tả hàng hóa:</strong> {goodsOrder.goodsDescription}</div>
 
 
@@ -186,7 +187,7 @@ const GoodsManagerment = () => {
                                         <Col span={4} style={{ display: 'flex', flex: '1', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', }} >
                                             <div>
                                                 <div><strong>Giá:</strong> {goodsOrder.price} {goodsOrder.isPaid ? <Tag color='success'>Đã thanh toán</Tag> : <Tag color='error'>Chưa thanh toán</Tag>}</div>
-                                                <div><strong>Trạng thái:</strong> {goodsOrder.status}</div>
+                                                <div><strong>Trạng thái:</strong> {goodsOrder.status === 'Pending' ? 'Chưa nhận hàng' : (goodsOrder.status === 'Received' ? 'Đã nhận hàng' : 'Đã trả hàng')}</div>
                                             </div>
                                             <div>
                                                 <Button type='primary' onClick={() => { handelEditGoods(goodsOrder) }}>Chỉnh sửa</Button>

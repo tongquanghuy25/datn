@@ -97,7 +97,7 @@ const getRunningByDriver = (driverId) => {
         try {
 
             const trip = await Trip.findOne({
-                where: { driverId: driverId, status: 'Đã khởi hành' },
+                where: { driverId: driverId, status: 'Started' },
                 include: [
                     { model: Route, as: 'route', required: true },
                     { model: Bus, as: 'bus', required: true }
@@ -141,10 +141,11 @@ const getTripsBySearch = (data) => {
                     {
                         model: BusOwner,
                         as: 'busOwner',
-                        // include: {
-                        //     model: User,
-                        //     as: 'user'
-                        // }
+                        include: {
+                            model: User,
+                            as: 'user',
+                            attributes: ['phone']
+                        },
                         attributes: ['busOwnerName', 'averageRating', 'reviewCount']
 
                     },
@@ -617,8 +618,13 @@ const updateTrip = (tripId, data) => {
         try {
 
             const { status, driverId } = data
-            if (status === 'Đã khởi hành') {
-                const trip = await Trip.findOne({ status: status, driverId: driverId })
+            if (status === 'Started') {
+                const trip = await Trip.findOne({
+                    where: {
+                        status: status,
+                        driverId: driverId
+                    }
+                });
                 if (trip !== null) {
                     resolve({
                         status: 400,
@@ -629,8 +635,10 @@ const updateTrip = (tripId, data) => {
             }
 
             const checkTrip = await Trip.findOne({
-                id: tripId
-            })
+                where: {
+                    id: tripId
+                }
+            });
             if (checkTrip === null) {
                 resolve({
                     status: 404,
@@ -639,12 +647,14 @@ const updateTrip = (tripId, data) => {
                 return;
             }
 
-            const updatedTrip = await Trip.findByIdAndUpdate(tripId, { ...data }, { new: true })
-
+            await Trip.update(data, {
+                where: {
+                    id: tripId
+                }
+            });
             resolve({
                 status: 200,
                 message: 'Cập nhật thông tin chuyến thành công!',
-                data: updatedTrip
             })
         } catch (e) {
             reject(e)
@@ -657,8 +667,10 @@ const updateFinishTrip = (tripId) => {
         try {
 
             const checkTrip = await Trip.findOne({
-                id: tripId
-            })
+                where: {
+                    id: tripId
+                }
+            });
             if (checkTrip === null) {
                 resolve({
                     status: 404,
@@ -667,12 +679,14 @@ const updateFinishTrip = (tripId) => {
                 return;
             }
             //6631f6867b09020fcdd9815d
-            const updatedTrip = await Trip.findByIdAndUpdate(tripId, { status: 'Đã kết thúc' }, { new: true })
-
+            await Trip.update({ status: 'Ended' }, {
+                where: {
+                    id: tripId
+                }
+            });
             resolve({
                 status: 200,
                 message: 'Kết thúc chuyến xe thành công!',
-                data: updatedTrip
             })
         } catch (e) {
             reject(e)
@@ -683,7 +697,11 @@ const updateFinishTrip = (tripId) => {
 const deleteTrip = (tripId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            await Trip.findByIdAndDelete(tripId)
+            await Trip.destroy({
+                where: {
+                    id: tripId
+                }
+            });
             resolve({
                 status: 200,
                 message: 'Xóa chuyến thành công!',

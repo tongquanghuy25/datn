@@ -96,16 +96,20 @@ const ModalUpdateTrip = (props) => {
                         onChange={onChangeStatus}
                         options={[
                             {
-                                value: 'Chưa khởi hành',
+                                value: 'NotStarted',
                                 label: 'Chưa khởi hành'
                             },
                             {
-                                value: 'Đã khởi hành',
+                                value: 'Started',
                                 label: 'Đã khởi hành'
                             },
                             {
-                                value: 'Đã kết thúc',
+                                value: 'Ended',
                                 label: 'Đã kết thúc'
+                            },
+                            {
+                                value: 'Cancelled',
+                                label: 'Đã hủy'
                             },
                         ]}
                         value={status}

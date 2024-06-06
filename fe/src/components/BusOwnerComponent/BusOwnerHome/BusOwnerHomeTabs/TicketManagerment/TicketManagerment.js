@@ -10,7 +10,7 @@ import { Option } from 'antd/es/mentions';
 import { changeSeat, deleteSeat, deleteTicketOrder, getTicketOrderByTrip } from '../../../../../services/OrderService';
 import { getListSeat } from '../../../../../utils/ListSeat';
 import ModalAddTicket from './ModalAddTicket';
-import { getVnCurrency } from '../../../../../utils';
+import { formatTime, getVnCurrency } from '../../../../../utils';
 import ModalEditTicket from './ModalEditTicket';
 const { Search } = Input;
 
@@ -68,9 +68,11 @@ const TicketManagerment = () => {
             id: record?.id,
             access_token: user?.access_token,
             isOnTimeAllow: isOnTimeAllow,
+            busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')),
             isPaid: record?.isPaid
         })
     }
+
     const column = [
 
         {
@@ -116,9 +118,9 @@ const TicketManagerment = () => {
                 return <div >
                     <Tag
                         style={{ marginBottom: '10px' }}
-                        color={record.status === 'Đã lên xe' ? 'blue' : (record.status === 'Đã hoàn thành' ? 'success' : 'warning')}
+                        color={record.status === 'Boarded' ? 'blue' : (record.status === 'Completed' ? 'success' : 'warning')}
                     >
-                        {record.status === 'Đã lên xe' ? record.status : (record.status === 'Đã hoàn thành' ? record.status : 'Chưa lên xe')}
+                        {record.status === 'Boarded' ? 'Đã lên xe' : (record.status === 'Completed' ? 'Đã hoàn thành' : 'Chưa lên xe')}
                     </Tag>
                     {record.isPaid ? <Tag color='success'>Đã thanh toán</Tag> : <Tag color='error'>Chưa thanh toán</Tag>}
                 </div>
@@ -185,7 +187,8 @@ const TicketManagerment = () => {
         onSuccess: (data) => {
             setListTicketOrder(data?.data)
             // successMes(data?.message)
-            const list = getListSeat(trip?.busId.typeBus, data?.data)
+            console.log('data?.data', data?.data);
+            const list = getListSeat(trip?.bus.typeBus, data?.data)
             setListSeat(list)
 
         },
@@ -272,7 +275,7 @@ const TicketManagerment = () => {
 
     const handleDeleteSeat = (seat) => {
         const canCancel = isCancellationAllowed(trip?.departureDate, trip?.departureTime, trip?.timeAlowCancel);
-        mutationDeleteSeat.mutate({ access_token: user?.access_token, ticketOrder: seat?.data, seatDelete: seat?.id, isOnTimeAllow: canCancel })
+        mutationDeleteSeat.mutate({ access_token: user?.access_token, ticketOrder: seat?.data, seatDelete: seat?.id, busOwnerId: JSON.parse(localStorage.getItem('bus_owner_id')), isOnTimeAllow: canCancel })
     };
 
 
@@ -295,9 +298,9 @@ const TicketManagerment = () => {
                         <Select placeholder='Chọn chuyến xe' value={trip?.id} style={{ width: '400px' }} onSelect={(value) => { handleSelectTrip(value); resetSeat() }}>
                             {listTrip?.map(item => {
                                 return <Option value={item.id}>
-                                    <Tag color='error'>{item.departureTime}</Tag>
-                                    <Tag color='warning'>{item.busId.licensePlate}</Tag>
-                                    {item.routeId.districtStart}-{item.routeId.districtEnd}
+                                    <Tag color='error'>{formatTime(item.departureTime)}</Tag>
+                                    <Tag color='warning'>{item.bus.licensePlate}</Tag>
+                                    {item.route.districtStart}-{item.route.districtEnd}
                                 </Option>
                             }
                             )}
@@ -317,9 +320,9 @@ const TicketManagerment = () => {
                 </Space>}
             </Row>
             <Row>
-                <div style={{ maxHeight: 'calc(100vh - 170px)', overflowY: 'auto', margin: '20px' }}>
+                <div style={{ width: 'calc(100vw - 170px)', maxHeight: 'calc(100vh - 170px)', overflowY: 'auto', margin: '20px' }}>
                     {
-                        trip?.prebooking && listSeat?.length > 0 ?
+                        trip?.prebooking ?
                             <div style={{ display: 'flex', flex: 1, flexWrap: 'wrap', gap: '16px' }}>
                                 {listSeat?.map(seat => (
 
@@ -335,9 +338,9 @@ const TicketManagerment = () => {
                                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                         <div style={{ fontSize: '24px', fontWeight: 'bold', marginLeft: '10px' }}> {seat.id}</div>
                                                         <Tag
-                                                            color={seat.data.status === 'Đã lên xe' ? 'blue' : (seat.data.status === 'Đã hoàn thành' ? 'success' : 'warning')}
+                                                            color={seat.data.status === 'Boarded' ? 'blue' : (seat.data.status === 'Completed' ? 'success' : 'warning')}
                                                         >
-                                                            {seat.data.status === 'Đã lên xe' ? seat.data.status : (seat.data.status === 'Đã hoàn thành' ? seat.data.status : 'Chưa lên xe')}
+                                                            {seat.data.status === 'Boarded' ? seat.data.status : (seat.data.status === 'Completed' ? seat.data.status : 'Chưa lên xe')}
                                                         </Tag>
                                                     </div>
                                                     <div style={{ fontSize: '18px', fontWeight: '500', marginTop: '10px', marginBottom: '5px' }}>{seat.data?.name} - {seat.data.phone}</div>

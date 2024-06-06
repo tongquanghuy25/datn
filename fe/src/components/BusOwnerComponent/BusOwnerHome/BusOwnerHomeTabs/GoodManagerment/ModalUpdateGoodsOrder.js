@@ -6,49 +6,10 @@ import dayjs from 'dayjs';
 import { errorMes, loadingMes, successMes } from '../../../../Message/Message';
 import { Option } from 'antd/es/mentions';
 import { getStopPointsByBusRoute } from '../../../../../services/RouteService';
-import { createGoodsOrder, updateGoodsOrder } from '../../../../../services/OrderService';
+import { calculateArrivalDateAndTime, calculateEndTime, getVnCurrency } from '../../../../../utils';
+import { updateGoodsOrder } from '../../../../../services/OrderService';
 
 
-function calculateTime(startTime, minutes) {
-    const [startHour] = startTime.split('giờ').map(str => parseInt(str.trim()));
-    const totalMins = startHour * 60 + minutes;
-    let endHours = Math.floor(totalMins / 60) % 24;
-    let endMins = totalMins % 60;
-
-    // Định dạng giờ và phút thành chuỗi 'hh:mm'
-    const formattedHours = endHours < 10 ? `0${endHours}` : `${endHours}`;
-    const formattedMins = endMins < 10 ? `0${endMins}` : `${endMins}`;
-
-    return `${formattedHours}h${formattedMins}`;
-}
-
-function calculateArrivalDateAndTime(departureDate, departureTime, durationInMinutes) {
-    // Chia chuỗi ngày đi thành các thành phần ngày, tháng và năm
-    const [day, month, year] = departureDate?.split('/')?.map(Number);
-
-    // Tách giờ và phút từ chuỗi giờ đi
-    // const [, hours, minutes] = departureTime.match(/(\d+) giờ (\d+)/)?.map(Number);
-    const [hours, minutes] = departureTime.split(':')
-
-    // Kiểm tra xem các thành phần đã chuyển đổi thành số hợp lệ chưa
-    if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
-        console.log("Ngày hoặc giờ đi không hợp lệ");
-        return;
-    }
-
-    // Tạo đối tượng Date từ các thành phần của ngày và giờ đi
-    const departureDateTime = new Date(year, month - 1, day, hours, minutes);
-
-    // Thêm số phút di chuyển vào ngày và giờ đi
-    const arrivalDateTime = new Date(departureDateTime.getTime() + durationInMinutes * 60000);
-
-    // Lấy ngày đến nơi
-    const arrivalDate = `${arrivalDateTime.getDate()}/${arrivalDateTime.getMonth() + 1}/${arrivalDateTime.getFullYear()}`;
-
-    // Lấy giờ đến nơi
-    const arrivalTime = `${arrivalDateTime.getHours()}:${arrivalDateTime.getMinutes().toString().padStart(2, '0')}`;
-    return { arrivalDate, arrivalTime };
-}
 
 const validateNumber = (_, value) => {
     const numberPattern = /^\d+$/;
@@ -102,8 +63,8 @@ const ModalUpdateGoodsOrder = (props) => {
     // Get List Stop Point
     const { data: dataStopPoint, refetch } = useQuery(
         {
-            queryKey: [`listStopPoint${trip?.routeId.id}`],
-            queryFn: () => getStopPointsByBusRoute(trip?.routeId.id),
+            queryKey: [`listStopPoint${trip?.route.id}`],
+            queryFn: () => getStopPointsByBusRoute(trip?.route.id),
         });
 
     useEffect(() => {
@@ -220,7 +181,7 @@ const ModalUpdateGoodsOrder = (props) => {
                                 <Select placeholder='Chọn điểm gửi hàng' style={{ width: '100%' }} >
                                     {listPickUpPoint?.map(item => {
                                         return <Option value={item?.id}>
-                                            {calculateTime(trip?.departureTime, item.timeFromStart)} {item.place}
+                                            {calculateEndTime(trip?.departureTime, item.timeFromStart)} {item.place}
                                         </Option>
                                     }
                                     )}
@@ -245,7 +206,7 @@ const ModalUpdateGoodsOrder = (props) => {
                                 <Select placeholder='Chọn điểm nhận hàng' style={{ width: '100%' }} >
                                     {listDropOffPoint?.map(item => {
                                         return <Option value={item?.id}>
-                                            {calculateTime(trip?.departureTime, item.timeFromStart)} {item.place}
+                                            {calculateEndTime(trip?.departureTime, item.timeFromStart)} {item.place}
                                         </Option>
                                     }
                                     )}

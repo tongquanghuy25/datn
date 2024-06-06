@@ -39,7 +39,8 @@ module.exports = {
             timeReceive: { type: Sequelize.TIME, allowNull: false },
             dateReceive: { type: Sequelize.DATE, allowNull: false },
 
-            weight: { type: Sequelize.INTEGER, allowNull: false },
+            // weight: { type: Sequelize.INTEGER, allowNull: false },
+            goodsName: { type: Sequelize.TEXT, allowNull: false },
             goodsDescription: { type: Sequelize.TEXT, allowNull: false },
 
             price: { type: Sequelize.INTEGER, allowNull: false },
