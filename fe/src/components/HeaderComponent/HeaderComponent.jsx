@@ -60,7 +60,7 @@ const HeaderComponent = () => {
                         <ContainerOutlined style={{ marginRight: '10px' }} />
                         Xem vé đã mua
                     </div>
-                    <div onClick={() => user?.access_token ? navigate('/bus-owner-registration') : navigate('/sign-up')} className='header-items'>
+                    <div onClick={() => navigate('/partner-registration')} className='header-items'>
                         <UsergroupAddOutlined style={{ marginRight: '10px', fontSize: '20px' }} />
                         Trở thành đối tác
                     </div>

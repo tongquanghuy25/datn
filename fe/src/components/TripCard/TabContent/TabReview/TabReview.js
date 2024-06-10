@@ -67,7 +67,7 @@ const TabReview = (props) => {
                         </Col>
                         <Col span={8}>
                             <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{review.name ? review.name : 'Chưa có tên'}</div>
-                            <a href={`mailto:${review.userId?.email}`} style={{ color: '#1890ff', fontSize: '14px' }}>{review.userId?.email}</a>
+                            <a href={`mailto:${review.userId?.email}`} style={{ color: '#1890ff', fontSize: '14px' }}>{review.user?.email}</a>
                         </Col>
                         <Col span={6}>
                             <Tag color='green'>Đã mua vé</Tag>

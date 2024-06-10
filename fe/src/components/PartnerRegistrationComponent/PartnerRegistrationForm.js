@@ -64,11 +64,11 @@ const PartnerRegistrationForm = (props) => {
 
             >
                 <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
-                    Đăng ký trở thành nhà xe
+                    {isBusOwner ? 'Đăng ký trở thành nhà xe' : 'Đăng ký trở thành đại lý'}
                 </div>
                 <Row gutter={[48]}>
                     <Col span={8}>
-                        <div style={{ fontSize: '18px', fontWeight: '500', marginBottom: '10px' }}>Thông tin tài khoản nhà xe</div>
+                        <div style={{ fontSize: '18px', fontWeight: '500', marginBottom: '10px' }}>{isBusOwner ? 'Thông tin tài khoản nhà xe' : 'Thông tin tài khoản đại lý'} </div>
 
                         <Form.Item
                             name="email"
@@ -147,7 +147,7 @@ const PartnerRegistrationForm = (props) => {
                         </Form.Item>
                     </Col>
                     <Col span={8}>
-                        <div style={{ fontSize: '18px', fontWeight: '500', marginBottom: '10px' }}>Thông tin nhà xe</div>
+                        <div style={{ fontSize: '18px', fontWeight: '500', marginBottom: '10px' }}> {isBusOwner ? 'Thông tin nhà xe' : 'Thông tin đại lý'}</div>
 
                         <Form.Item
                             name="partnerName"
@@ -156,12 +156,12 @@ const PartnerRegistrationForm = (props) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Tên nhà xe không được bỏ trống !",
+                                    message: `Tên ${isBusOwner ? 'nhà xe' : 'đại lý'} không được bỏ trống !`,
                                 }
                             ]}
                             {...formItemLayout}
                         >
-                            <Input placeholder="Tên nhà xe" size="large" />
+                            <Input placeholder={`Tên ${isBusOwner ? 'nhà xe' : 'đại lý'}`} size="large" />
                         </Form.Item>
                         <Form.Item
                             name="address"

@@ -155,11 +155,12 @@ const BusInformation = (props) => {
     console.log('fileList', fileList);
     return (
         <>
-            <div style={{ overflowY: 'auto', width: '100%', maxHeight: '600px', backgroundColor: '#e0f2f5', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '0px 20px' }}>
+            <div style={{ overflowY: 'auto', width: '100%', backgroundColor: '#d5f0d9', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '0px 20px' }}>
                 <Form
                     ref={formRef}
                     form={form}
                     onFinish={onFinish}
+                    style={{ height: 'calc(85vh - 40px)' }}
 
                 >
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>

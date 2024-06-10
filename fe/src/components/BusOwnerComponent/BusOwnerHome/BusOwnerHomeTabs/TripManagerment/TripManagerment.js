@@ -231,8 +231,6 @@ const TripManagerment = () => {
 
     }, [isSuccess, isError, data])
 
-    console.log('lll', listTrip);
-
     const onChangeDate = (date, dateString) => {
         setDay(date.format('YYYY-MM-DD'))
     }
@@ -291,7 +289,7 @@ const TripManagerment = () => {
                         dataSource={listTrip}
                         columns={column}
                         scroll={{
-                            y: 550,
+                            y: 500,
                         }}
                     ></Table>
                 </div>

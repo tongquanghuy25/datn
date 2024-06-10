@@ -1,6 +1,6 @@
 import { Modal } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
-import TabSeatSelection from '../../BusCard/TabContent/TabBookTicket/TabBookTicket';
+import TabSeatSelection from '../../TripCard/TabContent/TabBookTicket/TabBookTicket';
 import { successMes } from '../../Message/Message';
 
 

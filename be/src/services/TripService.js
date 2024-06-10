@@ -158,9 +158,10 @@ const getTripsBySearch = (data) => {
                 where: {
                     [Op.and]: [
                         sequelize.where(sequelize.fn('DATE', sequelize.col('departureDate')), date),
+                        { status: "NotStarted" }
                     ]
                 },
-                raw: true
+                // raw: true
             });
 
             resolve({
@@ -279,109 +280,6 @@ const getInforFilterTrip = (data) => {
 const getTripsByFilter = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            // const { provinceStart, districtStart, provinceEnd, districtEnd, date, order, placesEnd, placesStart, priceRange, isRecliningSeat, minRating } = data
-
-            // const routeIds = await Route.find(data).select('id')
-
-            // let routeIdFinal = []
-
-            // if (placesEnd?.length > 0 || placesStart?.length > 0) {
-            //     if (placesStart?.length > 0) {
-            //         routeIdFinal = await StopPoint.
-            //             find({
-            //                 routeId: { $in: routeIds },
-            //                 locationId: { $in: placesStart },
-            //                 isPickUp: true
-            //             })
-            //             .distinct('routeId')
-            //     }
-
-            //     if (placesEnd?.length > 0) {
-
-
-            //         let routes = await StopPoint.
-            //             find({
-            //                 routeId: { $in: routeIds },
-            //                 locationId: { $in: placesEnd },
-            //                 isPickUp: false
-            //             })
-            //             .distinct('routeId')
-
-            //         const routesString = routes.map(route => route.toString());
-            //         routeIdFinal = routeIdFinal.filter(item => routesString.includes(item.toString()))
-
-            //     }
-            // } else routeIdFinal = routeIds
-
-
-            // let filterBus = {}
-            // if (isRecliningSeat === 'true' || isRecliningSeat === 'false') {
-            //     filterBus = { isRecliningSeat: JSON.parse(isRecliningSeat) }
-            // }
-
-            // if (minRating) {
-            //     filterBus = { ...filterBus, averageRating: { $gt: parseInt(minRating) } }
-            // }
-
-            // let busIds = []
-            // if (JSON.stringify(filterBus) !== '{}') {
-            //     busIds = await Bus.find(filterBus).select('id')
-
-            // }
-
-
-            // let filterTrip = {
-            //     departureDate: date,
-            //     routeId: { $in: routeIdFinal },
-            //     ticketPrice: { $gt: priceRange[0], $lt: priceRange[1] }
-            //     // status: 'Chưa khởi hành'
-
-            // }
-            // if (JSON.stringify(filterBus) !== '{}') filterTrip = { ...filterTrip, busId: { $in: busIds } }
-
-
-
-            // let orderTrip = {}
-            // if (order === 'price_asc') {
-            //     orderTrip = { ticketPrice: 1 }
-            // } else if (order === 'price_desc') {
-            //     orderTrip = { ticketPrice: -1 }
-
-            // } else if (order === 'time_asc') {
-            //     orderTrip = { departureTime: 1 }
-
-            // } else if (order === 'time_desc') {
-            //     orderTrip = { departureTime: -1 }
-
-            // }
-
-
-            // const allTrip = await Trip.
-            //     find(filterTrip)
-            //     .populate('busId')
-            //     .populate('busOwnerId')
-            //     .populate({
-            //         path: 'routeId'
-            //     })
-            //     .sort(orderTrip)
-
-            // console.log('filterTrip', filterTrip);
-
-            // const allTrip = await Trip.
-            //     find({
-            //         departureDate: date,
-            //         routeId: { $in: routeIds },
-            //         // status: 'Chưa khởi hành'
-            //     })
-            //     .populate('busOwnerId', 'busOwnerName')
-            //     .populate({
-            //         path: 'routeId',
-            //         select: 'provinceStart districtStart provinceEnd districtEnd',
-            //     })
-            //     .populate('busId', 'avatar typeBus averageRating')
-            //     .limit(2)
-
-
             const { provinceStart, districtStart, provinceEnd, districtEnd, date, order, priceRange, seatOption, busOwnerSelected, minRating } = data;
             let { placesEnd, placesStart } = data
 
@@ -445,13 +343,6 @@ const getTripsByFilter = (data) => {
             }
 
 
-            // .populate('busOwnerId', 'busOwnerName')
-            //     .populate({
-            //         path: 'routeId',
-            //         select: 'provinceStart districtStart provinceEnd districtEnd',
-            //     })
-            //     .populate('busId', 'avatar typeBus averageRating')
-
             const allTrip = await Trip.findAll({
                 include: [
                     {
@@ -460,7 +351,7 @@ const getTripsByFilter = (data) => {
                         where: {
                             id: { [Op.in]: routeIdFinal }
                         },
-                        attributes: ['provinceStart', 'districtStart', 'provinceEnd', 'districtEnd']
+                        attributes: ['placeStart', 'districtStart', 'placeEnd', 'districtEnd', 'journeyTime']
                     },
                     {
                         model: BusOwner,
@@ -468,14 +359,10 @@ const getTripsByFilter = (data) => {
                         where: {
                             [Op.and]: [
                                 busOwnerSelected && busOwnerSelected.length > 0 ? { id: { [Op.in]: busOwnerSelected } } : null,
-                                minRating ? { averageRating: { [Op.gt]: parseInt(minRating) } } : null
+                                minRating ? { averageRating: { [Op.gte]: parseInt(minRating) } } : null
                             ].filter(condition => condition !== null)
                         },
-                        // include: {
-                        //     model: User,
-                        //     as: 'user'
-                        // },
-                        attributes: ['busOwnerName', 'averageRating']
+                        attributes: ['busOwnerName', 'averageRating', 'reviewCount']
                     },
                     {
                         model: Bus,
@@ -485,7 +372,7 @@ const getTripsByFilter = (data) => {
                                 seatOption && seatOption.length > 0 ? { typeSeat: { [Op.in]: seatOption } } : null,
                             ].filter(condition => condition !== null)
                         },
-                        attributes: ['avatar', 'typeBus']
+                        attributes: ['avatar', 'images', 'typeBus', 'convinients']
                     }
                 ],
                 where: {
@@ -495,110 +382,8 @@ const getTripsByFilter = (data) => {
                     ]
                 },
                 order: orderTrip,
-                raw: true
             });
 
-
-            // const allTrip = await Trip.findAll({
-            //     include: [
-            //         {
-            //             model: Route,
-            //             as: 'route',
-            //             where: {
-            //                 [Op.and]: [
-            //                     { provinceStart: provinceStart },
-            //                     { provinceEnd: provinceEnd },
-            //                     districtStart ? { districtStart: districtStart } : null,
-            //                     districtEnd ? { districtEnd: districtEnd } : null
-            //                 ]
-            //             }
-            //         },
-            //         {
-            //             model: BusOwner,
-            //             as: 'busOwner',
-            //             include: {
-            //                 model: User,
-            //                 as: 'user'
-            //             }
-            //         },
-            //         {
-            //             model: Bus,
-            //             as: 'bus',
-            //         }
-            //     ],
-            //     where: {
-            //         [Op.and]: [
-            //             sequelize.where(sequelize.fn('DATE', sequelize.col('departureDate')), date),
-            //         ]
-            //     },
-            //     raw: true
-            // });
-
-            // const whereConditions = {
-            //     provinceStart,
-            //     provinceEnd
-            // };
-
-            // if (districtStart) {
-            //     whereConditions.districtStart = districtStart;
-            // }
-
-            // if (districtEnd) {
-            //     whereConditions.districtEnd = districtEnd;
-            // }
-
-            // // Tìm các routeIds phù hợp
-
-            // let filterBus = {};
-            // if (isRecliningSeat === 'true' || isRecliningSeat === 'false') {
-            //     filterBus.isRecliningSeat = JSON.parse(isRecliningSeat);
-            // }
-
-            // if (minRating) {
-            //     filterBus.averageRating = { [sequelize.Op.gt]: parseInt(minRating) };
-            // }
-
-            // let busIds = [];
-            // if (Object.keys(filterBus).length > 0) {
-            //     const buses = await Bus.findAll({
-            //         where: filterBus,
-            //         attributes: ['id']
-            //     });
-            //     busIds = buses.map(bus => bus.id);
-            // }
-
-            // let filterTrip = {
-            //     departureDate: date,
-            //     routeId: { [sequelize.Op.in]: routeIdFinal },
-            //     ticketPrice: { [sequelize.Op.gt]: priceRange[0], [sequelize.Op.lt]: priceRange[1] }
-            // };
-
-            // if (busIds.length > 0) {
-            //     filterTrip.busId = { [sequelize.Op.in]: busIds };
-            // }
-
-            // let orderTrip = [];
-            // if (order === 'price_asc') {
-            //     orderTrip = [['ticketPrice', 'ASC']];
-            // } else if (order === 'price_desc') {
-            //     orderTrip = [['ticketPrice', 'DESC']];
-            // } else if (order === 'time_asc') {
-            //     orderTrip = [['departureTime', 'ASC']];
-            // } else if (order === 'time_desc') {
-            //     orderTrip = [['departureTime', 'DESC']];
-            // }
-
-            // const allTrip = await Trip.findAll({
-            //     where: filterTrip,
-            //     include: [
-            //         { model: Bus, as: 'bus' },
-            //         { model: BusOwner, as: 'busOwner' },
-            //         { model: Route, as: 'route' }
-            //     ],
-            //     order: orderTrip
-            // });
-
-            // console.log(allTrip);
 
             resolve({
                 status: 200,

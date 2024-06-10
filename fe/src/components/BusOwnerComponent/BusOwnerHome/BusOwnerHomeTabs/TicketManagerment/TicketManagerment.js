@@ -7,30 +7,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { getTripsByBusOwner } from '../../../../../services/TripService';
 import { errorMes, successMes, warningMes } from '../../../../Message/Message';
 import { Option } from 'antd/es/mentions';
-import { changeSeat, deleteSeat, deleteTicketOrder, getTicketOrderByTrip } from '../../../../../services/OrderService';
+import { changeSeat, deleteSeat, cancelTicketOrder, getTicketOrderByTrip } from '../../../../../services/OrderService';
 import { getListSeat } from '../../../../../utils/ListSeat';
 import ModalAddTicket from './ModalAddTicket';
-import { formatTime, getVnCurrency } from '../../../../../utils';
+import { formatTime, getVnCurrency, isCancellationAllowed } from '../../../../../utils';
 import ModalEditTicket from './ModalEditTicket';
 const { Search } = Input;
 
-
-function isCancellationAllowed(departureDateStr, departureTimeStr, cancellationTimeInHours) {
-    // Chuyển đổi chuỗi ngày và thời gian xuất phát thành đối tượng Date
-    console.log('aa', departureDateStr, departureTimeStr, cancellationTimeInHours);
-    const [day, month, year] = departureDateStr?.split('-').map(Number);
-    const [hours, minutes] = departureTimeStr?.split(':').map(Number);
-    const departureDate = new Date(year, month - 1, day, hours, minutes);
-
-    // Tính thời gian giới hạn cho phép hủy chuyến
-    const cancellationDeadline = new Date(departureDate.getTime() - cancellationTimeInHours * 60000 * 60);
-
-    // Lấy thời gian hiện tại
-    const currentDate = new Date();
-
-    // So sánh thời gian hiện tại với thời gian giới hạn
-    return currentDate <= cancellationDeadline;
-}
 
 const TicketManagerment = () => {
     const user = useSelector((state) => state.user)
@@ -48,10 +31,10 @@ const TicketManagerment = () => {
     const [selectedEmptySeats, setSelectedEmptySeats] = useState([]);
     const [seatSwap, setSeatSwap] = useState(null);
 
-    const mutationDelete = useMutation({
+    const mutationCancel = useMutation({
         mutationFn: async (data) => {
             const { id, access_token, ...rest } = data;
-            return await deleteTicketOrder(id, access_token, rest);
+            return await cancelTicketOrder(id, access_token, rest);
         },
         onSuccess: () => {
             successMes('Xóa đơn vé thành công!')
@@ -62,9 +45,10 @@ const TicketManagerment = () => {
         }
     });
 
+
     const handleDeleteTicket = (record) => {
         const isOnTimeAllow = isCancellationAllowed(trip?.departureDate, trip?.departureTime, trip?.timeAlowCancel)
-        mutationDelete.mutate({
+        mutationCancel.mutate({
             id: record?.id,
             access_token: user?.access_token,
             isOnTimeAllow: isOnTimeAllow,
@@ -118,9 +102,9 @@ const TicketManagerment = () => {
                 return <div >
                     <Tag
                         style={{ marginBottom: '10px' }}
-                        color={record.status === 'Boarded' ? 'blue' : (record.status === 'Completed' ? 'success' : 'warning')}
+                        color={record.status === 'Boarded' ? 'blue' : (record.status === 'NotBoarded' ? 'warning' : (record.status === 'Canceled' ? 'error' : 'success'))}
                     >
-                        {record.status === 'Boarded' ? 'Đã lên xe' : (record.status === 'Completed' ? 'Đã hoàn thành' : 'Chưa lên xe')}
+                        {record.status === 'Boarded' ? 'Đã lên xe' : (record.status === 'NotBoarded' ? 'Chưa lên xe' : (record.status === 'Canceled' ? 'Đã hủy' : 'Đã hoàn thành'))}
                     </Tag>
                     {record.isPaid ? <Tag color='success'>Đã thanh toán</Tag> : <Tag color='error'>Chưa thanh toán</Tag>}
                 </div>
@@ -309,7 +293,7 @@ const TicketManagerment = () => {
                     <div style={{ width: 200, marginLeft: '30px' }}>
                         <label>Tìm kiếm theo id đơn vé</label>
                         <Search
-                            placeholder="Nhập id đơn hàng"
+                            placeholder="Nhập id đơn vé"
                         //   onSearch={onSearch}
                         />
 

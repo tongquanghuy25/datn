@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { Card, Button, Tabs, Rate, Modal, Form, Input, Select } from 'antd';
+import { Card, Button, Tabs, Rate, Modal, Form, Input, Select, Row, Col } from 'antd';
 // import 'antd/dist/antd.css';
 import './style.css'; // Liên kết file CSS của bạn
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, EnvironmentOutlined, MoreOutlined } from '@ant-design/icons';
 import TabPane from 'antd/es/tabs/TabPane';
 import TabBookTicket from './TabContent/TabBookTicket/TabBookTicket';
 import TabImagesComponent from './TabContent/TabImages/TabImagesComponent';
@@ -71,7 +71,7 @@ const BusCard = ({ trip }) => {
     //         images: trip.busId.images,
     //         convinients: trip.busId.convinients,
     //         typeBus: trip.busId.typeBus,
-    //         availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+    //         totalSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
     //         routeId: trip.routeId.id,
     //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
     //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
@@ -88,23 +88,26 @@ const BusCard = ({ trip }) => {
     return (
         <div className="card-trip-container">
             <Card className="card-trip">
-                <div className="card-trip-content">
-                    <div className="card-trip-avatar">
-                        <img src={trip['bus.avatar']} alt="Bus Avatar" />
-                    </div>
-                    <div className="card-trip-info">
-                        <p className='name'>{trip['busOwner.busOwnerName']}</p>
-                        <p>Đánh giá: {trip['busOwner.averageRating']} <Rate disabled defaultValue={1} count={1} /> ({trip['busOwner.reviewCount']})</p>
-                        <p className="price">Giá vé: {getVnCurrency(trip.ticketPrice)}</p>
-                        <p>Số chỗ còn trống: {trip.totalSeats - trip.bookedSeats} / {trip.totalSeats}</p>
-                    </div>
-                    <div>
-                        <p>Giờ xuất phát: {formatTimeVn(trip.departureTime)}</p>
-                        <p>Địa điểm xuất phát: {`${trip['route.placeStart']}-${trip['route.districtStart']} `}</p>
-                        <p>Giờ đến: {formatTimeVn(calculateArrivalTime(trip.departureTime, trip['route.journeyTime']))}</p>
-                        <p>Địa điểm đến: {`${trip['route.placeEnd']}-${trip['route.districtEnd']} `}</p></div>
-                </div>
-                <div className="card-trip-actions">
+                <Row className="card-trip-content">
+                    <Col span={6} className="card-trip-avatar">
+                        <img src={trip.bus.avatar} alt="Bus Avatar" />
+                    </Col>
+                    <Col span={8} className="card-trip-info">
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{trip.busOwner.busOwnerName}</div>
+                        <p>Đánh giá: <strong> {trip.busOwner.averageRating} <Rate disabled defaultValue={1} count={1} /> ({trip.busOwner.reviewCount})</strong></p>
+                        <p><strong>{trip.bus.typeBus} chỗ</strong></p>
+                        <p>Số chỗ trống: <strong>{trip.totalSeats - trip.bookedSeats} / {trip.totalSeats}</strong></p>
+                    </Col>
+                    <Col span={10}>
+                        <Row justify={'end'} style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#29BE27' }}>Giá vé: {getVnCurrency(trip.ticketPrice)}</Row>
+                        <div>{formatTimeVn(trip.departureTime)}</div>
+                        <div><EnvironmentOutlined /> <strong>{`${trip.route.placeStart} - ${trip.route.districtStart} `}</strong></div>
+                        <div>  <MoreOutlined /> </div>
+                        <div><EnvironmentOutlined /> <strong>{`${trip.route.placeEnd} - ${trip.route.districtEnd} `}</strong></div>
+                        <div> {formatTimeVn(calculateArrivalTime(trip.departureTime, trip.route.journeyTime))}</div>
+                    </Col>
+                </Row>
+                <Row justify={'space-between'}>
                     <div
                         style={{ color: 'red', fontSize: '16px', textDecoration: 'underline', cursor: 'pointer' }}
                         onClick={() => { setIsReport(true) }}
@@ -112,15 +115,15 @@ const BusCard = ({ trip }) => {
                         <ExclamationCircleOutlined /> Báo cáo/ Khiếu nại
                     </div>
                     <div>
-                        <Button type="primary" onClick={handleShowDetails}>Xem chi tiết</Button>
-                        <Button type="primary" onClick={handleBookTickets}>Đặt vé</Button>
+                        <Button type="primary" onClick={handleShowDetails} >Xem chi tiết</Button>
+                        <Button type="primary" onClick={handleBookTickets} style={{ marginLeft: '20px' }}>Đặt vé</Button>
                     </div>
-                </div>
+                </Row>
 
                 {showDetails && (
                     <Tabs activeKey={activeTab} onChange={handleTabChange}>
                         <TabPane tab="Hình ảnh" key="1">
-                            <TabImagesComponent images={JSON.parse(trip['bus.images'])}></TabImagesComponent>
+                            <TabImagesComponent images={JSON.parse(trip.bus.images)}></TabImagesComponent>
                         </TabPane>
                         <TabPane tab="Đánh giá" key="2">
                             <TabReview busOwnerId={trip?.busOwnerId} />
@@ -139,7 +142,7 @@ const BusCard = ({ trip }) => {
                 {bookTickets && (
 
                     <TabBookTicket
-                        typeBus={trip['bus.typeBus']}
+                        typeBus={trip.bus.typeBus}
                         paymentRequire={trip.paymentRequire}
                         prebooking={trip.prebooking}
                         routeId={trip.routeId}
@@ -148,72 +151,74 @@ const BusCard = ({ trip }) => {
                         tripId={trip.id}
                         departureDate={trip.departureDate}
                         busOwnerId={trip.busOwnerId}
-                        busOwnerName={trip['busOwner.busOwnerName']}
-                        routeName={`${`${trip['route.placeStart']}-${trip['route.districtStart']} `} - ${`${trip['route.placeEnd']}-${trip['route.districtEnd']} `}`}
+                        busOwnerName={trip.busOwner.busOwnerName}
+                        routeName={`${`${trip.route.placeStart}-${trip.route.districtStart} `} - ${`${trip.route.placeEnd}-${trip.route.districtEnd} `}`}
                     />
 
                 )}
 
             </Card>
 
-            {isReport && <Modal
-                title={<h3>Báo cáo với chúng tôi</h3>}
-                open={isReport}
-                okText='Gửi'
-                onOk={() => {
-                    formRef.current.submit()
-                }}
-                cancelText='Hủy'
-                onCancel={() => {
-                    setIsReport(false)
-                    form.resetFields()
-                }}
-            >
-                <Form
-                    ref={formRef}
-                    layout="vertical"
-                    form={form}
-                    onFinish={onFinish}
+            {
+                isReport && <Modal
+                    title={<h3>Báo cáo với chúng tôi</h3>}
+                    open={isReport}
+                    okText='Gửi'
+                    onOk={() => {
+                        formRef.current.submit()
+                    }}
+                    cancelText='Hủy'
+                    onCancel={() => {
+                        setIsReport(false)
+                        form.resetFields()
+                    }}
                 >
-
-                    <Form.Item name="phone" >
-                        <Input placeholder="Số điện thoại liên hệ với bạn" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="title"
-                        label="Chủ đề muốn báo cáo"
-
+                    <Form
+                        ref={formRef}
+                        layout="vertical"
+                        form={form}
+                        onFinish={onFinish}
                     >
-                        <Select
-                            style={{ minWidth: '150px', marginRight: '10px' }}
-                            showSearch
-                            placeholder="Chọn tuyến đường"
+
+                        <Form.Item name="phone" >
+                            <Input placeholder="Số điện thoại liên hệ với bạn" />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="title"
+                            label="Chủ đề muốn báo cáo"
+
                         >
-                            <Option value="Giá vé">Giá vé</Option>
-                            <Option value="Điểm đón trả">Điểm đón trả</Option>
-                            <Option value="Thông tin tiện ích">Thông tin tiện ích</Option>
-                            <Option value="Lịch chạy(Giờ chạy)">Lịch chạy(Giờ chạy)</Option>
-                            <Option value="Thông tin nhà xe">Thông tin nhà xe</Option>
-                            <Option value="Khác">Khác</Option>
-                        </Select>
+                            <Select
+                                style={{ minWidth: '150px', marginRight: '10px' }}
+                                showSearch
+                                placeholder="Chọn tuyến đường"
+                            >
+                                <Option value="Giá vé">Giá vé</Option>
+                                <Option value="Điểm đón trả">Điểm đón trả</Option>
+                                <Option value="Thông tin tiện ích">Thông tin tiện ích</Option>
+                                <Option value="Lịch chạy(Giờ chạy)">Lịch chạy(Giờ chạy)</Option>
+                                <Option value="Thông tin nhà xe">Thông tin nhà xe</Option>
+                                <Option value="Khác">Khác</Option>
+                            </Select>
 
-                    </Form.Item>
+                        </Form.Item>
 
-                    <Form.Item
-                        name="content"
-                        label="Nội dung muốn báo cáo"
+                        <Form.Item
+                            name="content"
+                            label="Nội dung muốn báo cáo"
 
-                    >
-                        <TextArea
-                            placeholder='Vui lòng nhập mô tả chi tiết'
-                        />
+                        >
+                            <TextArea
+                                placeholder='Vui lòng nhập mô tả chi tiết'
+                            />
 
-                    </Form.Item>
+                        </Form.Item>
 
-                </Form>
-            </Modal>}
-        </div>
+                    </Form>
+                </Modal>
+            }
+        </div >
     );
 };
 

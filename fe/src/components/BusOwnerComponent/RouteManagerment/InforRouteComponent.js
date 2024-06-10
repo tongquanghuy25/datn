@@ -308,8 +308,8 @@ const InforRouteComponent = (props) => {
     }
 
     return (
-        <div style={{ height: '100%' }}>
-            <div style={{ height: '18%' }}>
+        <div style={{ height: 'calc(92vh - 40px)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: '110px' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', fontSize: '30px', fontWeight: '700', marginBottom: '10px' }}>Cập nhật thông tin tuyến đường</div>
                 <div style={{ display: 'flex', justifyContent: 'space-around', borderBottom: '1px solid #cccccc', paddingBottom: '10px' }}>
                     <div>
@@ -361,7 +361,7 @@ const InforRouteComponent = (props) => {
                     </div>
                 </div>
             </div>
-            <div style={{ height: '75%' }}>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <Button onClick={() => setIsPickUpPoint(true)} style={{ backgroundColor: isPickUpPoint ? '#abe0c9' : null, width: '200px', marginTop: '20px' }}>
@@ -380,14 +380,11 @@ const InforRouteComponent = (props) => {
                     pagination={false}
                     dataSource={isPickUpPoint ? listPickUpPoint : listDropOffPoint}
                     columns={column}
-                    scroll={{
-                        y: 350,
-                    }}
                 ></Table>
 
 
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+            <div style={{ height: '40px', display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
                 <Button onClick={() => { handleUpdateRoute() }} type="primary" style={{ marginRight: '20px' }}>
                     Xác nhận sửa
                 </Button>

@@ -8,7 +8,7 @@ const tripSchema = new mongoose.Schema(
         routeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
         departureDate: { type: String, required: true },
         departureTime: { type: String, required: true },
-        availableSeats: { type: Number, required: true },
+        totalSeats: { type: Number, required: true },
         ticketsSold: { type: Number, default: 0 },
         status: { type: String, required: true, default: 'Chưa khởi hành' },
         ticketPrice: { type: Number, required: true },

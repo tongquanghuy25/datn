@@ -12,9 +12,12 @@ export const getSeatsBookedByTrip = async (tripId) => {
     return res.data
 }
 
-export const getTicketsByUser = async (access_token, useId) => {
+export const getTicketsByUser = async (access_token, useId, statuses) => {
     const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-tickets-by-user/${useId}`,
         {
+            params: {
+                data: statuses
+            },
             headers: {
                 token: `Bearer ${access_token}`,
             }
@@ -23,8 +26,8 @@ export const getTicketsByUser = async (access_token, useId) => {
     return res.data
 }
 
-export const getTicketById = async (data) => {
-    const res = await axios.get(`${process.env.REACT_APP_API_URL}/order/get-tickets-by-id?ticketId=${data?.ticketId}&phone=${data?.phone}`)
+export const getTicketByCode = async (data) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/order/get-tickets-by-id?ticketCode=${data?.ticketCode}&phone=${data?.phone}`)
     return res.data
 }
 
@@ -39,7 +42,7 @@ export const getTicketOrderByTrip = async (access_token, tripId) => {
     return res.data
 }
 
-export const deleteTicketOrder = async (id, access_token, data) => {
+export const cancelTicketOrder = async (id, access_token, data) => {
     const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/order/delete-ticket/${id}`,
         {
             params: { data },

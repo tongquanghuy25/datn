@@ -35,7 +35,7 @@ const AdminPartnerComponent = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            setListData(data?.data)
+            setListData([...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data])
         } else if (isError) {
             console.log('err', data);
         }
@@ -265,9 +265,10 @@ const AdminPartnerComponent = () => {
                     bordered
                     dataSource={listData}
                     columns={column}
-                    scroll={{
-                        y: 500,
-                    }}
+                    // scroll={{
+                    //     y: 500,
+                    // }}
+                    style={{ padding: '0px 10px' }}
                 ></Table>
 
                 {isEdit && <Modal

@@ -13,7 +13,7 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
     console.log('sdfsad', tripSelected);
 
     const {
-        availableSeats,
+        totalSeats,
         bus,
         departureDate,
         departureTime,
@@ -25,7 +25,6 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
         ticketsSold
     } = tripSelected;
 
-    const totalSeats = 20;
     const bookedSeats = [
         { seatNumber: 3, name: 'John Doe', phone: '123-456-7890', email: 'john@example.com', pickup: '123 Main St', time: '9:00 AM' },
         { seatNumber: 7, name: 'Jane Smith', phone: '987-654-3210', email: 'jane@example.com', pickup: '456 Elm St', time: '10:00 AM' }
@@ -69,7 +68,7 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
                                         </Col>
                                         <Col span={12}>
                                             <p><strong>Trạng thái:</strong> <Tag color={status === 'active' ? 'green' : 'red'}>{status}</Tag></p>
-                                            <p><strong>Số ghế trống:</strong> {availableSeats}</p>
+                                            <p><strong>Số ghế trống:</strong> {totalSeats}</p>
                                             <p><strong>Giá vé:</strong> {ticketPrice}</p>
                                             <p><strong>Vé đã bán:</strong> {ticketsSold}</p>
                                         </Col>

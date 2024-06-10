@@ -70,17 +70,6 @@ function calculateArrivalTime(startTime, duration) {
 
     return { departureTime, arrivalTime };
 }
-
-const daysOfWeekOptions = [
-    { label: 'Thứ 2', value: 'Monday' },
-    { label: 'Thứ 3', value: 'Tuesday' },
-    { label: 'Thứ 4', value: 'Wednesday' },
-    { label: 'Thứ 5', value: 'Thursday' },
-    { label: 'Thứ 6', value: 'Friday' },
-    { label: 'Thứ 7', value: 'Saturday' },
-    { label: 'Chủ nhật', value: 'Sunday' },
-];
-
 const SideBarFilterComponent = (props) => {
 
     const { listDataFilter, dataSearch, setListTrip, handleCancelFilter } = props
@@ -102,8 +91,6 @@ const SideBarFilterComponent = (props) => {
         setOrder(e.target.value);
     };
 
-
-
     const handlePriceRangeChange = value => {
         setPriceRange(value);
     };
@@ -113,8 +100,6 @@ const SideBarFilterComponent = (props) => {
         newPriceRange[index] = value;
         setPriceRange(newPriceRange);
     };
-
-
 
     const handleCheckboxChange = checkedValues => {
         setSeatOption(checkedValues);
@@ -209,30 +194,30 @@ const SideBarFilterComponent = (props) => {
         },
         onSuccess: (data) => {
             console.log('da', data?.data);
-            const listData = data.data?.map(trip => {
-                const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
-                return {
-                    id: trip.id,
-                    busOwnerName: trip.busOwnerId.busOwnerName,
-                    avatar: trip.busId.avatar,
-                    rating: trip.busId.averageRating,
-                    reviewCount: trip.busId.reviewCount,
-                    images: trip.busId.images,
-                    convinients: trip.busId.convinients,
-                    typeBus: trip.busId.typeBus,
-                    availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
-                    routeId: trip.routeId.id,
-                    departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
-                    arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
-                    ticketPrice: trip.ticketPrice,
-                    paymentRequire: trip.paymentRequire,
-                    prebooking: trip.prebooking,
-                    departureDate: trip.departureDate,
-                    arrivalTime: arrivalTime,
-                    departureTime: departureTime,
-                }
-            })
-            setListTrip(listData)
+            // const listData = data.data?.map(trip => {
+            //     const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
+            //     return {
+            //         id: trip.id,
+            //         busOwnerName: trip.busOwnerId.busOwnerName,
+            //         avatar: trip.busId.avatar,
+            //         rating: trip.busId.averageRating,
+            //         reviewCount: trip.busId.reviewCount,
+            //         images: trip.busId.images,
+            //         convinients: trip.busId.convinients,
+            //         typeBus: trip.busId.typeBus,
+            //         totalSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+            //         routeId: trip.routeId.id,
+            //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
+            //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
+            //         ticketPrice: trip.ticketPrice,
+            //         paymentRequire: trip.paymentRequire,
+            //         prebooking: trip.prebooking,
+            //         departureDate: trip.departureDate,
+            //         arrivalTime: arrivalTime,
+            //         departureTime: departureTime,
+            //     }
+            // })
+            setListTrip(data?.data)
         }
     });
 
@@ -241,15 +226,7 @@ const SideBarFilterComponent = (props) => {
 
         result.order = order
         result.priceRange = priceRange
-
         result.seatOption = seatOption
-
-        // if (seatOption?.length === 1 && seatOption[0] === 'seat') {
-        //     result.isRecliningSeat = false
-        // } else if (seatOption?.length === 1 && seatOption[0] === 'bed') {
-        //     result.isRecliningSeat = true
-        // }
-
         result.minRating = minRating
         result.busOwnerSelected = busOwnerSelected
         result.placesStart = handleGetResultPlace(placesStart, listDataFilter?.listPlaceStart)

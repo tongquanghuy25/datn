@@ -7,7 +7,7 @@ const scheduleSchema = new mongoose.Schema(
         driverId: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver', required: true },
         routeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
         departureTime: { type: String, required: true },
-        availableSeats: { type: Number, required: true },
+        totalSeats: { type: Number, required: true },
         ticketPrice: { type: Number, required: true },
         paymentRequire: { type: Boolean, required: true, default: true },
         prebooking: { type: Boolean, required: true, default: false },

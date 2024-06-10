@@ -91,3 +91,42 @@ export const calculateArrivalDateAndTime = (departureDate, departureTime, durati
     return { arrivalDate, arrivalTime: formattedArrivalTime };
 }
 
+export const isCancellationAllowed = (startDateTime, startTime, cancelHours) => {
+    // Chuyển đổi chuỗi ngày giờ xuất phát thành đối tượng Date
+    const startDateTimeObj = new Date(startDateTime);
+
+    // Chuyển đổi chuỗi giờ xuất phát thành số giờ, phút và giây
+    const [hours, minutes, seconds] = startTime.split(':').map(Number);
+
+    // Thiết lập giờ, phút và giây cho đối tượng Date
+    startDateTimeObj.setHours(hours, minutes, seconds, 0);
+
+    // Tính toán thời gian cho phép hủy vé
+    const cancelWindowStart = new Date(startDateTimeObj.getTime() - cancelHours * 60 * 60 * 1000);
+
+    // Lấy thời gian hiện tại
+    const now = new Date();
+
+    // Kiểm tra nếu thời gian hiện tại nằm trong khoảng cho phép hủy vé
+    return now < cancelWindowStart;
+}
+
+// export const checkTimeDepartured = (startDateTime, startTime) => {
+//     // Chuyển đổi chuỗi ngày giờ xuất phát thành đối tượng Date
+//     const startDateTimeObj = new Date(startDateTime);
+
+//     // Chuyển đổi chuỗi giờ xuất phát thành số giờ, phút và giây
+//     const [hours, minutes, seconds] = startTime.split(':').map(Number);
+
+//     // Thiết lập giờ, phút và giây cho đối tượng Date
+//     startDateTimeObj.setHours(hours, minutes, seconds, 0);
+
+
+//     // Lấy thời gian hiện tại
+//     const now = new Date();
+
+//     // Kiểm tra nếu thời gian hiện tại nằm trong khoảng cho phép hủy vé
+//     return now > startDateTimeObj;
+// }
+
+

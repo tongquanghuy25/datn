@@ -60,14 +60,10 @@ const BusOwnerHome = () => {
     return (
         <Layout
             theme="light"
-            style={{
-                minHeight: 'calc(100vh - 65px)',
-            }}
         >
             <Sider
                 trigger={null}
             >
-
                 <Menu
                     theme="light"
                     // mode="inline"

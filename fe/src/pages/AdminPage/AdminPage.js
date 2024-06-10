@@ -37,10 +37,10 @@ const AdminPage = () => {
 
     return (
         <div style={{ display: 'flex' }}>
-            <Layout style={{ minHeight: '100vh' }}>
+            <Layout style={{ height: '100vh', }}>
                 <Sider
                     style={{ display: 'flex' }}
-                    collapsible>
+                >
                     <Row justify={'center'}>
                         <h1 style={{ color: 'white' }}>Admin Panel</h1>
                     </Row>
@@ -79,11 +79,11 @@ const AdminPage = () => {
                             //     key: "driver",
                             //     icon: <ShoppingCartOutlined />,
                             // },
-                            {
-                                label: "Quản lý xe",
-                                key: "bus",
-                                icon: <UserOutlined />,
-                            },
+                            // {
+                            //     label: "Quản lý xe",
+                            //     key: "bus",
+                            //     icon: <UserOutlined />,
+                            // },
                             // {
                             //     label: "Quản lý vé xe",
                             //     key: "ticket",
@@ -126,7 +126,7 @@ const AdminPage = () => {
                 </Sider>
 
                 <Content>
-                    <div style={{ marginLeft: '20px', marginTop: '10px', flex: 1, height: 'calc(100vh - 150px)' }} className='Admin-content'>
+                    <div style={{ marginLeft: '20px', flex: 1, height: '100vh', overflowY: 'auto' }} className='Admin-content'>
                         <Outlet></Outlet>
                     </div>
                 </Content>

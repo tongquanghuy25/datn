@@ -22,20 +22,35 @@ const AdminUserComponent = () => {
     const user = useSelector((state) => state.user);
     const [confirmLoading, setConfirmLoading] = useState(false)
 
-
+    //pageination
+    const [loading, setLoading] = useState(false);
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 10,
+        total: 0,
+    });
 
     const { data, isSuccess, isError, refetch } = useQuery(
         {
-            queryKey: ['users'],
-            queryFn: () => getAllUser(user?.access_token),
+            queryKey: ['users', pagination],
+            queryFn: () => {
+                setLoading(true)
+                return getAllUser(user?.access_token, pagination.current, pagination.pageSize)
+            },
         });
 
     useEffect(() => {
         if (isSuccess) {
-            setUsers(data?.data)
+            console.log('data', data?.data);
+            setPagination({
+                ...pagination,
+                total: data?.data.total,
+            })
+            setUsers(data?.data.users)
         } else if (isError) {
             console.log('err', data);
         }
+        setLoading(false)
 
     }, [isSuccess, isError, data])
 
@@ -46,7 +61,10 @@ const AdminUserComponent = () => {
             title: 'STT',
             key: 'index',
             width: 60,
-            render: (text, record, index) => index + 1,
+            render: (texxt, record, index) => {
+                console.log('record', index);
+                return index + 1
+            },
         },
         {
             title: "Họ và Tên",
@@ -216,6 +234,16 @@ const AdminUserComponent = () => {
         mutationDeleted.mutate({ id: userDeleting.id, user: userDeleting, access_token: user?.access_token })
     }
 
+
+
+    const handleTableChange = (pagination) => {
+        console.log('pagination', pagination);
+        setPagination({
+            ...pagination,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+        });
+    };
     return (
         <>
             <Table
@@ -223,9 +251,10 @@ const AdminUserComponent = () => {
                 bordered
                 dataSource={users}
                 columns={column}
-                scroll={{
-                    y: 500,
-                }}
+                loading={loading}
+                pagination={pagination}
+                onChange={handleTableChange}
+                style={{ marginTop: 30, padding: '0px 10px' }}
             ></Table>
             <Modal
                 title="Chỉnh sửa người dùng"

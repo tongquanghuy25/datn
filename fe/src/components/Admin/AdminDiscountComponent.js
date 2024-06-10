@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Table, Button, Modal, Form, Input, DatePicker, Space, message, Select, Row } from 'antd';
+import { Table, Button, Modal, Form, Input, DatePicker, Space, message, Select, Row, Pagination } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { getAllBusOwner } from '../../services/PartnerSevice';
@@ -164,6 +164,7 @@ const AdminDiscountComponent = () => {
             errorMes(data?.response?.data?.message)
         }
     });
+
     const handleDelete = (id) => {
         mutationDelete.mutate({ access_token: user?.access_token, id });
     };
@@ -171,7 +172,7 @@ const AdminDiscountComponent = () => {
 
     return (
         <div >
-            <Row justify={'space-between'}>
+            <Row justify={'space-between'} style={{ marginTop: 30 }}>
                 <Select
                     showSearch
                     placeholder="Chọn nhà xe"
@@ -198,13 +199,12 @@ const AdminDiscountComponent = () => {
             <Table
                 columns={columns}
                 dataSource={listDiscount}
-                rowKey="id"
+                // rowKey="id"
                 bordered
                 scroll={{
-                    y: 430,
+                    y: 500,
                 }}
                 style={{ marginTop: 20 }} />
-
             <Modal
                 title="Thêm mã giảm giá"
                 open={isModalVisible}

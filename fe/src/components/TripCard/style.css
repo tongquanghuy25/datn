@@ -1,0 +1,26 @@
+/* styles.css */
+
+.card-trip-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-trip {
+    width: 80%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card-trip:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-trip-avatar img {
+    width: 80%;
+    height: 80%;
+    border-radius: 10px;
+    object-fit: cover;
+}

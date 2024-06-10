@@ -82,6 +82,19 @@ const loginUser = (userLogin) => {
                 role: checkUser.role
             })
 
+            // for (let i = 0; i < 100; i++) {
+            //     const hash = bcrypt.hashSync('123456', 10)
+            //     const email = `test${i}@gmail.com`
+            //     const phone = '01234567890'
+            //     const name = 'test'
+            //     await User.create({
+            //         email,
+            //         password: hash,
+            //         phone,
+            //         name,
+            //     });
+            // }
+
             resolve({
                 status: 200,
                 message: 'Đăng nhập thành công!',
@@ -278,17 +291,27 @@ const deleteUser = (id) => {
     })
 }
 
-const getAllUser = () => {
+const getAllUser = (page, pageSize) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.findAll({
+            // const allUser = await User.findAll({
+            //     order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']],
+            //     raw: true
+            // });
+            const { count, rows } = await User.findAndCountAll({
+                offset: (page - 1) * pageSize,
+                limit: pageSize,
                 order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']],
                 raw: true
             });
+            console.log('count, rows', count, rows);
             resolve({
                 status: 200,
                 message: 'Success',
-                data: allUser
+                data: {
+                    users: rows,
+                    total: count,
+                }
             })
         } catch (e) {
             reject(e)

@@ -257,7 +257,7 @@ const ScheduleManagerment = () => {
                         dataSource={listSchedule}
                         columns={column}
                         scroll={{
-                            y: 550,
+                            y: 500,
                         }}
                     ></Table>
                 </div>

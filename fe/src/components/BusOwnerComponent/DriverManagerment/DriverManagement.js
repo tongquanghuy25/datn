@@ -22,7 +22,6 @@ const DriverManagement = () => {
             queryFn: () => getDriversByBusOwner(user?.access_token, JSON.parse(localStorage.getItem('bus_owner_id'))),
             staleTime: Infinity
         });
-    console.log('JSON.parse(localStorage.getIt', JSON.parse(localStorage.getItem('bus_owner_id')));
     useEffect(() => {
         if (isSuccess) {
             setListDriver(data?.data)
@@ -48,21 +47,22 @@ const DriverManagement = () => {
 
     return (
         <div style={{ marginTop: '20px', padding: '0 20px' }}>
-            <Row justify="space-between">
-                <div>
-                </div>
-                <div>
-                    <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />} style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', marginBottom: '20px', marginRight: '60px' }}>
-                        Thêm tài xế
-                    </Button>
-                </div>
-            </Row>
-            <Row justify="space-around" style={{ height: '80vh' }}>
-                <Col span={10} style={{}}>
+            <Row justify="space-around">
+                <Col span={12} style={{}}>
                     <DriverInformation driver={driverSelected} access_token={user?.access_token} refetch={refetch}></DriverInformation>
 
                 </Col>
-                <Col span={10} style={{ height: '100%', overflowY: 'auto' }}>
+                <Col span={8} style={{ height: '85vh', overflowY: 'auto' }}>
+                    <Row justify="space-between">
+                        <div style={{ fontSize: 20 }}>
+                            Dánh sách tài xế
+                        </div>
+                        <div>
+                            <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />} style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', marginBottom: '20px' }}>
+                                Thêm tài xế
+                            </Button>
+                        </div>
+                    </Row>
                     {
                         listDriver?.map((driver) => (
                             <div onClick={() => handleClickDriver(driver)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: driverSelected === driver ? '#c6e7f5' : '#f0f0f0', padding: '10px' }}>
@@ -73,6 +73,7 @@ const DriverManagement = () => {
                                 </div>
                             </div>
                         ))
+
                     }
                 </Col>
             </Row>

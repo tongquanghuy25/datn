@@ -88,7 +88,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
                                 <Col span={6} style={{ fontSize: '16px', color: '#666', textAlign: 'left' }}>
                                     <div><strong>Biển số xe:</strong> {trip.bus.licensePlate}</div>
                                     <div><strong>Loại xe:</strong> {trip.bus.typeBus} chỗ</div>
-                                    <div><strong>Số ghế trống:</strong> {trip.availableSeats}</div>
+                                    <div><strong>Số ghế trống:</strong> {trip.totalSeats - trip.bookedSeats}</div>
                                     <div><strong>Số ghế đã đặt:</strong> {trip.bookedSeats}</div>
                                     <div><strong>Trạng thái: </strong>
                                         <Tag

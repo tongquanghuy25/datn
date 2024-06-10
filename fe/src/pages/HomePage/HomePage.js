@@ -6,7 +6,7 @@ import HeaderComponent from '../../components/HeaderComponent/HeaderComponent'
 import FooterComponent from '../../components/FooterComponent/FooterComponent'
 import { Col, Radio, Row, Space, InputNumber, Slider, Checkbox, Rate, Select, DatePicker, Button } from 'antd'
 import { Option } from 'antd/es/mentions'
-import BusCard from '../../components/BusCard/TripCard'
+import TripCard from '../../components/TripCard/TripCard'
 import SearchBusComponent from '../../components/SearchBusComponent/SearchBusComponent'
 import { useMutation } from '@tanstack/react-query'
 import { errorMes } from '../../components/Message/Message'
@@ -69,7 +69,7 @@ const HomePage = () => {
             //         images: trip.busId.images,
             //         convinients: trip.busId.convinients,
             //         typeBus: trip.busId.typeBus,
-            //         availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+            //         totalSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
             //         routeId: trip.routeId.id,
             //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
             //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
@@ -115,7 +115,7 @@ const HomePage = () => {
                 <div style={{ backgroundColor: 'white', width: '80%' }}>
                     <SearchBusComponent handleSearch={handleSearch}></SearchBusComponent>
 
-                    {isSearch &&
+                    {isSearch ?
                         <Row style={{ marginBottom: '20px' }}>
                             <SideBarFilterComponent dataSearch={dataSearch} listDataFilter={listDataFilter} setListTrip={setListTrip} handleCancelFilter={handleCancelFilter}></SideBarFilterComponent>
                             {
@@ -123,7 +123,7 @@ const HomePage = () => {
                                     <Col span={18} style={{}}>
                                         <div style={{ overflowY: 'auto' }}>
                                             {listTrip.map(trip => (
-                                                <BusCard key={trip.id} trip={trip} />
+                                                <TripCard key={trip.id} trip={trip} />
                                             ))}
                                         </div>
                                     </Col>
@@ -135,8 +135,7 @@ const HomePage = () => {
                             }
 
                         </Row>
-                    }
-                    {!isSearch &&
+                        :
                         <Row justify={'center'} style={{ textAlign: 'center' }}>
                             <div style={{ maxWidth: '400px' }}>
                                 <img src={intro} style={{ width: '100%', height: 'auto' }} alt="Introduction"></img>
@@ -144,7 +143,6 @@ const HomePage = () => {
                             </div>
                         </Row>
                     }
-
                     <div class="seo-content">
 
                         <div class="card">

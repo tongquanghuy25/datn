@@ -51,6 +51,7 @@ require('./config/database');
 //         console.log(err);
 //     });
 
+
 app.listen(port, () => {
     console.log("server listening on port: ", + port);
 });

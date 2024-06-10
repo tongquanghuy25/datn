@@ -203,7 +203,7 @@ const ModalAddTicket = (props) => {
                                 <Form.Item label="Số lượng ghế" name="seatCount" rules={[{ required: true, message: 'Vui lòng nhập số lượng ghế!' }]}>
                                     <Input type='number'
                                         min={0}
-                                        max={trip?.availableSeats}
+                                        max={trip?.totalSeats}
                                         onChange={e => {
                                             setTotalPricet(trip?.ticketPrice * e.target.value + (pickUpPoint?.extracost || 0) + (dropOffPoint?.extracost || 0))
                                         }}

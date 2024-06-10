@@ -59,13 +59,14 @@ const getSeatsBookedByTrip = async (req, res) => {
 const getTicketsByUser = async (req, res) => {
     try {
         const useId = req.params.id
+        const statuses = req.query.data
         if (!useId) {
             return res.status(400).json({
                 status: 'ERR',
                 message: 'Id người dùng không được bỏ trống!'
             })
         }
-        const response = await OrderService.getTicketsByUser(useId)
+        const response = await OrderService.getTicketsByUser(useId, statuses)
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -74,11 +75,11 @@ const getTicketsByUser = async (req, res) => {
     }
 }
 
-const getTicketById = async (req, res) => {
+const getTicketByCode = async (req, res) => {
     try {
-        const ticketId = req.query.ticketId
+        const ticketCode = req.query.ticketCode
         const phone = req.query.phone
-        if (!ticketId) {
+        if (!ticketCode) {
             return res.status(400).json({
                 status: 'ERR',
                 message: 'Id vé không được bỏ trống!'
@@ -90,7 +91,7 @@ const getTicketById = async (req, res) => {
                 message: 'Số điện thoại không được bỏ trống!'
             })
         }
-        const response = await OrderService.getTicketById(ticketId, phone)
+        const response = await OrderService.getTicketByCode(ticketCode, phone)
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -99,7 +100,7 @@ const getTicketById = async (req, res) => {
     }
 }
 
-const deleteTicketOrder = async (req, res) => {
+const cancelTicketOrder = async (req, res) => {
     try {
         const { busOwnerId, isOnTimeAllow, isPaid } = req.query.data
         const ticketOrederId = req.params.id
@@ -111,7 +112,7 @@ const deleteTicketOrder = async (req, res) => {
         }
 
 
-        const response = await OrderService.deleteTicketOrder(ticketOrederId, busOwnerId, isOnTimeAllow, isPaid)
+        const response = await OrderService.cancelTicketOrder(ticketOrederId, busOwnerId, isOnTimeAllow, isPaid)
 
         return res.status(response.status).json(response)
 
@@ -333,7 +334,7 @@ module.exports = {
     createTicketOrder,
     getTicketOrderByTrip,
     getTicketsByUser,
-    getTicketById,
+    getTicketByCode,
     createGoodsOrder,
     updateGoodsOrder,
     deleteGoodsOrder,
@@ -343,5 +344,5 @@ module.exports = {
     changeSeat,
     deleteSeat,
     getSeatsBookedByTrip,
-    deleteTicketOrder,
+    cancelTicketOrder,
 }

@@ -305,8 +305,6 @@ const TabSeatSelection = (props) => {
                 transactionId,
                 paidAt,
                 isPaid: isAgent ? isPaidAgent : isPaid,
-
-
             }
             mutation.mutate(data)
         }

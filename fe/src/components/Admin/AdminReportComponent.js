@@ -170,9 +170,7 @@ const AdminReportComponent = () => {
                 bordered
                 dataSource={listReport}
                 columns={column}
-                scroll={{
-                    y: 500,
-                }}
+                style={{ marginTop: 30 }}
             ></Table>
             {/* <Modal
                 title="Chỉnh sửa người dùng"

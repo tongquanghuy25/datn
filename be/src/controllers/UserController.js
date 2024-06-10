@@ -168,7 +168,9 @@ const deleteUser = async (req, res) => {
 
 const getAllUser = async (req, res) => {
     try {
-        const response = await UserService.getAllUser()
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const response = await UserService.getAllUser(page, pageSize)
         return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({

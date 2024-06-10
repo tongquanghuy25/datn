@@ -1,4 +1,4 @@
-const { User, Trip, Refund, OrderTicket, OrderGoods } = require("../models/index")
+const { User, Trip, Refund, OrderTicket, OrderGoods, BusOwner, Route } = require("../models/index")
 const EmailService = require("../services/EmailService")
 // const sequelize = require('sequelize');
 const { Op } = require('sequelize');
@@ -44,7 +44,10 @@ const createTicketOrder = (newOrder) => {
             // Kiểm tra các ghế đã được đặt hay chưa
             const allSeats = await OrderTicket.findAll({
                 attributes: ['seats'],
-                where: { tripId: tripId },
+                where: {
+                    tripId: tripId,
+                    status: { [Op.notIn]: ['Canceled'] }
+                },
                 transaction,
                 raw: true
             })
@@ -170,7 +173,10 @@ const getSeatsBookedByTrip = (tripId) => {
 
             const allSeats = await OrderTicket.findAll({
                 attributes: ['seats'],
-                where: { tripId: tripId },
+                where: {
+                    tripId: tripId,
+                    status: { [Op.notIn]: ['Canceled'] }
+                },
                 raw: true
             })
             resolve({
@@ -185,7 +191,7 @@ const getSeatsBookedByTrip = (tripId) => {
     })
 }
 
-const getTicketsByUser = (userId) => {
+const getTicketsByUser = (userId, statuses) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await User.findByPk(userId);
@@ -196,8 +202,26 @@ const getTicketsByUser = (userId) => {
                 })
             }
             const allTicket = await OrderTicket.findAll({
-                where: { userOrder: userId },
-                include: { model: Trip, as: 'trip' },
+                where: {
+                    userOrder: userId,
+                    status: { [Op.in]: statuses }
+                },
+                include: {
+                    model: Trip,
+                    as: 'trip',
+                    include: [
+                        {
+                            model: BusOwner,
+                            as: 'busOwner',
+                            attributes: ['busOwnerName']
+                        },
+                        {
+                            model: Route,
+                            as: 'route',
+                            // attributes: ['busOwnerName']
+                        }
+                    ]
+                },
                 order: [['createdAt', 'DESC']]
             });
 
@@ -213,12 +237,28 @@ const getTicketsByUser = (userId) => {
     })
 }
 
-const getTicketById = (ticketId, phone) => {
+const getTicketByCode = (ticketCode, phone) => {
     return new Promise(async (resolve, reject) => {
         try {
-
+            console.log(ticketCode, phone);
             const ticket = await OrderTicket.findOne({
-                where: { id: ticketId, phone: phone }
+                where: { code: ticketCode, phone: phone },
+                include: {
+                    model: Trip,
+                    as: 'trip',
+                    include: [
+                        {
+                            model: BusOwner,
+                            as: 'busOwner',
+                            attributes: ['busOwnerName']
+                        },
+                        {
+                            model: Route,
+                            as: 'route',
+                            // attributes: ['busOwnerName']
+                        }
+                    ]
+                },
             });
             if (ticket === null) {
                 resolve({
@@ -250,7 +290,10 @@ const getTicketOrderByTrip = (tripId) => {
             }
 
             const orders = await OrderTicket.findAll({
-                where: { tripId: tripId }
+                where: {
+                    tripId: tripId,
+                    status: { [Op.notIn]: ['Canceled'] }
+                }
             });
             resolve({
                 status: 200,
@@ -263,34 +306,34 @@ const getTicketOrderByTrip = (tripId) => {
     })
 }
 
-const deleteTicketOrder = (ticketOrederId, busOwnerId, isOnTimeAllow, isPaid) => {
+const cancelTicketOrder = (ticketOrederId, busOwnerId, isOnTimeAllow, isPaid) => {
     return new Promise(async (resolve, reject) => {
         try {
             const orderTicket = await OrderTicket.findByPk(ticketOrederId);
             if (!orderTicket) {
                 resolve({
                     status: 400,
-                    message: 'Đơn gửi hàng không tồn tại!'
+                    message: 'Đơn vé không tồn tại!'
                 })
                 return
             }
-            const deleteOrder = await OrderTicket.destroy({
-                where: { id: ticketOrederId }
-            });
-
-            if (deleteOrder) {
+            const cancelOrder = await OrderTicket.update(
+                { status: 'Canceled' },
+                { where: { id: ticketOrederId } }
+            );
+            if (cancelOrder) {
                 if (isPaid === 'true') {
                     let refundAmount = 0
                     if (isOnTimeAllow === 'true') {
                         refundAmount = orderTicket.totalPrice
                     } else refundAmount = orderTicket.totalPrice / 2
-
+                    console.log(isOnTimeAllow);
                     await Refund.create({ busOwnerId: busOwnerId, name: orderTicket?.name, email: orderTicket?.email, phone: orderTicket?.phone, refundAmount: refundAmount })
 
                 }
                 await Trip.update(
                     {
-                        availableSeats: sequelize.literal(`availableSeats + ${orderTicket.seatCount}`)
+                        totalSeats: sequelize.literal(`totalSeats + ${orderTicket.seatCount}`)
                     },
                     {
                         where: {
@@ -301,7 +344,7 @@ const deleteTicketOrder = (ticketOrederId, busOwnerId, isOnTimeAllow, isPaid) =>
 
                 resolve({
                     status: 200,
-                    message: 'Xóa đơn gửi hàng thành công!',
+                    message: 'Hủy đơn vé thành công!',
                 })
             }
 
@@ -317,7 +360,10 @@ const changeSeat = (ticketOrderId, tripId, seats, seatSwap, destinationSeat) => 
             // Kiểm tra các ghế đã được đặt hay chưa
             const allSeats = await OrderTicket.findAll({
                 attributes: ['seats'],
-                where: { tripId: tripId },
+                where: {
+                    tripId: tripId,
+                    status: { [Op.notIn]: ['Canceled'] }
+                },
                 raw: true
             })
             const listseat = allSeats.map(item => JSON.parse(item.seats)).flat()
@@ -379,7 +425,7 @@ const deleteSeat = (ticketOrder, seatDelete, busOwnerId, isOnTimeAllow) => {
                     let refundAmount = 0
                     if (isOnTimeAllow) refundAmount = ticketOrder?.totalPrice
                     else refundAmount = ticketOrder?.totalPrice / 2
-                    await OrderTicket.destroy({ where: { id: ticketOrder.id } });
+                    await OrderTicket.update({ status: 'Canceled' }, { where: { id: ticketOrder.id } });
                     await Refund.create({ busOwnerId: busOwnerId, name: ticketOrder?.name, email: ticketOrder?.email, phone: ticketOrder?.phone, refundAmount: ticketOrder?.totalPrice })
                 }
             } else {
@@ -389,12 +435,12 @@ const deleteSeat = (ticketOrder, seatDelete, busOwnerId, isOnTimeAllow) => {
                         { seats: seats, totalPrice: totalPrice, seatCount: seats.length },
                         { where: { id: ticketOrder.id } }
                     );
-                } else await OrderTicket.destroy({ where: { id: ticketOrder.id } });
+                } else await OrderTicket.update({ status: 'Canceled' }, { where: { id: ticketOrder.id } });
 
             }
 
             await Trip.update(
-                { availableSeats: sequelize.literal('bookedSeats + 1') },
+                { totalSeats: sequelize.literal('totalSeats + 1') },
                 { where: { id: ticketOrder.tripId } }
             );
 
@@ -652,7 +698,7 @@ module.exports = {
     getTicketOrderByTrip,
     getSeatsBookedByTrip,
     getTicketsByUser,
-    getTicketById,
+    getTicketByCode,
     updateTicketOrder,
     changeSeat,
     deleteSeat,
@@ -662,6 +708,6 @@ module.exports = {
     deleteGoodsOrder,
     getGoodsOrderByTrip,
     updateStatusGoodsOrder,
-    deleteTicketOrder,
+    cancelTicketOrder,
 
 }

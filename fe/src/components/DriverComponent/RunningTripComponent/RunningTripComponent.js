@@ -140,8 +140,8 @@ const RunningTripComponent = () => {
                             <div><strong></strong></div>
                         </Col>
                         <Col span={5}>
-                            <div><strong>Số chỗ trống:  </strong>{trip?.availableSeats}</div>
-                            <div><strong>Số chỗ đã đặt:  </strong>{trip?.ticketsSold}</div>
+                            <div><strong>Số chỗ trống:  </strong>{trip?.totalSeats - trip?.bookedSeats}</div>
+                            <div><strong>Số chỗ đã đặt:  </strong>{trip?.bookedSeats}</div>
                             <div><strong>Số chỗ chưa thanh toán:  </strong></div>
                         </Col>
                         <Col span={5}>

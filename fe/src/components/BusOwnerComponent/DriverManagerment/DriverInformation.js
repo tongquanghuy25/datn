@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, DatePicker, Form, Input, Popconfirm, Select, Upload } from 'antd'
+import { Button, Col, DatePicker, Form, Input, Popconfirm, Row, Select, Upload } from 'antd'
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { errorMes, loadingMes, successMes } from '../../Message/Message';
@@ -104,23 +104,24 @@ const DriverInformation = (props) => {
 
   const me = <h1>Lưu ý</h1>
   return (
-    <div style={{ width: '100%', height: '95%', backgroundColor: '#e0f2f5', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+    <div style={{ width: '100%', backgroundColor: '#e0f2f5', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <Form
         form={form}
         onFinish={onFinish}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 14 }}
+        // labelCol={{ span: 6 }}
+        // wrapperCol={{ span: 14 }}
+        style={{ padding: '0 20px 20px 20px', height: 'calc(92vh - 40px)', }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h1>Thông tin tài xế</h1>
+          <div style={{ fontSize: 20, fontWeight: 'bold', marginTop: 20 }}>Thông tin tài xế</div>
 
           {
             imageUrl ? <img
               src={imageUrl}
-              style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%', marginTop: '20px', marginBottom: '20px' }} /> :
+              style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '50%', marginTop: '20px', marginBottom: '20px' }} /> :
               <div
               >
-                <UserOutlined style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'lightblue', fontSize: '100px', width: '150px', height: '150px', borderRadius: '50%', marginTop: '20px', marginBottom: '20px' }} />
+                <UserOutlined style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'lightblue', fontSize: '100px', width: '120px', height: '120px', borderRadius: '50%', marginTop: '20px', marginBottom: '20px' }} />
               </div>
           }
 
@@ -133,52 +134,106 @@ const DriverInformation = (props) => {
           </Upload>
         </div>
 
-        <Form.Item
+        <Row
+          gutter={[16, 16]}
           style={{ marginTop: '40px' }}
-          name="email"
-          label="Email"
-          rules={[
-            {
-              required: true,
-              message: "Email không được bỏ trống !",
-            },
-            {
-              type: "email",
-              message: "Email không đúng định dạng !",
-            },
-          ]}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="name"
-          label="Họ và tên"
-          rules={[
-            {
-              required: true,
-              message: "Tên không được bỏ trống !",
-            }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="phone"
-          label="Số điện thoại"
-          rules={[
-            {
-              required: true,
-              message: "Số điện thoại không được bỏ trống !",
-            },
-            {
-              min: 10,
-              max: 11,
-              message: "Số điện thoại không đúng định dạng !",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              name="name"
+              label="Họ và tên"
+              rules={[
+                {
+                  required: true,
+                  message: "Tên không được bỏ trống !",
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                {
+                  required: true,
+                  message: "Email không được bỏ trống !",
+                },
+                {
+                  type: "email",
+                  message: "Email không đúng định dạng !",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="dateOfBirth"
+              label="Ngày sinh"
+              rules={[
+                {
+                  required: true,
+                  message: "Ngày sinh không được bỏ trống !",
+                }
+              ]}
+            >
+              <DatePicker format='DD/MM/YYYY' style={{ width: '200px' }} />
+            </Form.Item>
+          </Col>
+
+          <Col span={12}>
+            <Form.Item
+              name="citizenId"
+              label="Số căn cước"
+              rules={[
+                {
+                  required: true,
+                  message: "Không được bỏ trống !",
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="phone"
+              label="Số điện thoại"
+              rules={[
+                {
+                  required: true,
+                  message: "Số điện thoại không được bỏ trống !",
+                },
+                {
+                  min: 10,
+                  max: 11,
+                  message: "Số điện thoại không đúng định dạng !",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="gender"
+              label="Giới tính"
+              rules={[
+                {
+                  required: true,
+                  message: "Không được bỏ trống !",
+                }
+              ]}
+            >
+              <Select style={{ width: '200px' }}>
+                <Option value="male">Nam</Option>
+                <Option value="female">Nữ</Option>
+                <Option value="other">Khác</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+
+
+
         <Form.Item
           name="address"
           label="Địa chỉ"
@@ -191,30 +246,7 @@ const DriverInformation = (props) => {
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          name="dateOfBirth"
-          label="Ngày sinh"
-          rules={[
-            {
-              required: true,
-              message: "Ngày sinh không được bỏ trống !",
-            }
-          ]}
-        >
-          <DatePicker format='DD/MM/YYYY' style={{ width: '200px' }} />
-        </Form.Item>
-        <Form.Item
-          name="citizenId"
-          label="Số căn cước"
-          rules={[
-            {
-              required: true,
-              message: "Không được bỏ trống !",
-            }
-          ]}
-        >
-          <Input />
-        </Form.Item>
+
         <Form.Item
           name="licenseType"
           label="Loại bằng lái"
@@ -227,24 +259,9 @@ const DriverInformation = (props) => {
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          name="gender"
-          label="Giới tính"
-          rules={[
-            {
-              required: true,
-              message: "Không được bỏ trống !",
-            }
-          ]}
-        >
-          <Select style={{ width: '200px' }}>
-            <Option value="male">Nam</Option>
-            <Option value="female">Nữ</Option>
-            <Option value="other">Khác</Option>
-          </Select>
-        </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 7, span: 18 }} style={{ textAlign: 'center', marginTop: '40px' }}>
+
+        <Form.Item style={{ textAlign: 'center' }}>
           <Button type="primary" htmlType="submit" >
             Chỉnh sửa
           </Button>
@@ -252,7 +269,6 @@ const DriverInformation = (props) => {
             title="Bạn có chắc chắn muốn xóa tài xế?"
             description={<div style={{ color: 'red', width: '300px' }}>! Lưu ý: Các chuyến sắp tới của tài xế này sẽ được cập nhật. Bạn cần kiểm tra lại.</div>}
             onConfirm={handleDeleteDriver}
-            // onCancel={cancel}
             okText="Đồng ý"
             cancelText="Hủy"
           >
@@ -260,10 +276,9 @@ const DriverInformation = (props) => {
               Xóa
             </Button>
           </Popconfirm>
-
         </Form.Item>
       </Form>
-    </div>
+    </div >
   )
 }
 

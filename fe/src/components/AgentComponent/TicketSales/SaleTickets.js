@@ -32,7 +32,7 @@ const SaleTickets = () => {
             //         images: trip.busId.images,
             //         convinients: trip.busId.convinients,
             //         typeBus: trip.busId.typeBus,
-            //         availableSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
+            //         totalSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
             //         routeId: trip.routeId.id,
             //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
             //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
@@ -81,7 +81,7 @@ const SaleTickets = () => {
                                 <Col span={6} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666', textAlign: 'left' }}>
                                     <div><strong>Số Điện Thoại:</strong> {trip['busOwner.user.phone']}</div>
                                     <div><strong>Loại xe:</strong> {trip['bus.typeBus']} chỗ</div>
-                                    <div><strong>Số ghế trống:</strong> {trip.availableSeats}</div>
+                                    <div><strong>Số ghế trống:</strong> {trip.totalSeats - trip.bookedSeats}</div>
                                     <div><strong>Trạng thái: </strong>
                                         <Tag
                                             color={trip.status === 'NotStarted' ? 'error' : (trip.status === 'Ended' ? 'success' : 'warning')}
