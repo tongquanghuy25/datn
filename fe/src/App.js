@@ -43,6 +43,7 @@ import SaleTickets from './components/AgentComponent/TicketSales/SaleTickets';
 import BookedTicketsComponent from './components/BookedTicketsComponent/BookedTicketsComponent';
 import AdminSentMailComponent from './components/Admin/AdminSentMailComponent';
 import AdminReportComponent from './components/Admin/AdminReportComponent';
+import Statistic from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeTabs/Statistic/Statistic';
 
 
 function App() {
@@ -142,7 +143,7 @@ function App() {
 
           <Route path='/bus-owner' element={<BusOwnerPage />}>
             <Route path='home' element={<BusOwnerHome />} >
-              <Route path='statistical' element={<>Thống kê</>} />
+              <Route path='statistical' element={<Statistic />} />
               <Route path='trip' element={<TripManagerment />} />
               <Route path='ticket' element={<TicketManagerment />} />
               <Route path='goods' element={<GoodsManagerment />} />

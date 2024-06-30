@@ -46,7 +46,9 @@ const RouteManagerment = () => {
                   setIsCreateRoute(false)
                   setRouteSelected(route)
                 }}
-                style={{ cursor: 'pointer', fontSize: '20px', color: routeSelected.id === route.id ? '#000000' : '#6d4c41', backgroundColor: routeSelected.id === route.id ? '#fbc02d' : '#fff9c4', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}>
+                style={{ cursor: 'pointer', fontSize: '20px', marginBottom: '20px', borderBottom: '1px solid black', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', backgroundColor: routeSelected.id === route.id ? '#F5E59F' : '#f0f0f0', margin: '10px 10px', padding: '5px', justifyContent: 'space-between' }}
+              //   style={{ cursor: 'pointer', fontSize: '20px', color: routeSelected.id === route.id ? '#000000' : '#6d4c41', backgroundColor: routeSelected.id === route.id ? '#fbc02d' : '#fff9c4', margin: '10px 10px', padding: '5px', borderRadius: '10px' }}
+              >
                 <div>
                   <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 'bold' }}>{route?.districtStart} - {route?.provinceStart} ({route?.placeStart})</div>
                 </div>
@@ -105,7 +107,7 @@ const RouteManagerment = () => {
             <InforRouteComponent route={routeSelected} refetchListRoute={refetch}></InforRouteComponent>}
         </Col>
       </Row>
-    </div>
+    </div >
   )
 }
 

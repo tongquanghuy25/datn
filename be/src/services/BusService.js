@@ -1,4 +1,4 @@
-const { BusOwner, Bus } = require("../models/index");
+const { BusOwner, Bus, Driver, Route } = require("../models/index");
 const { deleteImgCloud } = require("../utils");
 
 

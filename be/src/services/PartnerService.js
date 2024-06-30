@@ -1,5 +1,7 @@
-const { User, BusOwner, Agent } = require("../models/index");
+const { User, BusOwner, Agent, Bus, Driver, Route, Trip, OrderTicket, OrderGoods } = require("../models/index");
 const UserService = require('./UserService')
+const sequelize = require('sequelize');
+const { Op } = require('sequelize');
 
 const createBusOwner = (newBusOwner) => {
     return new Promise(async (resolve, reject) => {
@@ -179,6 +181,165 @@ const getDetailBusOwnerByUserId = (id) => {
     })
 }
 
+const getOverviewBusOwner = (busOwnerId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const numBus = await Bus.count({
+                where: { busOwnerId: busOwnerId },
+            });
+            const numDriver = await Driver.count({
+                where: { busOwnerId: busOwnerId },
+            });
+            const numRoute = await Route.count({
+                where: { busOwnerId: busOwnerId },
+            });
+            resolve({
+                status: 200,
+                message: 'Xóa xe thành công!',
+                data: {
+                    numBus,
+                    numDriver,
+                    numRoute,
+                }
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getStatisticBusOwner = (busOwnerId, tab, startDate, endDate, startOfMonth, endOfMonth, selectedYear) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log('busOwnerId', busOwnerId, tab, startDate, endDate, startOfMonth, endOfMonth, selectedYear);
+            let tripIds = [];
+            let allTrip = [];
+            if (tab === '1') {
+                const trips = await Trip.findAll({
+                    where: {
+                        busOwnerId: busOwnerId,
+                        // status: 'Ended',
+                        departureDate: {
+                            [sequelize.Op.and]: [
+                                { [sequelize.Op.gte]: new Date(startDate) }, // Lớn hơn hoặc bằng startDate
+                                { [sequelize.Op.lt]: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)) } // Nhỏ hơn endDate + 1 ngày
+                            ]
+                        }
+                    },
+                });
+                allTrip = trips;
+                tripIds = trips.map(trip => trip.id);
+            } else if (tab === '2') {
+                const trips = await Trip.findAll({
+                    where: {
+                        busOwnerId: busOwnerId,
+                        // status: 'Ended',
+                        departureDate: {
+                            [sequelize.Op.and]: [
+                                { [sequelize.Op.gte]: new Date(startOfMonth) }, // Lớn hơn hoặc bằng startDate
+                                { [sequelize.Op.lt]: new Date(new Date(endOfMonth).setDate(new Date(endOfMonth).getDate() + 1)) } // Nhỏ hơn endDate + 1 ngày
+                            ]
+                        }
+
+                    },
+                });
+                allTrip = trips;
+                tripIds = trips.map(trip => trip.id);
+            } else if (tab === '3') {
+                const trips = await Trip.findAll({
+                    where: {
+                        busOwnerId: busOwnerId,
+                        // status: 'Ended',
+                        departureDate: {
+                            [Op.between]: [`${selectedYear}-01-01`, `${selectedYear}-12-31`]
+                        }
+                    },
+                });
+                allTrip = trips;
+                tripIds = trips.map(trip => trip.id);
+            }
+
+            console.log('tripIds', tripIds);
+
+            // Tính tổng số lượng vé
+            const totalTicketCount = await OrderTicket.sum('seatCount', {
+                where: {
+                    tripId: {
+                        [Op.in]: tripIds
+                    }
+                }
+            });
+
+            // Tính tổng số tiền của các vé
+            const totalRevenueTicket = await OrderTicket.sum('totalPrice', {
+                where: {
+                    tripId: {
+                        [Op.in]: tripIds
+                    }
+                }
+            });
+
+            // Tính tổng số tiền của các đơn gửi hàng
+            const totalRevenueGoods = await OrderGoods.sum('price', {
+                where: {
+                    tripId: {
+                        [Op.in]: tripIds
+                    }
+                }
+            });
+            console.log('totalTicketCount', totalTicketCount, totalRevenueTicket + totalRevenueGoods);
+
+
+            const occupancyRates = await Trip.findAll({
+                where: {
+                    id: {
+                        [sequelize.Op.in]: tripIds
+                    }
+                },
+                attributes: [
+                    'routeId',
+                    [sequelize.fn('sum', sequelize.col('bookedSeats')), 'totalBookedSeats'],
+                    [sequelize.fn('sum', sequelize.literal('totalSeats')), 'totalSeats']
+                ],
+                include: [{
+                    model: Route,
+                    as: 'route',
+                    attributes: ['provinceStart', 'districtStart', 'provinceEnd', 'districtEnd']
+                }],
+                group: ['routeId']
+            });
+
+            // Tính tỉ lệ lấp đầy cho từng routeId
+            const occupancyRateResults = occupancyRates.map((rate, index) => {
+                const percent = parseFloat(rate.dataValues.totalSeats) > 0 ? (parseInt(rate.dataValues.totalBookedSeats) / parseFloat(rate.dataValues.totalSeats)) * 100 : 0
+                const route = rate.dataValues.route
+                console.log(route);
+                return ({
+                    key: index + 1,
+                    stt: index + 1,
+                    route: `${route.districtStart} ,${route.provinceStart}  ->  ${route.districtEnd} ,${route.provinceEnd}`,
+                    occupancyRate: parseFloat(percent.toFixed(2))
+                })
+            });
+
+            console.log('occupancyRateResults', occupancyRateResults);
+
+            resolve({
+                status: 200,
+                message: 'Xóa xe thành công!',
+                data: {
+                    numTrip: tripIds.length,
+                    numTicket: totalTicketCount,
+                    revenue: totalRevenueTicket + totalRevenueGoods,
+                    occupancyRate: occupancyRateResults
+                }
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 //AGENT
 
 const createAgent = (newAgent) => {
@@ -330,6 +491,8 @@ const getDetailAgentByUserId = (id) => {
     })
 }
 
+
+
 module.exports = {
     createBusOwner,
     getAllBusOwnerNotAccept,
@@ -337,6 +500,8 @@ module.exports = {
     editBusOwner,
     deleteBusOwner,
     getDetailBusOwnerByUserId,
+    getOverviewBusOwner,
+    getStatisticBusOwner,
 
     createAgent,
     getAllAgent,

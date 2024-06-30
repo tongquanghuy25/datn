@@ -1,4 +1,4 @@
-import { Button, Col, Input, InputNumber, Radio, Result, Row, Space, Steps } from 'antd';
+import { Button, Col, Input, InputNumber, Modal, Radio, Result, Row, Space, Steps } from 'antd';
 import { initArraySeat } from '../../../../utils/SeatDiagram';
 import SeatSelector from './SeatSelector';
 import './style.css'
@@ -78,6 +78,13 @@ const TabSeatSelection = (props) => {
     const [noteDropOff, setNoteDropOff] = useState();
 
     const [listTicketSold, setListTicketSold] = useState([]);
+
+    const [isShowNotification, setIsShowNotification] = useState(false);
+    const [BookedStatus, setBookedStatus] = useState({
+        isSuccess: true,
+        message: '',
+        subMessage: ''
+    });
 
 
     const { data, isSuccess, isError } = useQuery(
@@ -258,11 +265,25 @@ const TabSeatSelection = (props) => {
                 if (isAgent) {
                     handleOrderSuccess()
                 }
-                else successMes('Đặt vé thành công')
+                else {
+                    setBookedStatus({
+                        isSuccess: true,
+                        message: 'Bạn đã đặt vé thành công!',
+                        subMessage: 'Thông tin vé của bạn sẽ được gửi về email đặt vé.'
+                    });
+                    setIsShowNotification(true);
+                }
             },
             onError: (data) => {
                 if (isAgent) handleMessage(data?.response?.data?.message)
-                errorMes(data?.response?.data?.message)
+                else {
+                    setBookedStatus({
+                        isSuccess: false,
+                        message: 'Đặt vé không thành công!',
+                        subMessage: data?.response?.data?.message
+                    });
+                    setIsShowNotification(true);
+                }
             }
         }
     )
@@ -585,17 +606,6 @@ const TabSeatSelection = (props) => {
                             }
 
                         </Row>
-                        {/* <Row justify={'end'}>
-                            <span>Nhập mã giảm giá</span>
-                            <Input
-                                placeholder="Nhập mã giảm giá"
-                                value={codeDiscount}
-                                onChange={e => setCodeDiscount(e.target.value)}
-                                style={{ width: '150px', marginLeft: '10px' }} />
-                            <Button disabled={isDiscounted} style={{ marginLeft: '10px' }} onClick={() => handleApplyDiscount()}>
-                                Áp dụng
-                            </Button>
-                        </Row> */}
                         <Row style={{ borderTop: '1px solid #333', paddingTop: '20px', marginTop: '20px' }} justify={'space-between'}>
                             <Button style={{ marginRight: '10px' }} onClick={prevStep}>
                                 Quay lại
@@ -620,6 +630,35 @@ const TabSeatSelection = (props) => {
                 )}
             </div>
             <Row justify={'end'} style={{ color: 'red', marginTop: '5px', height: '1rem' }}>{message}</Row>
+
+            <Modal
+                open={isShowNotification}
+                // okText='Chỉnh sửa'
+                // onOk={() => {
+                //     setIsShowNotification(false)
+                // }}
+                // cancelText='Hủy'
+                onCancel={() => {
+                    setIsShowNotification(false)
+                }}
+                width={'50%'}
+                style={{
+                    top: 10,
+                }}
+                footer={''}
+            >
+                <Result
+                    status={BookedStatus.isSuccess ? "success" : "error"}
+                    title={BookedStatus.message}
+                    subTitle={BookedStatus.subMessage}
+                // extra={[
+                //     <Button type="primary" key="console">
+                //         Go Console
+                //     </Button>,
+                //     <Button key="buy">Buy Again</Button>,
+                // ]}
+                />
+            </Modal>
         </div>
     )
 }

@@ -9,6 +9,9 @@ router.put('/edit-bus-owner/:id', authAdminMiddleWare, PartnerController.editBus
 router.delete('/delete-bus-owner/:id', authAdminMiddleWare, PartnerController.deleteBusOwner)
 router.get('/get-all-partner-not-accept', authAdminMiddleWare, PartnerController.getAllBusOwnerNotAccept)
 router.get('/get-detail-bus-owner-by-userId/:id', authBusOwnerMiddleWare, PartnerController.getDetailBusOwnerByUserId)
+router.get('/overview-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getOverviewBusOwner)
+router.get('/statistic-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getStatisticBusOwner)
+
 
 router.post('/register-agent', PartnerController.createAgent)
 router.get('/get-all-agent', authAdminMiddleWare, PartnerController.getAllAgent)

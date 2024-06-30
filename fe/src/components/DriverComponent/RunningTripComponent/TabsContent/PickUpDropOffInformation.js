@@ -230,7 +230,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
                                                 gutter={[8, 8]}
                                                 style={{ height: '80px', marginLeft: 10, padding: 10, border: '1px solid #333', marginBottom: '10px', borderRadius: '10px', backgroundColor: '#f5eacb' }}>
                                                 <Col span={10} style={{ fontSize: '16px' }}>
-                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}><strong>Hàng hóa: </strong>{item.goodsName} asdfjbdf jhsabd m dfkbskjfkn sdkfbskjdbfksd fkjsdbjk</div>
+                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}><strong>Hàng hóa: </strong>{item.goodsName}</div>
                                                     <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}><strong>Mô tả: </strong>{item.goodsDescription}</div>
                                                 </Col>
 

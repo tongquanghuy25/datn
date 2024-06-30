@@ -13,7 +13,7 @@ import SeatInformation from './TabsContent/SeatInformation';
 import PickUpDropOffInformation from './TabsContent/PickUpDropOffInformation';
 import nodata from '../../../acess/nodata.jpg'
 import GoodsInformation from './TabsContent/GoodsInformation';
-import { formatTimeVn } from '../../../utils';
+import { formatTimeVn, getVnCurrency } from '../../../utils';
 
 
 
@@ -26,6 +26,12 @@ const RunningTripComponent = () => {
     const [activeTab, setActiveTab] = useState('1');
     const [listSeat, setListSeat] = useState([])
     const [ticketOrderDetail, setTicketOrderDetail] = useState()
+    const [inforPriceTrip, setInforPriceTrip] = useState({
+        seatNotPaid: 0,
+        totalTicketPrice: 0,
+        totalGoodsPrice: 0,
+        totalPrice: 0
+    })
 
 
 
@@ -41,11 +47,15 @@ const RunningTripComponent = () => {
             setTrip(data?.data?.trip)
             setListTicketOrder(data?.data.listTicketOrder)
             setListGoodsOrder(data?.data.listGoodsOrder)
-
+            let seatNotPaid = 0, totalTicketPrice = 0, totalGoodsPrice = 0, totalPrice = 0;
             //Get seat
             const listSeat = []
             data?.data?.listTicketOrder?.forEach(item => {
                 JSON.parse(item.seats)?.forEach(element => {
+                    if (!item.isPaid) {
+                        seatNotPaid = seatNotPaid + 1;
+                        totalTicketPrice = totalTicketPrice + item.ticketPrice;
+                    }
                     const seat = {
                         id: element,
                         orderId: item.id,
@@ -63,6 +73,19 @@ const RunningTripComponent = () => {
                 });
             })
             setListSeat(listSeat?.sort((a, b) => a.id - b.id))
+
+            data?.data?.listGoodsOrder?.forEach(item => {
+                if (!item.isPaid) totalGoodsPrice = totalGoodsPrice + item.price;
+            })
+
+            totalPrice = totalTicketPrice + totalGoodsPrice;
+
+            setInforPriceTrip({
+                seatNotPaid: seatNotPaid,
+                totalTicketPrice: totalTicketPrice,
+                totalGoodsPrice: totalGoodsPrice,
+                totalPrice: totalPrice
+            })
         } else if (isError) {
         }
     }, [isSuccess, isError, data])
@@ -132,7 +155,7 @@ const RunningTripComponent = () => {
                         <Col span={5}>
                             <div><strong>Ngày xuất phát:  </strong>{dayjs(trip?.departureDate).format('DD-MM-YYYY')}</div>
                             <div><strong>Giờ xuất phát:  </strong>{formatTimeVn(trip?.departureTime)}</div>
-                            <div><strong>Giá vé:  </strong>{trip?.ticketPrice}</div>
+                            <div><strong>Giá vé:  </strong><span style={{ color: 'red' }}>{getVnCurrency(trip?.ticketPrice)}</span></div>
                         </Col>
                         <Col span={5}>
                             <div><strong>Loại xe:  </strong>{trip?.bus.typeBus}</div>
@@ -142,14 +165,14 @@ const RunningTripComponent = () => {
                         <Col span={5}>
                             <div><strong>Số chỗ trống:  </strong>{trip?.totalSeats - trip?.bookedSeats}</div>
                             <div><strong>Số chỗ đã đặt:  </strong>{trip?.bookedSeats}</div>
-                            <div><strong>Số chỗ chưa thanh toán:  </strong></div>
+                            <div><strong>Số chỗ chưa thanh toán:  </strong>{inforPriceTrip.seatNotPaid}</div>
                         </Col>
-                        <Col span={5}>
-                            <div><strong>Tổng số tiền vé phải thu:  </strong></div>
-                            <div><strong>Tổng số tiền hàng:</strong></div>
-                            <div><strong>Tổng số tiền :</strong></div>
+                        <Col span={6}>
+                            <div><strong>Tiền vé phải thu:  </strong><span style={{ color: 'red' }}>{getVnCurrency(inforPriceTrip.totalTicketPrice)}</span></div>
+                            <div><strong>Tiền hàng phải thu: </strong><span style={{ color: 'red' }}>{getVnCurrency(inforPriceTrip.totalGoodsPrice)}</span></div>
+                            <div><strong>Tổng số tiền phải thu: </strong><span style={{ color: 'red' }}>{getVnCurrency(inforPriceTrip.totalPrice)}</span></div>
                         </Col>
-                        <Col span={4}>
+                        <Col span={3}>
                             <Button onClick={handleFinishTrip} type='primary' danger>Kết thúc chuyến</Button>
                         </Col>
                     </Row>

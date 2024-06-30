@@ -67,8 +67,8 @@ const DriverPage = () => {
             >
                 <div className="user-info" style={{ padding: '20px', textAlign: 'center', marginBottom: '20px' }}>
                     <Avatar size={64} src={user?.avatar} icon={<UserOutlined />} />
-                    <div style={{ marginTop: '10px', color: 'white', fontSize: '20px' }}>Xin chào tài xế</div>
-                    <div style={{ marginTop: '5px', color: 'white', fontSize: '16px' }}>{user?.name}</div>
+                    <div style={{ marginTop: '10px', color: 'white', fontSize: '16px' }}>Xin chào tài xế</div>
+                    <div style={{ marginTop: '5px', color: 'white', fontSize: '20px' }}>{user?.name}</div>
                 </div>
                 <Menu
                     theme="dark"
@@ -78,7 +78,7 @@ const DriverPage = () => {
                     selectedKeys={selectedKeys}
 
                 />
-                <div style={{ display: 'flex', height: '280px', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', height: '300px', flexDirection: 'column', justifyContent: 'flex-end' }}>
                     <Button type="primary" icon={<LogoutOutlined />} danger onClick={() => { handleLogOut() }}>
                         Đăng xuất
                     </Button>

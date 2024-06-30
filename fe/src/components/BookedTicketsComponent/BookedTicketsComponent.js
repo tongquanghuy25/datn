@@ -66,10 +66,9 @@ const BookedTicketsComponent = () => {
         mutation.mutate({ ticketCode, phone })
         setIsSearch(true)
     }
+
     const handleCancelSearch = () => {
-        const list = queryClient.getQueryData(['tickets'])?.data
-        if (list?.length > 0) setListTicket(queryClient.getQueryData(['tickets'])?.data)
-        else refetch()
+        refetch()
         setTicketCode('')
         setPhone('')
         setIsSearch(false)
@@ -93,14 +92,14 @@ const BookedTicketsComponent = () => {
                     onChange={e => setPhone(e.target.value)}
                 />
                 {
-                    // !isSearch ? <Button type='primary' onClick={handleSearch}>Tìm kiếm</Button>
-                    //     : <Button type='primary' danger onClick={handleCancelSearch}>Xóa tìm kiếm</Button>
-                    <Button type='primary' onClick={handleSearch}>Tìm kiếm</Button>
+                    !isSearch ? <Button type='primary' onClick={handleSearch}>Tìm kiếm</Button>
+                        : <Button type='primary' danger onClick={handleCancelSearch}>Xóa tìm kiếm</Button>
+                    // <Button type='primary' onClick={handleSearch}>Tìm kiếm</Button>
                 }
             </Row>
             {
                 <>
-                    <Row justify={'center'}>
+                    {!isSearch && <Row justify={'center'}>
                         {
                             isSearch || !user.id ?
                                 listTicket?.length > 0 && <h2>Thông tin vé</h2>
@@ -111,7 +110,7 @@ const BookedTicketsComponent = () => {
                                     <TabPane tab="Đã hủy" key="3"></TabPane>
                                 </Tabs>
                         }
-                    </Row>
+                    </Row>}
                     {listTicket?.length > 0 ? <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                         {listTicket?.map(ticket => {
                             return <BookedTicketsCard

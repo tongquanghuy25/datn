@@ -52,6 +52,33 @@ export const getDetailBusOwnerByUserId = async (id, access_token) => {
     return res.data
 }
 
+export const getOverviewBusOwner = async (id, access_token) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/partner/overview-bus-owner/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
+
+export const getStatisticBusOwner = async (id, access_token, data) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/partner/statistic-bus-owner/${id}`, {
+        params: {
+            tab: data.tab,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            startOfMonth: data.startOfMonth,
+            endOfMonth: data.endOfMonth,
+            selectedMonth: data.selectedMonth,
+            selectedYear: data.selectedYear
+        },
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
+
 
 //AGENT
 

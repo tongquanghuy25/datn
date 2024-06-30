@@ -97,6 +97,42 @@ const getDetailBusOwnerByUserId = async (req, res) => {
     }
 }
 
+const getOverviewBusOwner = async (req, res) => {
+    try {
+        const busOwnerId = req.params.id
+        if (!busOwnerId) {
+            return res.status(400).json({
+                message: 'Id nhà xe không được bỏ trống !'
+            })
+        }
+        const response = await PartnerService.getOverviewBusOwner(busOwnerId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const getStatisticBusOwner = async (req, res) => {
+    try {
+        const busOwnerId = req.params.id
+        if (!busOwnerId) {
+            return res.status(400).json({
+                message: 'Id nhà xe không được bỏ trống !'
+            })
+        }
+        const { tab, startDate, endDate, startOfMonth, endOfMonth, selectedYear } = req.query
+
+        const response = await PartnerService.getStatisticBusOwner(busOwnerId, tab, startDate, endDate, startOfMonth, endOfMonth, selectedYear)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 //AGENT
 
 const createAgent = async (req, res) => {
@@ -191,6 +227,8 @@ module.exports = {
     editBusOwner,
     deleteBusOwner,
     getDetailBusOwnerByUserId,
+    getOverviewBusOwner,
+    getStatisticBusOwner,
 
     createAgent,
     getAllAgent,

@@ -31,7 +31,6 @@ const createDriver = (newDriver) => {
     })
 }
 
-
 const getDriversByBusOwner = (busOwnerId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -59,7 +58,8 @@ const getDriversByBusOwner = (busOwnerId) => {
 const getDriversByUserId = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const driver = await Driver.findOne({ userId: userId })
+            console.log(userId);
+            const driver = await Driver.findOne({ where: { userId: userId } })
             resolve({
                 status: 200,
                 message: 'Success',
@@ -171,8 +171,6 @@ const getAllDriver = () => {
         }
     })
 }
-
-
 
 module.exports = {
     createDriver,

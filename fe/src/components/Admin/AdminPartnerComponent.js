@@ -35,7 +35,7 @@ const AdminPartnerComponent = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            setListData([...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data, ...data?.data])
+            setListData(data?.data)
         } else if (isError) {
             console.log('err', data);
         }

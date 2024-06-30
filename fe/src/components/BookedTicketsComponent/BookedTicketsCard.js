@@ -18,7 +18,6 @@ const BookedTicketsCard = (props) => {
     const [rating, setRating] = useState(0);
     const [content, setContent] = useState('');
 
-
     const mutation = useMutation({
         mutationFn: async (data) => {
             const { access_token, ...rest } = data;
@@ -80,7 +79,6 @@ const BookedTicketsCard = (props) => {
         })
     }
 
-    console.log('gggg', user);
     return (
         <div
             style={{
@@ -115,13 +113,6 @@ const BookedTicketsCard = (props) => {
                     <Tag color={ticket.isPaid ? 'green' : 'red'} style={{ marginLeft: '8px' }}>
                         {ticket.sPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                     </Tag>
-                    {/* {ticket.status === 'Completed' ?
-                            <div style={{ marginBottom: '8px' }}><strong>Trạng thái:</strong> {ticket.status}</div>
-                            :
-                            <>
-
-                            </>
-                        } */}
                 </Col>
             </Row>
             <Row justify={'space-between'} style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #777' }}>
@@ -131,15 +122,13 @@ const BookedTicketsCard = (props) => {
                     <div>
                     </div>
                     :
-
-                    <Button size='small' type='primary' onClick={() => setIsReview(!isReview)}>Đánh giá</Button>
+                    ticket?.status != "NotBoarded" && ticket?.status != "Canceled" && <Button size='small' type='primary' onClick={() => setIsReview(!isReview)}>Đánh giá</Button>
                 }
                 <Button size='small' type='default' onClick={() => { setVisible(true); setTicketSelected(ticket) }}>Chi tiết</Button>
                 {
                     ticket.status === 'NotBoarded' ? <Popconfirm
                         title="Bạn có chắc chắn muốn xóa vé?"
                         onConfirm={() => { handleDeleteTicket() }}
-                        // onCancel={cancel}
                         okText="Đồng ý"
                         cancelText="Hủy"
                     >

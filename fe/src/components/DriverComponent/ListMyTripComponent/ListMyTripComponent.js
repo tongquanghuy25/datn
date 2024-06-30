@@ -6,7 +6,7 @@ import { errorMes, successMes } from '../../Message/Message';
 import { getTripsByDriver, updateTrip } from '../../../services/TripService';
 import { useSelector } from 'react-redux';
 import ModalTripDeitail from './ModalTripDeitail';
-import { formatTime } from '../../../utils';
+import { formatTime, formatTimeVn } from '../../../utils';
 
 
 const ListMyTripComponent = ({ setSelectedKeys }) => {
@@ -100,7 +100,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
                                 </Col>
                                 <Col span={10} style={{ fontSize: '16px', color: '#666', textAlign: 'left' }}>
                                     <div><strong>Điểm xuất phát:</strong> {trip.route.placeStart} - {trip.route.districtStart}</div>
-                                    <div><strong>Thời gian di chuyển:</strong> {trip.route.journeyTime}</div>
+                                    <div><strong>Thời gian di chuyển:</strong> {formatTimeVn(trip.route.journeyTime)}</div>
                                     <div><strong>Điểm đến:</strong> {trip.route.placeEnd} - {trip.route.districtEnd}</div>
                                 </Col>
                                 <Col span={4} style={{ fontSize: '16px', color: '#666' }}>

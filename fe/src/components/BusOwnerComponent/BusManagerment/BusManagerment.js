@@ -75,7 +75,7 @@ const BusManagerment = () => {
                                                 <p style={{ color: '#555', fontWeight: '500' }}>{bus.typeBus} chỗ</p>
                                             </div>
                                         </div>
-                                        <div style={{ fontSize: '16px', marginLeft: '100px', fontWeight: '500' }}>Đánh giá : {bus.averageRating} <StarOutlined style={{ color: 'red' }} /></div>
+                                        <div style={{ fontSize: '16px', marginLeft: '100px', fontWeight: '500' }}>Đánh giá : 5{bus.averageRating} <StarOutlined style={{ color: 'red' }} /></div>
 
                                     </div>
 

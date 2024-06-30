@@ -19,13 +19,12 @@ const ModalCreateTrip = (props) => {
     const mutation = useMutation({
         mutationFn: async (data) => {
             const { access_token, ...rest } = data;
-            console.log('datasđfsa', data);
             return await createTrip(access_token, rest);
         },
         onSuccess: (data) => {
             successMes(data.message)
             refetch()
-            handleCancel()
+            //   handleCancel()
 
         },
         onError: (data) => {

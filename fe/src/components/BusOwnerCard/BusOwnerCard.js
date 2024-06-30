@@ -67,7 +67,6 @@ const BusOwnerCard = (props) => {
             isBusOwner: data.busOwnerName ? true : false
         })
     }
-    console.log('dâ', data);
     return (
         <Card className={`info-card ${data?.busOwnerName ? 'busOwner' : 'agent'}`} >
             <div style={{ fontSize: 20, fontWeight: 'bold' }}>{data?.busOwnerName ? "Thông tin nhà xe" : "Thông tin đại lý"}</div>

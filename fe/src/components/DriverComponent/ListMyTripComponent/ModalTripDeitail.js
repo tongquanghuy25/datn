@@ -10,7 +10,6 @@ const ModalTripDeitail = ({ tripSelected, setTripSelected }) => {
         setActiveTab(key);
     };
 
-    console.log('sdfsad', tripSelected);
 
     const {
         totalSeats,

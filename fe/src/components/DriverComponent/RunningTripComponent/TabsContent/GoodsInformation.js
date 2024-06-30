@@ -31,7 +31,7 @@ const GoodsInformation = ({ listGoodsOrder }) => {
                                 </Col>
 
                                 <Col span={8}>
-                                    <div><strong>Tên hàng hóa:</strong> {goodsOrder.goodsName}fdasdf dsfasdf asdfasdf sfasfsafs fsf s fgdsfgdsgfd</div>
+                                    <div><strong>Tên hàng hóa:</strong> {goodsOrder.goodsName}</div>
                                     <div><strong>Mô tả hàng hóa:</strong> {goodsOrder.goodsDescription}</div>
 
 

@@ -4,7 +4,6 @@ const { Op } = require('sequelize');
 
 const createTrip = (dates, newTrip) => {
     return new Promise(async (resolve, reject) => {
-
         try {
             const checkBusOwner = await BusOwner.findByPk(newTrip.busOwnerId);
             if (checkBusOwner === null) {
@@ -67,6 +66,7 @@ const getAllByBusOwner = (busOwnerId, day) => {
 const getAllByDriver = (driverId, day) => {
     return new Promise(async (resolve, reject) => {
         try {
+            console.log(driverId, day);
             const allTrip = await Trip.findAll({
                 where: {
                     [Op.and]: [
