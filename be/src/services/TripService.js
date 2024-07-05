@@ -103,6 +103,7 @@ const getRunningByDriver = (driverId) => {
                     { model: Bus, as: 'bus', required: true }
                 ]
             });
+            //await OrderTicket.update({ payee: 120 }, { where: { tripId: trip.id } });
             const listTicketOrder = await OrderTicket.findAll({ where: { tripId: trip.id } });
             const listGoodsOrder = await OrderGoods.findAll({ where: { tripId: trip.id } });
             resolve({

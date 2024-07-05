@@ -36,7 +36,7 @@ const TicketAgentPage = () => {
                     <Menu theme="dark" mode="horizontal" selectedKeys={[selectedTab]} onClick={handleTabChange}>
                         <Menu.Item key="sale-tickets">Bán vé</Menu.Item>
                         <Menu.Item key="tickets-saled">Vé đã bán</Menu.Item>
-                        <Menu.Item key="route">Quản lý tài chính</Menu.Item>
+                        <Menu.Item key="financial">Quản lý tài chính</Menu.Item>
                     </Menu>
                 </div>
                 <div>

@@ -90,3 +90,22 @@ export const resetPassword = async (data) => {
     return res.data
 }
 
+
+export const sentMailAdmin = async (access_token, data) => {
+    const res = await axiosJWT.post(`${process.env.REACT_APP_API_URL}/user/sent-mail-admin`, data, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
+export const getDataAdmin = async (access_token) => {
+    console.log('dđ');
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/user/data-admin`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}

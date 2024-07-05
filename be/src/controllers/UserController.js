@@ -241,11 +241,20 @@ const logoutUser = async (req, res) => {
 
 const sentMailAdmin = async (req, res) => {
     try {
-
-        res.clearCookie('refresh_token')
-        return res.status(200).json({
-            message: 'Logout successfully'
+        const { to, subject, content } = req.body;
+        const response = await UserService.sentMailAdmin(to, subject, content)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
         })
+    }
+}
+
+const getDataAdmin = async (req, res) => {
+    try {
+        const response = await UserService.getDataAdmin()
+        return res.status(response.status).json(response)
     } catch (e) {
         return res.status(404).json({
             message: e
@@ -266,5 +275,6 @@ module.exports = {
     logoutUser,
     editUser,
 
-    sentMailAdmin
+    sentMailAdmin,
+    getDataAdmin
 }

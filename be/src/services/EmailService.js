@@ -124,9 +124,37 @@ Vui lòng thay đổi mật khẩu sau khi đăng nhập vì lý do bảo mật.
     throw error;
   }
 }
+
+const sendEmail = async (to, subject, content) => {
+  try {
+    console.log('dfsadfasd', to);
+
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_ACCOUNT, // generated ethereal user
+        pass: process.env.MAIL_PASSWORD, // generated ethereal password
+      },
+    });
+    transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+    console.log('dfsadfasd', to);
+    await transporter.sendMail({
+      from: process.env.MAIL_ACCOUNT, // sender address
+      to: to,
+      subject: subject, // Subject line
+      html: content,
+    });
+  } catch (error) {
+    console.error("Error sending email:", error.message);
+    throw error;
+  }
+}
 module.exports = {
   sendEmailCreateOrder,
-  sendEmailResetPassword
+  sendEmailResetPassword,
+  sendEmail
 }
 
 let refusePartner = `

@@ -1,9 +1,10 @@
-const { User } = require("../models/index")
+const { User, Bus, Driver, BusOwner } = require("../models/index")
 const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 const { deleteImgCloud, generateRandomCode } = require("../utils");
-const { sendEmailResetPassword } = require("./EmailService");
-
+const { sendEmailResetPassword, sendEmail } = require("./EmailService");
+const { raw } = require("body-parser");
+const { Op, Sequelize } = require('sequelize');
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -304,7 +305,8 @@ const getAllUser = (page, pageSize) => {
                 order: [['createdAt', 'DESC'], ['updatedAt', 'DESC']],
                 raw: true
             });
-            console.log('count, rows', count, rows);
+
+
             resolve({
                 status: 200,
                 message: 'Success',
@@ -314,6 +316,7 @@ const getAllUser = (page, pageSize) => {
                 }
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
@@ -346,6 +349,120 @@ const getDetailsUser = (id) => {
     })
 }
 
+const sentMailAdmin = (to, subject, content) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let users;
+            if (to === 'Tất cả') {
+                users = await User.findAll({
+                    where: { role: { [Op.notIn]: ['ADMIN'] } },
+                    raw: true
+                });
+            } else if (to === 'Nhà xe') {
+                users = await User.findAll({
+                    where: { role: 'BUSOWNER' },
+                    raw: true
+                });
+            } else if (to === 'Đại lý') {
+                users = await User.findAll({
+                    where: { role: 'AGENT' },
+                    raw: true
+                });
+            } else if (to === 'Tài xế') {
+                users = await User.findAll({
+                    where: { role: 'DRIVER' },
+                    raw: true
+                });
+            } else if (to === 'Người dùng') {
+                users = await User.findAll({
+                    where: { role: 'USER' },
+                    raw: true
+                });
+            } else {
+                users = await User.findAll({
+                    where: { email: to },
+                });
+
+            }
+
+            if (users == null) {
+                resolve({
+                    status: 404,
+                    message: 'Người dùng không tồn tại!'
+                })
+                return;
+            }
+            const emails = users?.map(item => item.email)
+            await sendEmail(emails.join(','), subject, content)
+            resolve({
+                status: 200,
+                message: 'SUCESS',
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
+const getDataAdmin = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const numUser = await User.count();
+            const numBus = await Bus.count();
+            const numDriver = await Driver.count();
+            const numBusOwner = await BusOwner.count();
+
+            console.log(numUser, numBusOwner, numBus, numDriver);
+
+            const currentDate = new Date();
+            const twelveMonthsAgo = new Date(currentDate.getFullYear(), currentDate.getMonth() - 11, 1); // 12 months ago
+            const result = await User.findAll({
+                attributes: [
+                    [Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'year'],
+                    [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'month'],
+                    [Sequelize.literal('COUNT(*)'), 'count'],
+                ],
+                where: {
+                    createdAt: {
+                        [Op.gte]: twelveMonthsAgo,
+                    },
+                },
+                group: [Sequelize.fn('YEAR', Sequelize.col('createdAt')), Sequelize.fn('MONTH', Sequelize.col('createdAt'))],
+                order: [[Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'ASC'], [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'ASC']],
+            });
+
+
+            const monthNames = [
+                'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+                'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+            ];
+
+            // Tạo mảng data theo yêu cầu
+            const dataNewUser = result.map(item => ({
+                month: monthNames[item.dataValues.month - 1], // Month starts from 1
+                newUser: item.dataValues.count
+            }));
+
+            resolve({
+                status: 200,
+                message: 'SUCESS',
+                data: {
+                    numUser,
+                    numBusOwner,
+                    numBus,
+                    numDriver,
+                    dataNewUser
+                }
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     createUser,
     loginUser,
@@ -356,4 +473,6 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
+    sentMailAdmin,
+    getDataAdmin
 }

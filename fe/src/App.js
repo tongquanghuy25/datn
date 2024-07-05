@@ -44,6 +44,8 @@ import BookedTicketsComponent from './components/BookedTicketsComponent/BookedTi
 import AdminSentMailComponent from './components/Admin/AdminSentMailComponent';
 import AdminReportComponent from './components/Admin/AdminReportComponent';
 import Statistic from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeTabs/Statistic/Statistic';
+import FinancialManagement from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeTabs/FinancialManagement/FinancialManagement';
+import FinancialComponent from './components/AgentComponent/FinancialComponent/FinancialComponent';
 
 
 function App() {
@@ -147,7 +149,7 @@ function App() {
               <Route path='trip' element={<TripManagerment />} />
               <Route path='ticket' element={<TicketManagerment />} />
               <Route path='goods' element={<GoodsManagerment />} />
-              <Route path='financial' element={<>Thống kê</>} />
+              <Route path='financial' element={<FinancialManagement />} />
               <Route path='profile' element={<ProfileComponent />} />
               <Route path='change-assword' element={<ChangePasswordComponent />} />
             </Route>
@@ -169,7 +171,7 @@ function App() {
           <Route path='/agent' element={<TicketAgentPage />} >
             <Route path='sale-tickets' element={<SaleTickets />} />
             <Route path='tickets-saled' element={<BookedTicketsComponent />} />
-
+            <Route path='financial' element={<FinancialComponent />} />
           </Route>
 
           <Route path='/test' element={<TestPage />} />

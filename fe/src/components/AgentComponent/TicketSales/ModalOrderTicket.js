@@ -29,7 +29,7 @@ const ModalOrderTicket = (props) => {
             }}
         >
             <TabSeatSelection
-                typeBus={trip['bus.typeBus']}
+                typeBus={trip?.bus.typeBus}
                 paymentRequire={trip?.paymentRequire}
                 prebooking={trip?.prebooking}
                 routeId={trip?.routeId}
@@ -37,8 +37,8 @@ const ModalOrderTicket = (props) => {
                 departureTime={trip?.departureTime}
                 tripId={trip?.id}
                 departureDate={trip?.departureDate}
-                busOwnerName={trip['busOwner.busOwnerName']}
-                routeName={`${trip['route.placeStart']} - ${trip['route.placeEnd']}`}
+                busOwnerName={trip?.busOwner.busOwnerName}
+                routeName={`${trip?.route.placeStart} - ${trip?.route.placeEnd}`}
                 isAgent={true}
                 handleOrderSuccess={handleOrderSuccess}
             />

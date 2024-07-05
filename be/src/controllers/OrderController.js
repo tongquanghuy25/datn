@@ -330,6 +330,28 @@ const updateStatusGoodsOrder = async (req, res) => {
         })
     }
 }
+
+
+const updateSettled = async (req, res) => {
+    try {
+        const userId = req.params.id
+        console.log(userId);
+        if (!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Id của người dùng không được bỏ trống!'
+            })
+        }
+        const response = await OrderService.updateSettled(userId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+
 module.exports = {
     createTicketOrder,
     getTicketOrderByTrip,
@@ -345,4 +367,5 @@ module.exports = {
     deleteSeat,
     getSeatsBookedByTrip,
     cancelTicketOrder,
+    updateSettled,
 }

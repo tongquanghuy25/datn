@@ -17,6 +17,7 @@ router.get('/getAll', authAdminMiddleWare, userController.getAllUser)
 router.get('/get-details/:id', authUserMiddleWare, userController.getDetailsUser)
 router.post('/refresh-token', userController.refreshToken)
 
-
 router.post('/sent-mail-admin', authBusOwnerMiddleWare, userController.sentMailAdmin)
+router.get('/data-admin', authAdminMiddleWare, userController.getDataAdmin)
+
 module.exports = router

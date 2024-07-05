@@ -3,6 +3,10 @@ import { Form, Input, Button, message, Row, AutoComplete } from 'antd';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useMutation } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+import { sentMailAdmin } from '../../services/UserService';
+import { errorMes, successMes } from '../Message/Message';
 // import 'antd/dist/antd.css';
 
 const { TextArea } = Input;
@@ -18,9 +22,29 @@ const options = [
 const AdminSentMailComponent = () => {
     const [form] = Form.useForm();
     const [editorContent, setEditorContent] = useState('');
+    const user = useSelector((state) => state.user)
+
+
+    const mutation = useMutation({
+        mutationFn: (data) => {
+            console.log('da', data);
+            return sentMailAdmin(user?.access_token, data)
+        },
+        onSuccess: () => {
+            successMes("Gửi mail thành công !");
+            form.resetFields()
+        },
+        onError: (data) => {
+            errorMes(data?.response?.data?.message)
+        }
+    })
 
     const onFinish = async (values) => {
-        console.log(values);
+        mutation.mutate({
+            to: values.to,
+            subject: values.subject,
+            content: editorContent
+        });
     };
 
     const modules = {

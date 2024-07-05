@@ -69,18 +69,18 @@ const SaleTickets = () => {
     return (
         <div>
             <SearchBusComponent handleSearch={handleSearch}></SearchBusComponent>
-            <Row style={{ display: 'flex', justifyContent: 'center' }}>
+            <Row style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
                 {
                     listTrip.map(trip => (
                         <Card style={{ width: '80%', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', marginBottom: 20, backgroundColor: '#faf3de' }}>
                             <Row>
-                                <Col offset={4} style={{ fontSize: 24, fontWeight: 'bold', marginBottom: '10px', color: '#1890ff' }}>{trip['busOwner.busOwnerName']}</Col>
+                                <Col offset={5} style={{ fontSize: 24, fontWeight: 'bold', marginBottom: '10px', color: '#1890ff' }}>{trip?.busOwner.busOwnerName}</Col>
                             </Row>
                             <Row style={{ display: 'flex', alignItems: 'center' }} >
-                                <Col span={4} style={{ alignSelf: 'flex-start', fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{formatTimeVn(trip.departureTime)}</Col>
+                                <Col span={5} style={{ alignSelf: 'flex-start', fontWeight: 'bold', fontSize: '40px', color: '#1890ff', textAlign: 'center' }}>{formatTimeVn(trip.departureTime)}</Col>
                                 <Col span={6} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666', textAlign: 'left' }}>
-                                    <div><strong>Số Điện Thoại:</strong> {trip['busOwner.user.phone']}</div>
-                                    <div><strong>Loại xe:</strong> {trip['bus.typeBus']} chỗ</div>
+                                    <div><strong>Số Điện Thoại:</strong> {trip?.busOwner.user.phone}</div>
+                                    <div><strong>Loại xe:</strong> {trip.bus.typeBus} chỗ</div>
                                     <div><strong>Số ghế trống:</strong> {trip.totalSeats - trip.bookedSeats}</div>
                                     <div><strong>Trạng thái: </strong>
                                         <Tag
@@ -90,10 +90,10 @@ const SaleTickets = () => {
                                         </Tag>
                                     </div>
                                 </Col>
-                                <Col span={10} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666', textAlign: 'left' }}>
-                                    <div><strong>Điểm xuất phát:</strong> {trip['route.placeStart']} - {trip['route.districtStart']}</div>
-                                    <div><strong>Thời gian di chuyển:</strong> {formatTimeVn(trip['route.journeyTime'])}</div>
-                                    <div><strong>Điểm đến:</strong> {trip['route.placeEnd']} - {trip['route.districtEnd']}</div>
+                                <Col span={9} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666', textAlign: 'left' }}>
+                                    <div><strong>Điểm xuất phát:</strong> {trip.route.placeStart} - {trip.route.districtStart}</div>
+                                    <div><strong>Thời gian di chuyển:</strong> {trip.route.journeyTime && formatTimeVn(trip.route.journeyTime)}</div>
+                                    <div><strong>Điểm đến:</strong> {trip.route.placeEnd} - {trip.route.districtEnd}</div>
                                 </Col>
                                 <Col span={4} style={{ alignSelf: 'flex-start', fontSize: '16px', color: '#666' }} >
                                     <div><strong>Giá vé:</strong> {trip.ticketPrice}</div>

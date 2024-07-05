@@ -11,7 +11,8 @@ router.get('/get-all-partner-not-accept', authAdminMiddleWare, PartnerController
 router.get('/get-detail-bus-owner-by-userId/:id', authBusOwnerMiddleWare, PartnerController.getDetailBusOwnerByUserId)
 router.get('/overview-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getOverviewBusOwner)
 router.get('/statistic-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getStatisticBusOwner)
-
+router.get('/debts-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getDebtsBusOwner)
+router.get('/detail-debts-by-user/:id', authBusOwnerMiddleWare, PartnerController.getDetailDebts)
 
 router.post('/register-agent', PartnerController.createAgent)
 router.get('/get-all-agent', authAdminMiddleWare, PartnerController.getAllAgent)

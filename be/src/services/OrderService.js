@@ -693,6 +693,25 @@ const updateStatusGoodsOrder = (id, data) => {
     })
 }
 
+const updateSettled = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await OrderTicket.update({ status: 'Settled' }, {
+                where: { payee: userId },
+            });
+            await OrderGoods.update({ status: 'Settled' }, {
+                where: { payee: userId },
+            });
+            resolve({
+                status: 200,
+                message: 'Cập nhật trạng thái đơn vé thành công!',
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     createTicketOrder,
     getTicketOrderByTrip,
@@ -710,4 +729,5 @@ module.exports = {
     updateStatusGoodsOrder,
     cancelTicketOrder,
 
+    updateSettled,
 }

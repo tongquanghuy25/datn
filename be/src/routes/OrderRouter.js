@@ -21,7 +21,8 @@ router.delete('/delete-goods/:id', authBusOwnerMiddleWare, OrderController.delet
 router.get('/get-goods-order-by-trip/:id', authBusOwnerMiddleWare, OrderController.getGoodsOrderByTrip)
 router.put('/update-status-goods/:id', authDriverMiddleWare, OrderController.updateStatusGoodsOrder)
 
-
+//ALL
+router.put('/update-settled/:id', authBusOwnerMiddleWare, OrderController.updateSettled)
 
 
 // router.get('/get-details-order/:id', OrderController.getDetailsOrder)

@@ -1,7 +1,7 @@
 const { User, BusOwner, Agent, Bus, Driver, Route, Trip, OrderTicket, OrderGoods } = require("../models/index");
 const UserService = require('./UserService')
 const sequelize = require('sequelize');
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 
 const createBusOwner = (newBusOwner) => {
     return new Promise(async (resolve, reject) => {
@@ -340,6 +340,177 @@ const getStatisticBusOwner = (busOwnerId, tab, startDate, endDate, startOfMonth,
     })
 }
 
+const getDebtsBusOwner = (busOwnerId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const trips = await Trip.findAll({
+                where: {
+                    busOwnerId: busOwnerId
+                },
+                attributes: ['id']
+            });
+            const drivers = await Driver.findAll({
+                where: {
+                    busOwnerId: busOwnerId
+                },
+                include: {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id']
+                }
+            });
+            const agents = await Agent.findAll({
+                include: {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id']
+                }
+            });
+
+            const ticketDebts = await OrderTicket.findAll({
+                attributes: [
+                    'payee',
+                    [Sequelize.fn('SUM', Sequelize.col('totalPrice')), 'totalDebt']
+                ],
+                where: {
+                    tripId: {
+                        [Op.in]: trips.map(trip => trip.id)
+                    },
+                    [Op.or]: [
+                        { payee: { [Op.in]: drivers.map(driver => driver.userId) } },
+                        { payee: { [Op.in]: agents.map(agent => agent.userId) } }
+                    ]
+                },
+                group: ['payee'],
+            });
+
+            const debtsDriver = [];
+            const debtsAgent = [];
+
+            for (const ticket of ticketDebts) {
+                const { payee, totalDebt } = ticket.dataValues;
+                const user = await User.findByPk(payee);
+
+                if (user) {
+                    let debtInfo;
+                    if (user.role === 'DRIVER') {
+                        debtInfo = {
+                            id: user.id,
+                            name: user.name,
+                            totalDebt: totalDebt
+                        };
+                        if (debtInfo) {
+                            debtsDriver.push(debtInfo);
+                        }
+                    } else if (user.role === 'AGENT') {
+                        const agent = await Agent.findOne({
+                            where: { userId: payee }
+                        });
+                        if (agent) {
+                            debtInfo = {
+                                id: user.id,
+                                name: agent.agentName,
+                                totalDebt: totalDebt
+                            };
+                        }
+                        if (debtInfo) {
+                            debtsAgent.push(debtInfo);
+                        }
+                    }
+
+
+                }
+            }
+            resolve({
+                status: 200,
+                message: 'Thành công!',
+                data: { debtsDriver, debtsAgent }
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getDetailDebts = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const totalTicketPricesAndSeats = await OrderTicket.findAll({
+                attributes: [
+                    'tripId',
+                    [Sequelize.fn('SUM', Sequelize.col('totalPrice')), 'totalTicketPrice'],
+                    [Sequelize.fn('GROUP_CONCAT', Sequelize.col('seats')), 'seatsList']
+                ],
+                where: {
+                    payee: userId
+                },
+                include: {
+                    model: Trip,
+                    as: 'trip',
+                    attributes: ['departureDate', 'departureTime', 'routeId'],
+                    include: {
+                        model: Route,
+                        as: 'route',
+                        attributes: ['provinceStart', 'districtStart', 'provinceEnd', 'districtEnd']
+                    }
+                },
+                group: ['tripId']
+            });
+
+            const goodsData = await OrderGoods.findAll({
+                attributes: [
+                    'tripId',
+                    [Sequelize.fn('SUM', Sequelize.col('price')), 'totalOrderPrice'],
+                ],
+                where: {
+                    Payee: userId,
+                },
+                group: ['tripId'],
+            });
+
+
+            const transformedData = totalTicketPricesAndSeats.map(orderTicket => {
+                const { tripId, totalTicketPrice, seatsList } = orderTicket.dataValues;
+                const { departureDate, departureTime, route } = orderTicket.trip;
+                const { provinceStart, districtStart, provinceEnd, districtEnd } = route;
+
+                // Tìm đơn hàng hóa tương ứng với chuyến xe
+                const goods = goodsData.find(good => good.tripId === tripId);
+                const totalOrderPrice = goods ? goods.dataValues.totalOrderPrice : 0;
+
+                // Xử lý chuỗi seatsList thành mảng các chỗ ngồi
+                const seatListArray = seatsList
+                    .replace(/\]\,\[/g, ',') // Thay thế "],[" bằng ","
+                    .replace(/^\[|\]$/g, '') // Xóa dấu "[" ở đầu và "]" ở cuối
+                    .split(',') // Tách thành các phần tử
+                    .map(seat => seat.replace(/\"/g, '')); // Xóa dấu ngoặc kép
+
+                return {
+                    tripId,
+                    totalTicketPrice,
+                    totalOrderPrice,
+                    seatList: seatListArray,
+                    departureDate,
+                    departureTime,
+                    provinceStart,
+                    districtStart,
+                    provinceEnd,
+                    districtEnd
+                };
+            });
+
+            resolve({
+                status: 200,
+                message: 'Thành công!',
+                data: transformedData
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
 //AGENT
 
 const createAgent = (newAgent) => {
@@ -502,6 +673,8 @@ module.exports = {
     getDetailBusOwnerByUserId,
     getOverviewBusOwner,
     getStatisticBusOwner,
+    getDebtsBusOwner,
+    getDetailDebts,
 
     createAgent,
     getAllAgent,
