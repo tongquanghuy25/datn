@@ -254,6 +254,23 @@ const getDetailAgentByUserId = async (req, res) => {
     }
 }
 
+const getDebtsAgent = async (req, res) => {
+    try {
+        const userId = req.params.id
+        if (!userId) {
+            return res.status(400).json({
+                message: 'Id người dùng không được bỏ trống!'
+            })
+        }
+        const response = await PartnerService.getDebtsAgent(userId)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
     createBusOwner,
     getAllBusOwner,
@@ -270,5 +287,6 @@ module.exports = {
     getAllAgent,
     editAgent,
     deleteAgent,
-    getDetailAgentByUserId
+    getDetailAgentByUserId,
+    getDebtsAgent
 }

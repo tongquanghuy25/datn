@@ -19,5 +19,6 @@ router.get('/get-all-agent', authAdminMiddleWare, PartnerController.getAllAgent)
 router.put('/edit-agent/:id', authAdminMiddleWare, PartnerController.editAgent)
 router.delete('/delete-agent/:id', authAdminMiddleWare, PartnerController.deleteAgent)
 router.get('/get-detail-agent-by-userId/:id', authAgentMiddleWare, PartnerController.getDetailAgentByUserId)
+router.get('/get-debts-agent/:id', authAgentMiddleWare, PartnerController.getDebtsAgent)
 
 module.exports = router

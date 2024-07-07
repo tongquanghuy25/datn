@@ -1,0 +1,42 @@
+.financial-layout {
+    padding: 24px;
+    background: #f0f2f5;
+}
+
+.financial-content {
+    background: #fff;
+    padding: 24px;
+    margin: 0;
+    min-height: calc(100vh - 115px);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.financial-table {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.statistic-card {
+    background: #f0f2f5;
+    border-radius: 8px;
+    text-align: center;
+    height: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.statistic-card .ant-statistic-title {
+    color: #595959;
+    font-weight: bold;
+}
+
+.statistic-card .ant-statistic-content {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.statistic-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+}

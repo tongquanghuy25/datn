@@ -153,4 +153,12 @@ export const getDetailAgentByUserId = async (id, access_token) => {
     return res.data
 }
 
+export const getDebtsAgent = async (id, access_token) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/partner/get-debts-agent/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
 

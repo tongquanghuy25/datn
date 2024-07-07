@@ -9,11 +9,8 @@ import { errorMes } from '../../../../Message/Message';
 import { formatTimeVn } from '../../../../../utils';
 import { updateSettled } from '../../../../../services/OrderService';
 
-
 const FinancialManagement = () => {
-
     const user = useSelector((state) => state.user);
-
 
     const [agents, setAgents] = useState([]);
     const [drivers, setDrivers] = useState([]);
@@ -23,24 +20,19 @@ const FinancialManagement = () => {
     const [userPayment, setUserPayment] = useState();
     const [tripDetails, setTripDetails] = useState([]);
 
-
-    const { data, isSuccess, isError, refetch } = useQuery(
-        {
-            queryKey: ['busOwnerNotAccept'],
-            queryFn: () => getDebtsBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token),
-        });
+    const { data, isSuccess, isError, refetch } = useQuery({
+        queryKey: ['busOwnerNotAccept'],
+        queryFn: () => getDebtsBusOwner(JSON.parse(localStorage.getItem('bus_owner_id')), user?.access_token),
+    });
 
     useEffect(() => {
         if (isSuccess) {
-            // setPartnerNotAccept(data?.data)
-            console.log(data?.data);
             setAgents(data?.data?.debtsAgent);
             setDrivers(data?.data?.debtsDriver);
         } else if (isError) {
             console.log('err', data);
         }
-
-    }, [isSuccess, isError, data])
+    }, [isSuccess, isError, data]);
 
     const mutation = useMutation({
         mutationFn: async (data) => {
@@ -51,16 +43,15 @@ const FinancialManagement = () => {
             setTripDetails(data?.data);
         },
         onError: (data) => {
-            errorMes(data?.response?.data?.message)
+            errorMes(data?.response?.data?.message);
         }
     });
 
     const handleViewDetails = (user) => {
         setSelectedUser(user);
         setIsModalVisible(true);
-        mutation.mutate({ id: user.id })
+        mutation.mutate({ id: user.id });
     };
-
 
     const mutationPayment = useMutation({
         mutationFn: async (data) => {
@@ -69,16 +60,15 @@ const FinancialManagement = () => {
         },
         onSuccess: () => {
             message.success(`Đã xác nhận thanh toán`);
-            setIsModalConfirm(false)
+            setIsModalConfirm(false);
         },
         onError: (data) => {
-            errorMes(data?.response?.data?.message)
+            errorMes(data?.response?.data?.message);
         }
     });
 
-
     const handleConfirmPayment = () => {
-        mutationPayment.mutate({ id: userPayment.id })
+        mutationPayment.mutate({ id: userPayment.id });
     };
 
     const columns = [
@@ -105,14 +95,14 @@ const FinancialManagement = () => {
             ),
         },
     ];
+
     const columnsDetail = [
         {
             title: 'Chuyến xe',
             key: 'route',
-            render: (route) => {
-                console.log('route', route);
-                return `${route?.provinceStart} - ${route?.districtStart} -> ${route?.provinceEnd} - ${route?.districtEnd}`
-            },
+            render: (route) => (
+                `${route?.provinceStart} - ${route?.districtStart} -> ${route?.provinceEnd} - ${route?.districtEnd}`
+            ),
         },
         {
             title: 'Ngày',
@@ -159,18 +149,17 @@ const FinancialManagement = () => {
             dataIndex: 'totalAmount',
             key: 'totalAmount',
             render: (text, record) => (
-                <>
-                    {record.totalTicketPrice + record.totalOrderPrice} VND
-                </>
+                <>{(record.totalTicketPrice + record.totalOrderPrice).toLocaleString()} VND</>
             ),
         },
     ];
 
     const totalAgentDebt = agents.reduce((sum, agent) => sum + agent.totalDebt, 0);
     const totalDriverDebt = drivers.reduce((sum, driver) => sum + driver.totalDebt, 0);
+
     return (
-        <div style={{ padding: 30 }}>
-            <Row gutter={16} justify={'space-between'}>
+        <div style={{ padding: '30px', backgroundColor: '#f0f2f5' }}>
+            <Row gutter={16} justify='space-between'>
                 <Col span={12}>
                     <Card>
                         <Statistic
@@ -183,7 +172,13 @@ const FinancialManagement = () => {
                         />
                     </Card>
                     <Divider orientation="left"><CarOutlined /> Dư nợ đại lý</Divider>
-                    <Table dataSource={agents.map(agent => ({ ...agent, debtType: 'agent' }))} pagination={false} columns={columns} rowKey="id" />
+                    <Table
+                        dataSource={agents.map(agent => ({ ...agent, debtType: 'agent' }))}
+                        pagination={false}
+                        columns={columns}
+                        rowKey="id"
+                        style={{ marginTop: '16px', backgroundColor: '#fff', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)' }}
+                    />
                 </Col>
                 <Col span={12}>
                     <Card>
@@ -197,27 +192,34 @@ const FinancialManagement = () => {
                         />
                     </Card>
                     <Divider orientation="left"><UserOutlined /> Dư nợ tài xế</Divider>
-                    <Table dataSource={drivers.map(driver => ({ ...driver, debtType: 'driver' }))} columns={columns} pagination={false} rowKey="id" />
+                    <Table
+                        dataSource={drivers.map(driver => ({ ...driver, debtType: 'driver' }))}
+                        columns={columns}
+                        pagination={false}
+                        rowKey="id"
+                        style={{ marginTop: '16px', backgroundColor: '#fff', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)' }}
+                    />
                 </Col>
             </Row>
 
-            {
-                isModalVisible && <Modal
-                    title={<div style={{ fontSize: 24, fontWeight: 'bold' }}>{`Chi tiết dư nợ của ${selectedUser ? selectedUser.name : ''}`}</div>}
+            {isModalVisible && (
+                <Modal
+                    title={<div style={{ fontSize: '24px', fontWeight: 'bold' }}>{`Chi tiết dư nợ của ${selectedUser ? selectedUser.name : ''}`}</div>}
                     open={isModalVisible}
                     onCancel={() => setIsModalVisible(false)}
                     footer={null}
-                    width={'80%'}
-                    height={'90%'}
-                    style={{
-                        top: 40,
-                    }}
+                    width='80%'
+                    height='90%'
+                    style={{ top: '40px' }}
                 >
-                    <Table columns={columnsDetail} dataSource={tripDetails} pagination={false} rowKey="tripId" />
+                    <Table columns={columnsDetail} dataSource={tripDetails} pagination={false} rowKey="tripId"
+                        style={{ marginTop: '16px', backgroundColor: '#fff', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)' }}
+
+                    />
                 </Modal>
-            }
-            {
-                isModalConfirm && <Modal
+            )}
+            {isModalConfirm && (
+                <Modal
                     title="Xác nhận thanh toán"
                     open={isModalConfirm}
                     onOk={() => handleConfirmPayment()}
@@ -227,9 +229,9 @@ const FinancialManagement = () => {
                 >
                     <p>Bạn có chắc chắn muốn thanh toán cho {userPayment?.name} hay không?</p>
                 </Modal>
-            }
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default FinancialManagement
+export default FinancialManagement;

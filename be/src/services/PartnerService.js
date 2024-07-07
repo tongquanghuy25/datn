@@ -287,7 +287,7 @@ const getStatisticBusOwner = (busOwnerId, tab, startDate, endDate, startOfMonth,
                     }
                 }
             });
-            console.log('totalTicketCount', totalTicketCount, totalRevenueTicket + totalRevenueGoods);
+            //  console.log('totalTicketCount', totalTicketCount, totalRevenueTicket + totalRevenueGoods);
 
 
             const occupancyRates = await Trip.findAll({
@@ -662,7 +662,85 @@ const getDetailAgentByUserId = (id) => {
     })
 }
 
+const getDebtsAgent = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const agent = await Agent.findOne({
+                where: { userId: userId }
+            });
+            if (agent === null) {
+                resolve({
+                    status: 404,
+                    message: 'Đại lý không tồn tại!'
+                })
+                return;
+            }
 
+            const orders = await OrderTicket.findAll({
+                where: {
+                    [Op.or]: [
+                        { userOrder: userId },
+                        { payee: userId }
+                    ]
+                },
+                include: [
+                    {
+                        model: Trip,
+                        as: 'trip',
+                        include: {
+                            model: BusOwner,
+                            as: 'busOwner',
+                            attributes: ['busOwnerName']
+                        }
+                    }
+                ]
+            });
+
+            // Nhóm các order ticket theo busOwnerName
+            const groupedData = orders.reduce((acc, order) => {
+                const busOwnerName = order.trip.busOwner.busOwnerName;
+                if (!acc[busOwnerName]) {
+                    acc[busOwnerName] = {
+                        busOwnerName,
+                        ticketsSold: 0,
+                        totalRevenue: 0,
+                        debt: 0
+                    };
+                }
+                acc[busOwnerName].ticketsSold += 1;
+                acc[busOwnerName].totalRevenue += order.totalPrice;
+                if (order.status !== 'Settled') {
+                    acc[busOwnerName].debt += order.totalPrice;
+                }
+                return acc;
+            }, {});
+            const groupedDataArray = Object.values(groupedData);
+            // Tính tổng số vé đã bán, tổng doanh thu và tổng dư nợ
+            const totalStats = Object.values(groupedData).reduce((acc, busOperatorStats) => {
+                acc.totalTicketsSold += busOperatorStats.ticketsSold;
+                acc.totalRevenue += busOperatorStats.totalRevenue;
+                acc.totalDebt += busOperatorStats.debt;
+                return acc;
+            }, {
+                totalTicketsSold: 0,
+                totalRevenue: 0,
+                totalDebt: 0
+            });
+
+
+
+            // console.log(totalStats, groupedData);
+
+            resolve({
+                status: 200,
+                message: 'SUCESS',
+                data: { totalStats, groupedDataArray }
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 module.exports = {
     createBusOwner,
@@ -680,6 +758,7 @@ module.exports = {
     getAllAgent,
     editAgent,
     deleteAgent,
-    getDetailAgentByUserId
+    getDetailAgentByUserId,
+    getDebtsAgent
 
 }

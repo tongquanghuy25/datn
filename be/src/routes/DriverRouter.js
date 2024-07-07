@@ -9,5 +9,6 @@ router.get('/get-driver-by-busowner/:id', authBusOwnerMiddleWare, DriverControll
 router.get('/get-detail-by-user-id/:id', authDriverMiddleWare, DriverController.getDriversByUserId)
 router.put('/update/:id', uploadCloud.single('avatar'), authDriverMiddleWare, DriverController.updateDriver)
 router.delete('/delete/:id', authBusOwnerMiddleWare, DriverController.deleteDriver)
+router.get('/get-statistic/:id/:driverId/:startDate/:endDate', authDriverMiddleWare, DriverController.getStatisticDriver)
 
 module.exports = router

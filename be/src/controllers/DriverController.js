@@ -120,11 +120,31 @@ const deleteDriver = async (req, res) => {
     }
 }
 
+const getStatisticDriver = async (req, res) => {
+    try {
+        const userId = req.params.id
+        const driverId = req.params.driverId
+        const startDate = req.params.startDate
+        const endDate = req.params.endDate
+        if (!userId) {
+            return res.status(400).json({
+                message: 'Id người dùng không được bỏ trống!'
+            })
+        }
+        const response = await DriverService.getStatisticDriver(userId, driverId, startDate, endDate)
+        return res.status(response.status).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
 
 module.exports = {
     createDriver,
     getDriversByBusOwner,
     getDriversByUserId,
     updateDriver,
-    deleteDriver
+    deleteDriver,
+    getStatisticDriver
 }

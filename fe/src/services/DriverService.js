@@ -46,3 +46,12 @@ export const deleteDriver = async (id, access_token) => {
     },)
     return res.data
 }
+
+export const getStatisticDriver = async (access_token, id, driverId, startDate, endDate) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/driver/get-statistic/${id}/${driverId}/${startDate}/${endDate}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}

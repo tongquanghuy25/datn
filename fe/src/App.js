@@ -46,6 +46,7 @@ import AdminReportComponent from './components/Admin/AdminReportComponent';
 import Statistic from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeTabs/Statistic/Statistic';
 import FinancialManagement from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeTabs/FinancialManagement/FinancialManagement';
 import FinancialComponent from './components/AgentComponent/FinancialComponent/FinancialComponent';
+import StatisticComponent from './components/DriverComponent/StatisticComponent/StatisticComponent';
 
 
 function App() {
@@ -163,7 +164,7 @@ function App() {
           <Route path='/driver' element={<DriverPage />} >
             <Route path='running-trip' element={<RunningTripComponent />} />
             <Route path='my-trip' element={<ListMyTripComponent />} />
-            <Route path='statistical' element={<RunningTripComponent />} />
+            <Route path='statistical' element={<StatisticComponent />} />
             <Route path='profile' element={<ProfileComponent />} />
             <Route path='change-password' element={<ChangePasswordComponent />} />
 
