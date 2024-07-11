@@ -13,7 +13,4 @@ router.get('/get-all-by-driver/:id', authDriverMiddleWare, TripController.getAll
 router.get('/get-running-by-driver/:id', authDriverMiddleWare, TripController.getRunningByDriver)
 router.put('/update-finish-trip/:id', authDriverMiddleWare, TripController.updateFinishTrip)
 
-// router.put('/update/:id', uploadCloud.any(), authBusOwnerMiddleWare, BusController.updateBus)
-// router.delete('/delete/:id', authBusOwnerMiddleWare, BusController.deleteBus)
-
 module.exports = router

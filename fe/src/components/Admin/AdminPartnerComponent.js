@@ -202,7 +202,6 @@ const AdminPartnerComponent = () => {
         setIsEdit(true)
     }
 
-
     const onFinish = (values) => {
         if (activeTab === 'busOwner')
             values.busOwnerName = values.partnerName
@@ -211,7 +210,6 @@ const AdminPartnerComponent = () => {
         setConfirmLoading(true)
         mutationUpdate.mutate({ id: PartnerEditing.id, partner: values, token: user?.access_token })
     }
-
 
     const mutationDeleted = useMutation({
         mutationFn: async (data) => {

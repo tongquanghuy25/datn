@@ -218,8 +218,6 @@ const AdminUserComponent = () => {
         }
     });
 
-    // const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
-    // const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const HandleEditUser = () => {
         setConfirmLoading(true)
         mutationUpdate.mutate({ id: userEditing.id, user: userEditing, access_token: user?.access_token })
@@ -251,7 +249,7 @@ const AdminUserComponent = () => {
                 bordered
                 dataSource={users}
                 columns={column}
-                loading={loading}
+                // loading={loading}
                 pagination={pagination}
                 onChange={handleTableChange}
                 style={{ marginTop: 30, padding: '0px 10px' }}

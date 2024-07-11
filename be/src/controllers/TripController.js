@@ -76,6 +76,7 @@ const getRunningByDriver = async (req, res) => {
 const getTripsBySearch = async (req, res) => {
     try {
         const data = req.query
+        console.log(data);
         const response = await TripService.getTripsBySearch(data.data)
         return res.status(response.status).json(response)
     } catch (e) {

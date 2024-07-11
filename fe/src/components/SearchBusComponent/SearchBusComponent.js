@@ -129,7 +129,6 @@ const SearchBusComponent = (props) => {
 
     const onSearch = () => {
         if (provinceStart && provinceEnd && date) {
-            console.log(date);
             handleSearch({ provinceStart, provinceEnd, districtStart, districtEnd, date })
         } else errorMes('Vui lòng nhập đầy đủ thông tin!')
     }

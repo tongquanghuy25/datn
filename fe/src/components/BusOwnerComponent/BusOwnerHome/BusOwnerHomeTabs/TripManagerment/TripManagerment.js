@@ -12,9 +12,11 @@ import { getBussByBusOwner } from '../../../../../services/BusService';
 import { getDriversByBusOwner } from '../../../../../services/DriverService';
 import { getRouteByBusOwner } from '../../../../../services/RouteService';
 import { formatTimeVn, getVnCurrency } from '../../../../../utils';
+import InfomationTrip from './InfomationTrip';
 
 const TripManagerment = () => {
 
+    const [tripSelected, setTripSelected] = useState()
 
     const column = [
 
@@ -102,28 +104,6 @@ const TripManagerment = () => {
                 </span>
             }
         },
-        // {
-        //     title: "Chi tiết",
-        //     key: 'detail',
-        //     width: 80,
-        //     align: 'center',
-        //     render: (record) => {
-        //         return <>
-        //             <ProfileOutlined onClick={() => { }} style={{ color: 'blue', fontSize: '16px' }} />
-        //         </>
-        //     }
-        // },
-        // {
-        //     title: "Sửa",
-        //     key: 'update',
-        //     width: 60,
-        //     align: 'center',
-        //     render: (record) => {
-        //         return <>
-        //             <EditOutlined onClick={() => { setIsUpdateTrip(true); setTripUpdate(record) }} style={{ color: 'green', fontSize: '16px' }} />
-        //         </>
-        //     }
-        // },
         {
             title: "Hành động",
             key: 'action',
@@ -131,7 +111,7 @@ const TripManagerment = () => {
             align: 'center',
             render: (record) => {
                 return <Row justify={'space-between'}>
-                    <ProfileOutlined onClick={() => { }} style={{ color: 'blue', fontSize: '16px' }} />
+                    <ProfileOutlined onClick={() => { setTripSelected(record) }} style={{ color: 'blue', fontSize: '16px' }} />
                     <EditOutlined onClick={() => { setIsUpdateTrip(true); setTripUpdate(record) }} style={{ color: 'green', fontSize: '16px' }} />
 
                     <Popconfirm
@@ -296,6 +276,7 @@ const TripManagerment = () => {
             </Row>
             <ModalCreateTrip isCreateTrip={isCreateTrip} handleCancel={handleCancel} refetch={refetch} listRoute={listRoute} listBus={listBus} listDriver={listDriver} dataBuss={dataBuss} dataRoutes={dataRoutes} filterOption={filterOption}></ModalCreateTrip>
             <ModalUpdateTrip trip={tripUpdate} isUpdateTrip={isUpdateTrip} handleCancel={handleCancelUpdate} refetch={refetch} listBus={listBus} listDriver={listDriver} filterOption={filterOption}></ModalUpdateTrip>
+            {tripSelected && <InfomationTrip tripSelected={tripSelected} setTripSelected={setTripSelected} />}
         </div>
     )
 }

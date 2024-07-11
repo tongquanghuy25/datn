@@ -92,6 +92,7 @@ const DrawerCreateBus = (props) => {
         formData.append('type', values.type);
         formData.append('numberSeat', values.numberSeat);
         formData.append('color', values.color);
+        console.log('fff', values.convinients);
         formData.append('convinients', values.convinients);
         formData.append('avatar', avatarFile?.originFileObj);
         formData.append('typeSeat', values?.typeSeat)

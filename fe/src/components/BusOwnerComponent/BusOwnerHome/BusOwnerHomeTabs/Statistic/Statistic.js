@@ -101,7 +101,7 @@ const Statistic = () => {
     }, [activeTab, startDate, endDate, selectedMonth, selectedYear]);
 
     return (
-        <div style={{ padding: '30px', background: '#ececec', height: '100vh' }}>
+        <div style={{ padding: '30px', background: '#ececec', height: 'calc(100vh - 1100px)' }}>
             <Row gutter={24}>
                 <Col span={8}>
                     <StatisticCard

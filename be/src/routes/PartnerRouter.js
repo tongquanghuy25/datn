@@ -13,6 +13,8 @@ router.get('/overview-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.
 router.get('/statistic-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getStatisticBusOwner)
 router.get('/debts-bus-owner/:id', authBusOwnerMiddleWare, PartnerController.getDebtsBusOwner)
 router.get('/detail-debts-by-user/:id', authBusOwnerMiddleWare, PartnerController.getDetailDebts)
+router.get('/get-refund/:id', authBusOwnerMiddleWare, PartnerController.getRefunds)
+router.put('/confirm-refund/:id', authBusOwnerMiddleWare, PartnerController.confirmRefund)
 
 router.post('/register-agent', PartnerController.createAgent)
 router.get('/get-all-agent', authAdminMiddleWare, PartnerController.getAllAgent)

@@ -64,11 +64,11 @@ const HeaderComponent = () => {
                         <UsergroupAddOutlined style={{ marginRight: '10px', fontSize: '20px' }} />
                         Trở thành đối tác
                     </div>
-                    <div onClick={() => { console.log('huyhuy'); }} className='header-items'>
+                    <div onClick={() => navigate('/about-us')} className='header-items'>
                         <QuestionCircleOutlined style={{ marginRight: '10px' }} />
                         Giới thiệu
                     </div>
-                    <div onClick={() => { console.log('huyhuy'); }} className='header-items'>
+                    <div onClick={() => navigate('/contact')} className='header-items'>
                         <PhoneOutlined style={{ marginRight: '10px' }} />
                         Liên hệ
                     </div>

@@ -67,7 +67,8 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
     }
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', padding: 24 }}>
-            <Row>
+            <div >
+                <label>Chọn ngày</label>
                 <div>
                     <DatePicker
                         format='DD/MM/YYYY'
@@ -78,7 +79,7 @@ const ListMyTripComponent = ({ setSelectedKeys }) => {
                         size='large'
                     />
                 </div>
-            </Row>
+            </div>
             <Row style={{ flex: 1, overflowY: 'auto' }}>
                 {
                     listTrip.map(trip => (

@@ -5,6 +5,8 @@ const { deleteImgCloud } = require('../utils');
 const createBus = async (req, res) => {
     try {
         let { licensePlate, typeBus, type, numberSeat, color, convinients, busOwnerId, floorNumber, typeSeat } = req.body
+        convinients = convinients.split(',')
+        console.log(convinients);
         const arrPath = req.files.map((file) => file?.path)
         let avatar
         let images = []
@@ -30,6 +32,7 @@ const createBus = async (req, res) => {
         numberSeat = parseInt(numberSeat)
 
         const response = await BusService.createBus({ licensePlate, typeBus, numberSeat, color, convinients, busOwnerId, images, avatar, floorNumber, typeSeat })
+
         if (response.status !== 200) {
             if (req.files) await deleteImgCloud({ files: req.files })
             return res.status(response.status).json(response)
@@ -71,7 +74,6 @@ const updateBus = async (req, res) => {
         delete data.newImages
         if (data.images === 'null') data.images = null
         if (data.convinients === 'null') data.convinients = null
-        console.log(data.convinients);
         req.files?.forEach(file => {
             if (file.fieldname && file.fieldname === 'avatar') data = { ...data, avatar: file.path }
             else if (file.fieldname) {

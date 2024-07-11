@@ -46,7 +46,6 @@ const BusManagerment = () => {
     return (
         <div style={{ marginTop: '20px', padding: '0 20px' }}>
             <Row justify="space-between">
-
             </Row>
             {listBus &&
                 <Row justify="space-around" style={{ height: '80vh' }}>
@@ -78,7 +77,6 @@ const BusManagerment = () => {
                                         <div style={{ fontSize: '16px', marginLeft: '100px', fontWeight: '500' }}>Đánh giá : 5{bus.averageRating} <StarOutlined style={{ color: 'red' }} /></div>
 
                                     </div>
-
                                 </>
 
 

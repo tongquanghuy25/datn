@@ -146,9 +146,9 @@ export const updateStatusGoodsOrder = async (id, access_token, data) => {
 }
 
 
-export const updateSettled = async (id, access_token) => {
+export const updateSettled = async (id, busOwnerId, access_token) => {
     console.log(id);
-    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/update-settled/${id}`,
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/order/update-settled/${id}/${busOwnerId}`,
         {
             headers: {
                 token: `Bearer ${access_token}`,

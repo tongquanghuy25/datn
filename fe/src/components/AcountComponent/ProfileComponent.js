@@ -181,7 +181,7 @@ const ProfileComponent = () => {
                             name="gender"
                             label="Giới tính"
                         >
-                            <Select style={{ width: '150px' }}>
+                            <Select style={{ width: '130px' }}>
                                 <Option value="male">Nam</Option>
                                 <Option value="female">Nữ</Option>
                                 <Option value="other">Khác</Option>

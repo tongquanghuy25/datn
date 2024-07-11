@@ -1,4 +1,4 @@
-const { User, BusOwner, Agent, Bus, Driver, Route, Trip, OrderTicket, OrderGoods } = require("../models/index");
+const { User, BusOwner, Agent, Bus, Driver, Route, Trip, OrderTicket, OrderGoods, Refund } = require("../models/index");
 const UserService = require('./UserService')
 const sequelize = require('sequelize');
 const { Op, Sequelize } = require('sequelize');
@@ -259,32 +259,27 @@ const getStatisticBusOwner = (busOwnerId, tab, startDate, endDate, startOfMonth,
                 tripIds = trips.map(trip => trip.id);
             }
 
-            console.log('tripIds', tripIds);
-
             // Tính tổng số lượng vé
             const totalTicketCount = await OrderTicket.sum('seatCount', {
                 where: {
-                    tripId: {
-                        [Op.in]: tripIds
-                    }
+                    tripId: { [Op.in]: tripIds },
+                    status: { [Op.notIn]: ['Canceled'] }
                 }
             });
 
             // Tính tổng số tiền của các vé
             const totalRevenueTicket = await OrderTicket.sum('totalPrice', {
                 where: {
-                    tripId: {
-                        [Op.in]: tripIds
-                    }
+                    tripId: { [Op.in]: tripIds },
+                    status: { [Op.notIn]: ['Canceled'] }
                 }
             });
 
             // Tính tổng số tiền của các đơn gửi hàng
             const totalRevenueGoods = await OrderGoods.sum('price', {
                 where: {
-                    tripId: {
-                        [Op.in]: tripIds
-                    }
+                    tripId: { [Op.in]: tripIds },
+                    status: { [Op.notIn]: ['Canceled'] }
                 }
             });
             //  console.log('totalTicketCount', totalTicketCount, totalRevenueTicket + totalRevenueGoods);
@@ -379,7 +374,8 @@ const getDebtsBusOwner = (busOwnerId) => {
                     [Op.or]: [
                         { payee: { [Op.in]: drivers.map(driver => driver.userId) } },
                         { payee: { [Op.in]: agents.map(agent => agent.userId) } }
-                    ]
+                    ],
+                    status: { [Op.notIn]: ['Canceled'] }
                 },
                 group: ['payee'],
             });
@@ -442,7 +438,8 @@ const getDetailDebts = (userId) => {
                     [Sequelize.fn('GROUP_CONCAT', Sequelize.col('seats')), 'seatsList']
                 ],
                 where: {
-                    payee: userId
+                    payee: userId,
+                    status: { [Op.notIn]: ['Canceled'] }
                 },
                 include: {
                     model: Trip,
@@ -503,6 +500,49 @@ const getDetailDebts = (userId) => {
                 status: 200,
                 message: 'Thành công!',
                 data: transformedData
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
+const getRefunds = (busOwnerId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const refunds = await Refund.findAll({
+                where: {
+                    busOwnerId: busOwnerId
+                }
+            })
+
+            console.log(refunds);
+
+
+            resolve({
+                status: 200,
+                message: 'Thành công!',
+                data: refunds
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e)
+        }
+    })
+}
+
+const confirmRefund = (refundId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await Refund.update({ isRefund: true }, {
+                where: {
+                    id: refundId
+                }
+            })
+            resolve({
+                status: 200,
+                message: 'Thành công!',
             })
         } catch (e) {
             console.log(e);
@@ -681,7 +721,8 @@ const getDebtsAgent = (userId) => {
                     [Op.or]: [
                         { userOrder: userId },
                         { payee: userId }
-                    ]
+                    ],
+                    status: { [Op.notIn]: ['Canceled'] }
                 },
                 include: [
                     {
@@ -753,6 +794,8 @@ module.exports = {
     getStatisticBusOwner,
     getDebtsBusOwner,
     getDetailDebts,
+    getRefunds,
+    confirmRefund,
 
     createAgent,
     getAllAgent,

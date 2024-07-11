@@ -58,33 +58,20 @@ const BusOwnerHome = () => {
     };
 
     return (
-        <Layout
-            theme="light"
-        >
-            <Sider
-                trigger={null}
-            >
+        <Layout theme="light" >
+            <Sider trigger={null}>
                 <Menu
                     theme="light"
-                    // mode="inline"
                     items={items}
                     onSelect={handleSliderChange}
                     selectedKeys={selectedKeys}
-                    style={{ paddingTop: '50px', minHeight: 'calc(100vh - 65px)', }}
-
+                    style={{ paddingTop: '50px', height: 'calc(100vh - 64px)' }}
                 />
-
             </Sider>
             <Layout>
-
-                <Content
-                    style={{
-                        minHeight: 280,
-                    }}
-                >
+                <Content  >
                     <Outlet />
                 </Content>
-
             </Layout>
         </Layout >
 

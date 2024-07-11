@@ -20,68 +20,20 @@ const HomePage = () => {
     const [listDataFilter, setListDatafilter] = useState({})
     const [dataSearch, setDataSearch] = useState()
     const [isSearch, setIsSearch] = useState(false)
+    const [page, setPage] = useState(1)
 
 
-    function calculateArrivalTime(startTime, duration) {
-        // Chuyển đổi chuỗi 'hh:mm' thành giờ và phút
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const [durationHour, durationMinute] = duration.split(':').map(Number);
-
-        // Tính toán thời gian đến
-        let arrivalHour = startHour + durationHour;
-        let arrivalMinute = startMinute + durationMinute;
-
-        // Xử lý trường hợp khi phút vượt quá 60
-        if (arrivalMinute >= 60) {
-            arrivalHour += Math.floor(arrivalMinute / 60);
-            arrivalMinute %= 60;
-        }
-
-        if (arrivalMinute > 24) {
-            arrivalMinute = arrivalMinute % 24
-        }
-
-        // Định dạng thời gian đến
-        const formattedArrivalMinute = arrivalMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-        const arrivalTime = `${arrivalHour}:${formattedArrivalMinute}`;
-
-        // Định dạng thời gian xuất phát
-        const formattedStartMinute = startMinute.toString().padStart(2, '0'); // Thêm số 0 phía trước nếu cần
-        const departureTime = `${startHour}:${formattedStartMinute}`;
-
-        return { departureTime, arrivalTime };
-    }
 
     const mutationGetList = useMutation({
         mutationFn: async (data) => {
             return await getTripsBySearch(data);
         },
         onSuccess: (data) => {
-            // const listData = data.data?.map(trip => {
-            //     const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
-            //     return {
-            //         id: trip.id,
-            //         busOwnerId: trip.busOwnerId.id,
-            //         busOwnerName: trip.busOwnerId.busOwnerName,
-            //         avatar: trip.busId.avatar,
-            //         rating: trip.busId.averageRating,
-            //         reviewCount: trip.busId.reviewCount,
-            //         images: trip.busId.images,
-            //         convinients: trip.busId.convinients,
-            //         typeBus: trip.busId.typeBus,
-            //         totalSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
-            //         routeId: trip.routeId.id,
-            //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
-            //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
-            //         ticketPrice: trip.ticketPrice,
-            //         paymentRequire: trip.paymentRequire,
-            //         prebooking: trip.prebooking,
-            //         departureDate: trip.departureDate,
-            //         arrivalTime: arrivalTime,
-            //         departureTime: departureTime,
-            //     }
-            // })
-            setListTrip(data?.data)
+            if (page === 1) {
+                setListTrip(data?.data);
+            } else {
+                setListTrip([...listTrip, ...data?.data]);
+            }
         },
         onError: (data) => {
             errorMes(data?.response?.data?.message)
@@ -98,11 +50,18 @@ const HomePage = () => {
     });
 
     const handleSearch = (data) => {
-        mutationGetList.mutate(data)
+        setPage(1);
+        mutationGetList.mutate({ ...data, page: 1, pageSize: parseInt(process.env.REACT_APP_PAGE_SIZE) })
         mutationGetInforFilter.mutate(data)
         setDataSearch(data)
         setIsSearch(true)
     }
+
+    const loadMoreTrips = () => {
+        const nextPage = page + 1;
+        mutationGetList.mutate({ ...dataSearch, page: nextPage, pageSize: parseInt(process.env.REACT_APP_PAGE_SIZE) });
+        setPage(nextPage);
+    };
 
     const handleCancelFilter = (data) => {
         mutationGetList.mutate(data)
@@ -126,6 +85,11 @@ const HomePage = () => {
                                                 <TripCard key={trip.id} trip={trip} />
                                             ))}
                                         </div>
+                                        {listTrip.length % parseInt(process.env.REACT_APP_PAGE_SIZE) === 0 && (
+                                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                                <Button onClick={loadMoreTrips}>Xem thêm</Button>
+                                            </div>
+                                        )}
                                     </Col>
                                     :
                                     <Col span={18} align="middle" style={{}}>

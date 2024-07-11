@@ -22,7 +22,7 @@ router.get('/get-goods-order-by-trip/:id', authBusOwnerMiddleWare, OrderControll
 router.put('/update-status-goods/:id', authDriverMiddleWare, OrderController.updateStatusGoodsOrder)
 
 //ALL
-router.put('/update-settled/:id', authBusOwnerMiddleWare, OrderController.updateSettled)
+router.put('/update-settled/:id/:busOwnerId', authBusOwnerMiddleWare, OrderController.updateSettled)
 
 
 // router.get('/get-details-order/:id', OrderController.getDetailsOrder)

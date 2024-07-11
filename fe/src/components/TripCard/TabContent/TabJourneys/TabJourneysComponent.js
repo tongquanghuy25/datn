@@ -34,7 +34,7 @@ const TabJourneysComponent = ({ departureTime, routeId }) => {
 
     useEffect(() => {
         setListPickUpPoint(dataStopPoint?.data?.listPickUpPoint.sort((a, b) => a.timeFromStart - b.timeFromStart).map(item => {
-            return { label: calculateEndTime(departureTime, item.timeFromStart), children: item.place }
+            return { label: calculateEndTime(departureTime, item.timeFromStart), children: `${item.place}` }
         }))
         setListDropOffPoint(dataStopPoint?.data?.listDropOffPoint.sort((a, b) => a.timeFromStart - b.timeFromStart).map(item => {
             return { label: calculateEndTime(departureTime, item.timeFromStart), children: item.place }
@@ -46,14 +46,14 @@ const TabJourneysComponent = ({ departureTime, routeId }) => {
             <Col span={10}>
                 <Timeline
                     style={{ paddingTop: '10px' }}
-                    mode='left'
+                    mode='right'
                     items={listPickUpPoint}
                 />
             </Col>
             <Col span={10}>
                 <Timeline
                     style={{ paddingTop: '10px' }}
-                    mode='left'
+                    mode='right'
                     items={listDropOffPoint}
                 />
             </Col>

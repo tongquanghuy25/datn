@@ -111,7 +111,7 @@ const BookedTicketsCard = (props) => {
 
                     </div>
                     <Tag color={ticket.isPaid ? 'green' : 'red'} style={{ marginLeft: '8px' }}>
-                        {ticket.sPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                        {ticket.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                     </Tag>
                 </Col>
             </Row>

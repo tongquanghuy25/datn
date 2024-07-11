@@ -19,7 +19,7 @@ const GoodsInformation = ({ listGoodsOrder }) => {
                                     <div><strong>Số điện thoại người gửi:</strong> {goodsOrder.phoneSender}</div>
                                     <div><strong>Địa điểm gửi hàng:</strong> {goodsOrder.sendPlace}</div>
                                     <div><strong>Ghi chú:</strong> {goodsOrder.noteSend}</div>
-                                    <div><strong>Thời gian gửi hàng:</strong> {formatTimeVn(goodsOrder.timeSend)} ngày {dayjs(goodsOrder.dateSend).format('DD-MM-YYYY')}</div>
+                                    <div><strong>Thời gian gửi:</strong> {formatTimeVn(goodsOrder.timeSend)} ngày {dayjs(goodsOrder.dateSend).format('DD-MM-YYYY')}</div>
                                 </Col>
 
                                 <Col span={6}>
@@ -27,7 +27,7 @@ const GoodsInformation = ({ listGoodsOrder }) => {
                                     <div><strong>Số điện thoại người nhận:</strong> {goodsOrder.phoneReceiver}</div>
                                     <div><strong>Địa điểm nhận hàng:</strong> {goodsOrder.receivePlace}</div>
                                     <div><strong>Ghi chú:</strong> {goodsOrder.noteReceive}</div>
-                                    <div><strong>Thời gian nhận hàng:</strong> {formatTimeVn(goodsOrder.timeReceive)} {dayjs(goodsOrder.dateReceive).format('DD-MM-YYYY')}</div>
+                                    <div><strong>Thời gian nhận:</strong> {formatTimeVn(goodsOrder.timeReceive)} ngày {dayjs(goodsOrder.dateReceive).format('DD-MM-YYYY')}</div>
                                 </Col>
 
                                 <Col span={8}>

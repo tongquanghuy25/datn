@@ -34,7 +34,6 @@ const StatisticComponent = () => {
     onSuccess: (data) => {
       setStatistics(data?.data)
       setTripDetails(data?.data.tripDetails)
-      console.log('fff', data?.data);
     },
     onError: (data) => {
       errorMes(data?.response?.data?.message)
@@ -132,7 +131,7 @@ const StatisticComponent = () => {
           <Row >
             <Col span={4}>
               <div style={colStyle}>
-                <Title level={4} style={{ marginBottom: '8px' }}>
+                <Title level={5} style={{ marginBottom: '8px' }}>
                   <CarOutlined /> Tổng số chuyến
                 </Title>
                 <Text style={{ fontSize: '24px', color: '#1890ff' }}>
@@ -142,7 +141,7 @@ const StatisticComponent = () => {
             </Col>
             <Col span={5}>
               <div style={colStyle}>
-                <Title level={4} style={{ marginBottom: '8px' }}>
+                <Title level={5} style={{ marginBottom: '8px' }}>
                   <FileTextOutlined /> Tổng số đơn vé
                 </Title>
                 <Text style={{ fontSize: '24px', color: '#1890ff' }}>
@@ -152,7 +151,7 @@ const StatisticComponent = () => {
             </Col>
             <Col span={5}>
               <div style={colStyle}>
-                <Title level={4} style={{ marginBottom: '8px' }}>
+                <Title level={5} style={{ marginBottom: '8px' }}>
                   <DollarOutlined /> Số tiền đã thu từ vé
                 </Title>
                 <Text style={{ fontSize: '24px', color: '#1890ff' }}>
@@ -162,7 +161,7 @@ const StatisticComponent = () => {
             </Col>
             <Col span={5}>
               <div style={colStyle}>
-                <Title level={4} style={{ marginBottom: '8px' }}>
+                <Title level={5} style={{ marginBottom: '8px' }}>
                   <InboxOutlined /> Tổng số đơn gửi hàng
                 </Title>
                 <Text style={{ fontSize: '24px', color: '#1890ff' }}>
@@ -172,7 +171,7 @@ const StatisticComponent = () => {
             </Col>
             <Col span={5}>
               <div style={colStyle}>
-                <Title level={4} style={{ marginBottom: '8px' }}>
+                <Title level={5} style={{ marginBottom: '8px' }}>
                   <DollarOutlined /> Số tiền đã thu từ hàng
                 </Title>
                 <Text style={{ fontSize: '24px', color: '#1890ff' }}>
@@ -190,7 +189,7 @@ const StatisticComponent = () => {
             columns={columns}
             dataSource={tripDetails}
             scroll={{
-              y: 400,
+              y: 310,
             }}
           />
         </Col>

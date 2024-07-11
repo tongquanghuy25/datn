@@ -152,6 +152,7 @@ const PickUpDropOffInformation = ({ listGoodsOrder, listTicketOrder, handleUpdat
             errorMes(data?.response?.data?.message)
         }
     });
+    console.log('placeSelectedData?.ordersTicket', placeSelectedData?.ordersTicket);
     return (
         <div >
             <Row>

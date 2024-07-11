@@ -162,3 +162,21 @@ export const getDebtsAgent = async (id, access_token) => {
     return res.data
 }
 
+export const getRefunds = async (id, access_token) => {
+    const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/partner/get-refund/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
+
+export const confirmRefund = async (id, access_token) => {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/partner/confirm-refund/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    },)
+    return res.data
+}
+

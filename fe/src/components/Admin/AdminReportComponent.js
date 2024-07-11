@@ -51,11 +51,13 @@ const AdminReportComponent = () => {
             title: "Tên nhà xe",
             dataIndex: 'busOwner',
             key: 'busOwner',
+            width: 170,
             render: (record) => record.busOwnerName
         },
         {
             title: "Số điện thoại người báo cáo",
             dataIndex: 'phone',
+            width: 130,
             key: 'phone',
 
         },
@@ -63,6 +65,7 @@ const AdminReportComponent = () => {
             title: "Tiêu đề",
             dataIndex: 'title',
             key: 'title',
+            width: 170,
         },
         {
             title: "Nội dung",
@@ -73,12 +76,14 @@ const AdminReportComponent = () => {
             title: "Ngày",
             dataIndex: 'createdAt',
             key: 'content',
+            width: 130,
             render: record => dayjs(record).format('DD-MM-YYYY')
         },
         {
             title: "Trạng thái",
             dataIndex: 'status',
             key: 'status',
+            width: 100,
             render: record => record === 'processing' ? 'Đang xử lý' : 'Đã xử lý'
         },
         {
@@ -105,64 +110,6 @@ const AdminReportComponent = () => {
     ]
 
 
-    // const OnEditUser = (record) => {
-    //     setIsEdit(true)
-    //     setUserEditing(record)
-    // }
-
-    // const mutationUpdate = useMutation({
-    //     mutationFn: async (data) => {
-    //         const { id, access_token, user } = data;
-    //         return await editUser(id, access_token, user);
-    //     },
-    //     onSuccess: (data) => {
-    //         successMes(data.message)
-    //         setConfirmLoading(false)
-    //         refetch()
-    //         setIsEdit(false)
-    //         // successMes('Sửa người dùng thành công !')
-    //     },
-    //     onError: (data) => {
-    //         setConfirmLoading(false)
-    //         setIsEdit(false)
-    //         refetch()
-    //         errorMes(data?.response?.data?.message)
-    //     }
-    // });
-
-    // const mutationDeleted = useMutation({
-    //     mutationFn: async (data) => {
-    //         const { id, access_token, user } = data;
-    //         await deleteUser(id, access_token, user);
-    //     },
-    //     onSuccess: () => {
-    //         setConfirmLoading(false)
-    //         refetch()
-    //         setIsDelete(false)
-    //         successMes('Xóa người dùng thành công !')
-    //     },
-    //     onError: () => {
-    //         setConfirmLoading(false)
-    //         setIsDelete(false)
-    //         refetch()
-    //         errorMes('Xóa người dùng không thành công !')
-    //     }
-    // });
-
-    // const HandleEditUser = () => {
-    //     setConfirmLoading(true)
-    //     mutationUpdate.mutate({ id: userEditing.id, user: userEditing, access_token: user?.access_token })
-    // }
-
-    // const OnDeleteUser = (record) => {
-    //     setIsDelete(true)
-    //     setUserDeleting(record)
-    // }
-    // const HandleDeleteUser = () => {
-    //     setConfirmLoading(true)
-    //     mutationDeleted.mutate({ id: userDeleting.id, user: userDeleting, access_token: user?.access_token })
-    // }
-
     return (
         <>
             <Table
@@ -172,83 +119,6 @@ const AdminReportComponent = () => {
                 columns={column}
                 style={{ marginTop: 30 }}
             ></Table>
-            {/* <Modal
-                title="Chỉnh sửa người dùng"
-                open={isEdit}
-                okText='Xác nhận'
-                onOk={() => {
-                    HandleEditUser()
-                }}
-                cancelText='Hủy'
-                onCancel={() => {
-                    setIsEdit(false)
-                }}
-                confirmLoading={confirmLoading}
-
-            >
-                <span >Tên</span>
-                <Input
-                    style={{ marginBottom: '20px', marginTop: '10px' }}
-                    value={userEditing?.name}
-                    onChange={(e) => {
-                        setUserEditing((pre) => {
-                            return { ...pre, name: e.target.value }
-                        })
-                    }}
-                />
-                <span >Email</span>
-                <Input
-                    style={{ marginBottom: '20px', marginTop: '10px' }}
-                    value={userEditing?.email}
-                    onChange={(e) => {
-                        setUserEditing((pre) => {
-                            return { ...pre, email: e.target.value }
-                        })
-                    }}
-                />
-                <span>Số điện thoại</span>
-                <Input
-                    style={{ marginBottom: '20px', marginTop: '10px' }}
-                    value={userEditing?.phone}
-                    onChange={(e) => {
-                        setUserEditing((pre) => {
-                            return { ...pre, phone: e.target.value }
-                        })
-                    }}
-                />
-                <div><span>Vai trò</span></div>
-                <Select
-                    style={{ width: '150px', marginTop: '10px' }}
-                    value={userEditing?.role}
-                    onChange={(value) => {
-                        setUserEditing((pre) => {
-                            return { ...pre, role: value }
-                        })
-                    }}
-                >
-                    <Option value="admin">Admin</Option>
-                    <Option value="busowner">Bus Owner</Option>
-                    <Option value="user">User</Option>
-                </Select>
-
-            </Modal>
-            <Modal
-                title='Bạn có chắc chắn muốn xóa người dùng ?'
-                open={isDelete}
-                okText='Xác nhận'
-                onOk={() => {
-                    HandleDeleteUser()
-                }}
-                cancelText='Hủy'
-                onCancel={() => {
-                    setIsDelete(false)
-                }}
-                confirmLoading={confirmLoading}
-
-            >
-
-
-            </Modal> */}
         </>
     )
 }

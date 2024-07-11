@@ -72,7 +72,7 @@ function calculateArrivalTime(startTime, duration) {
 }
 const SideBarFilterComponent = (props) => {
 
-    const { listDataFilter, dataSearch, setListTrip, handleCancelFilter } = props
+    const { listDataFilter, dataSearch, setListTrip, handleCancelFilter, page } = props
 
     const [listBusOwner, setListBusOwner] = useState([]);
     const [order, setOrder] = useState();
@@ -173,13 +173,11 @@ const SideBarFilterComponent = (props) => {
         places.forEach(val => {
             const districtObj = listPlace?.find(item => Object.keys(item)[0] === val);
             if (districtObj) {
-                // Nếu giá trị là một huyện
                 const locations = districtObj[val];
                 locations.forEach(location => {
                     newResult.push(location.id);
                 });
             } else {
-                // Nếu giá trị là một địa điểm
                 newResult.push(val);
             }
         });
@@ -193,30 +191,6 @@ const SideBarFilterComponent = (props) => {
             return await getTripsByFilter(data);
         },
         onSuccess: (data) => {
-            console.log('da', data?.data);
-            // const listData = data.data?.map(trip => {
-            //     const { departureTime, arrivalTime } = calculateArrivalTime(trip.departureTime, trip.routeId.journeyTime)
-            //     return {
-            //         id: trip.id,
-            //         busOwnerName: trip.busOwnerId.busOwnerName,
-            //         avatar: trip.busId.avatar,
-            //         rating: trip.busId.averageRating,
-            //         reviewCount: trip.busId.reviewCount,
-            //         images: trip.busId.images,
-            //         convinients: trip.busId.convinients,
-            //         typeBus: trip.busId.typeBus,
-            //         totalSeats: `${trip.busId.numberSeat - trip.ticketsSold}/${trip.busId.numberSeat}`,
-            //         routeId: trip.routeId.id,
-            //         departureLocation: `${trip.routeId.districtStart} - ${trip.routeId.placeStart}`,
-            //         arrivalLocation: `${trip.routeId.districtEnd} - ${trip.routeId.placeEnd}`,
-            //         ticketPrice: trip.ticketPrice,
-            //         paymentRequire: trip.paymentRequire,
-            //         prebooking: trip.prebooking,
-            //         departureDate: trip.departureDate,
-            //         arrivalTime: arrivalTime,
-            //         departureTime: departureTime,
-            //     }
-            // })
             setListTrip(data?.data)
         }
     });
@@ -236,7 +210,6 @@ const SideBarFilterComponent = (props) => {
 
         mutation.mutate(result)
     }
-
 
 
     const handleClearFilter = () => {

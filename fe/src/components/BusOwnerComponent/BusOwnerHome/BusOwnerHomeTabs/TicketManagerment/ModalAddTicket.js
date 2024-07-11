@@ -83,6 +83,7 @@ const ModalAddTicket = (props) => {
             }
         }
     )
+    console.log('user111', user);
     const handleFinish = (values) => {
         const { arrivalDate, arrivalTime } = calculateArrivalDateAndTime(trip?.departureDate, trip?.departureTime, pickUpPoint.timeFromStart)
         const { arrivalDate: endDate, arrivalTime: endTime } = calculateArrivalDateAndTime(trip?.departureDate, trip?.departureTime, dropOffPoint.timeFromStart)

@@ -104,8 +104,8 @@ const getRunningByDriver = (driverId) => {
                 ]
             });
             //await OrderTicket.update({ payee: 120 }, { where: { tripId: trip.id } });
-            const listTicketOrder = await OrderTicket.findAll({ where: { tripId: trip.id } });
-            const listGoodsOrder = await OrderGoods.findAll({ where: { tripId: trip.id } });
+            const listTicketOrder = await OrderTicket.findAll({ where: { tripId: trip.id, status: { [Op.notIn]: ['Canceled'] } } });
+            const listGoodsOrder = await OrderGoods.findAll({ where: { tripId: trip.id, status: { [Op.notIn]: ['Canceled'] } } });
             resolve({
                 status: 200,
                 message: 'Success',
@@ -121,7 +121,7 @@ const getRunningByDriver = (driverId) => {
 const getTripsBySearch = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { provinceStart, districtStart, provinceEnd, districtEnd, date } = data;
+            const { provinceStart, districtStart, provinceEnd, districtEnd, date, page = 1, pageSize = 10 } = data;
 
             const allTrip = await Trip.findAll({
                 include: [
@@ -162,6 +162,8 @@ const getTripsBySearch = (data) => {
                         { status: "NotStarted" }
                     ]
                 },
+                offset: parseInt(pageSize) * (parseInt(page) - 1),
+                limit: parseInt(pageSize),
                 // raw: true
             });
 
@@ -281,7 +283,7 @@ const getInforFilterTrip = (data) => {
 const getTripsByFilter = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { provinceStart, districtStart, provinceEnd, districtEnd, date, order, priceRange, seatOption, busOwnerSelected, minRating } = data;
+            const { provinceStart, districtStart, provinceEnd, districtEnd, date, order, priceRange, seatOption, busOwnerSelected, minRating, page, pageSize } = data;
             let { placesEnd, placesStart } = data
 
             const routeIds = await Route.findAll({
@@ -402,7 +404,6 @@ const getTripsByFilter = (data) => {
 const updateTrip = (tripId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-
             const { status, driverId } = data
             if (status === 'Started') {
                 const trip = await Trip.findOne({
@@ -418,6 +419,7 @@ const updateTrip = (tripId, data) => {
                     })
                     return;
                 }
+
             }
 
             const checkTrip = await Trip.findOne({
@@ -425,6 +427,7 @@ const updateTrip = (tripId, data) => {
                     id: tripId
                 }
             });
+
             if (checkTrip === null) {
                 resolve({
                     status: 404,
@@ -438,6 +441,18 @@ const updateTrip = (tripId, data) => {
                     id: tripId
                 }
             });
+
+            if (status === 'Cancelled') {
+                await OrderTicket.update(
+                    { status: 'Canceled' },
+                    { where: { tripId: checkTrip.id } }
+                )
+                await OrderGoods.update(
+                    { status: 'Canceled' },
+                    { where: { tripId: checkTrip.id } }
+                )
+            }
+
             resolve({
                 status: 200,
                 message: 'Cập nhật thông tin chuyến thành công!',
@@ -470,6 +485,15 @@ const updateFinishTrip = (tripId) => {
                     id: tripId
                 }
             });
+            await OrderTicket.update(
+                { status: 'Completed' },
+                {
+                    where: {
+                        tripId: checkTrip.id,
+                        status: { [Op.notIn]: ['Canceled'] }
+                    }
+                }
+            )
             resolve({
                 status: 200,
                 message: 'Kết thúc chuyến xe thành công!',

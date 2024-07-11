@@ -78,7 +78,7 @@ const DriverPage = () => {
                     selectedKeys={selectedKeys}
 
                 />
-                <div style={{ display: 'flex', height: '300px', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', height: '250px', flexDirection: 'column', justifyContent: 'flex-end' }}>
                     <Button type="primary" icon={<LogoutOutlined />} danger onClick={() => { handleLogOut() }}>
                         Đăng xuất
                     </Button>

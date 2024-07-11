@@ -201,8 +201,8 @@ const GoodsManagerment = () => {
                             )
                         })
                         :
-                        <div style={{ fontSize: '18px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-                            <img src={nodata} style={{ maxWidth: '200px' }}></img>
+                        <div style={{ fontSize: '18px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', marginTop: 40 }}>
+                            <img src={nodata} style={{ maxWidth: '300px' }}></img>
                             <h2>Chưa có đơn hàng hóa nào</h2>
                         </div>
                     }

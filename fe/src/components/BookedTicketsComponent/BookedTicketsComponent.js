@@ -99,18 +99,20 @@ const BookedTicketsComponent = () => {
             </Row>
             {
                 <>
-                    {!isSearch && <Row justify={'center'}>
-                        {
-                            isSearch || !user.id ?
-                                listTicket?.length > 0 && <h2>Thông tin vé</h2>
-                                :
-                                <Tabs activeKey={activeTab} onChange={(key) => setActiveTab(key)} style={{ marginTop: '20px' }}>
-                                    <TabPane tab="Chưa hoàn thành" key="1"></TabPane>
-                                    <TabPane tab="Đã hoàn thành" key="2"> </TabPane>
-                                    <TabPane tab="Đã hủy" key="3"></TabPane>
-                                </Tabs>
-                        }
-                    </Row>}
+                    {isSearch ?
+                        <Row style={{ marginTop: 100 }}></Row>
+                        : <Row justify={'center'}>
+                            {
+                                isSearch || !user.id ?
+                                    listTicket?.length > 0 && <h2>Thông tin vé</h2>
+                                    :
+                                    <Tabs activeKey={activeTab} onChange={(key) => setActiveTab(key)} style={{ marginTop: '20px' }}>
+                                        <TabPane tab="Chưa hoàn thành" key="1"></TabPane>
+                                        <TabPane tab="Đã hoàn thành" key="2"> </TabPane>
+                                        <TabPane tab="Đã hủy" key="3"></TabPane>
+                                    </Tabs>
+                            }
+                        </Row>}
                     {listTicket?.length > 0 ? <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                         {listTicket?.map(ticket => {
                             return <BookedTicketsCard
@@ -174,7 +176,7 @@ const BookedTicketsComponent = () => {
 
                         <div><strong>Phương Thức Thanh Toán:</strong> {ticketSelected?.paymentMethod}</div>
                         <div><strong>Thanh Toán:</strong> {ticketSelected?.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</div>
-                        <div><strong>Trạng Thái:</strong> {ticketSelected?.status}</div>
+                        {/* <div><strong>Trạng Thái:</strong> {ticketSelected?.status}</div> */}
                     </div>
                 </Modal>
             }

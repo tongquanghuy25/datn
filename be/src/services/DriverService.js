@@ -228,7 +228,8 @@ const getStatisticDriver = (userId, driverId, startDate, endDate) => {
                 ],
                 where: {
                     payee: userId,
-                    tripId: { [Op.in]: tripId }
+                    tripId: { [Op.in]: tripId },
+                    status: { [Op.notIn]: ['Canceled'] }
                 },
             });
 
@@ -243,14 +244,14 @@ const getStatisticDriver = (userId, driverId, startDate, endDate) => {
                 ],
                 where: {
                     Payee: userId,
-                    tripId: { [Op.in]: tripId }
+                    tripId: { [Op.in]: tripId },
+                    status: { [Op.notIn]: ['Canceled'] }
                 },
             });
 
             const totalGoods = goodsStats[0].dataValues.totalGoods;
             const totalGoodsAmount = goodsStats[0].dataValues.totalGoodsAmount ? goodsStats[0].dataValues.totalGoodsAmount : 0;
 
-            console.log('aa');
             resolve({
                 status: 200,
                 message: 'Success',

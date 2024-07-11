@@ -13,6 +13,7 @@ import TextArea from 'antd/es/input/TextArea';
 import { createReport } from '../../services/ReportService';
 import { useMutation } from '@tanstack/react-query';
 import { errorMes, successMes } from '../Message/Message';
+import TabConvinient from './TabContent/TabConvinient/TabConvinient';
 
 const { Option } = Select;
 
@@ -129,14 +130,17 @@ const BusCard = ({ trip }) => {
                             <TabReview busOwnerId={trip?.busOwnerId} />
                         </TabPane>
                         <TabPane tab="Tiện ích" key="3">
-                            Nội dung Tiện ích
+                            <TabConvinient
+                                convinients={trip?.bus.convinients}
+                            // convinients={["Khăn lạnh", "Cổng sạc USB", "Màn hình TV", "Ghế xếp", "Bàn chải đánh răng"]}
+                            />
                         </TabPane>
                         <TabPane tab="Hành trình" key="4">
                             <TabJourneysComponent departureTime={trip.departureTime} routeId={trip.routeId}></TabJourneysComponent>
                         </TabPane>
-                        <TabPane tab="Chính sách" key="5">
+                        {/* <TabPane tab="Chính sách" key="5">
                             Nội dung hành trình
-                        </TabPane>
+                        </TabPane> */}
                     </Tabs>
                 )}
                 {bookTickets && (

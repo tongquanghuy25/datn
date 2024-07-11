@@ -75,32 +75,8 @@ const createTicketOrder = (newOrder) => {
                 }
             }
 
-            // console.log('tripId', tripId)
-            // console.log('userOrder', userOrder)
-            // console.log('name', name)
-            // console.log('email', email)
-            // console.log('phone', phone)
-            // console.log('departureTime', departureTime)
-            // console.log('departureDate', departureDate)
-            // console.log('code', code)
-            // console.log('pickUp', pickUp)
-            // console.log('notePickUp', notePickUp)
-            // console.log('timePickUp', timePickUp)
-            // console.log('datePickUp', datePickUp)
-            // console.log('dropOff', dropOff)
-            // console.log('noteDropOff', noteDropOff)
-            // console.log('timeDropOff', timeDropOff)
-            // console.log('dateDropOff', dateDropOff)
-            // console.log('seats', seats)
-            // console.log('seatCount', seatCount)
-            // console.log('ticketPrice', ticketPrice)
-            // console.log('extraCosts', extraCosts)
-            // console.log('discount', discount)
-            // console.log('totalPrice', totalPrice)
-            // console.log('payee', payee)
-            // console.log('paymentMethod', paymentMethod)
-            // console.log('isPaid', isPaid)
-            // console.log('paidAt', paidAt)
+
+            console.log('newOrder', newOrder);
 
             const createdOrder = await OrderTicket.create(
                 {
@@ -419,7 +395,7 @@ const deleteSeat = (ticketOrder, seatDelete, busOwnerId, isOnTimeAllow) => {
                     let refundAmount = 0
                     if (isOnTimeAllow) refundAmount = ticketOrder?.ticketPrice
                     else refundAmount = ticketOrder?.ticketPrice / 2
-                    await OrderTicket.update({ seats: seats, seatCount: seats.length }, { where: { id: ticketOrder.id } });
+                    await OrderTicket.update({ seats: seats, seatCount: seats.length, totalPrice: ticketOrder?.totalPrice - ticketOrder?.ticketPrice }, { where: { id: ticketOrder.id } });
                     await Refund.create({ busOwnerId: busOwnerId, name: ticketOrder?.name, email: ticketOrder?.email, phone: ticketOrder?.phone, refundAmount: refundAmount })
                 } else {
                     let refundAmount = 0
@@ -693,24 +669,36 @@ const updateStatusGoodsOrder = (id, data) => {
     })
 }
 
-const updateSettled = (userId) => {
+const updateSettled = (userId, busOwnerId) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const trips = await Trip.findAll(
+                {
+                    attributes: ['id'],
+                    where: {
+                        busOwnerId: busOwnerId,
+                    },
+                }
+            )
+            console.log(trips);
+            const tripIds = trips?.map(trip => trip.id)
             await OrderTicket.update({ status: 'Settled' }, {
-                where: { payee: userId },
+                where: { payee: userId, tripId: { [Op.in]: tripIds } },
             });
             await OrderGoods.update({ status: 'Settled' }, {
-                where: { payee: userId },
+                where: { payee: userId, tripId: { [Op.in]: tripIds } },
             });
             resolve({
                 status: 200,
                 message: 'Cập nhật trạng thái đơn vé thành công!',
             })
         } catch (e) {
+            console.log(e);
             reject(e)
         }
     })
 }
+
 
 module.exports = {
     createTicketOrder,

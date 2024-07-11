@@ -47,6 +47,8 @@ import Statistic from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeT
 import FinancialManagement from './components/BusOwnerComponent/BusOwnerHome/BusOwnerHomeTabs/FinancialManagement/FinancialManagement';
 import FinancialComponent from './components/AgentComponent/FinancialComponent/FinancialComponent';
 import StatisticComponent from './components/DriverComponent/StatisticComponent/StatisticComponent';
+import AboutUsPage from './pages/AboutUsPage/AboutUsPage';
+import ContactPage from './pages/ContactPage/ContactPage';
 
 
 function App() {
@@ -128,6 +130,9 @@ function App() {
           <Route path='/change-password' element={<ChangePasswordPage />} />
           <Route path='/partner-registration' element={<PartnerRegistrationPage />} />
           <Route path='/booked-tickets' element={<BookedTicketsPage />} />
+          <Route path='/about-us' element={<AboutUsPage />} />
+          <Route path='/contact' element={<ContactPage />} />
+
 
           <Route path='/admin' element={<AdminPage />} >
             <Route path='home' element={<AdminHomeComponent />} />

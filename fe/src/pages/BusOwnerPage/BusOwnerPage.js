@@ -33,12 +33,12 @@ const BusOwnerPage = () => {
 
     return (
         <Layout style={{ backgroundColor: '#fff' }}>
-            <Header style={{ height: '8vh', display: 'flex', alignItems: 'center', justifyContent: 'space-between', }}>
+            <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', }}>
                 <div>
                     <div style={{ fontSize: 36, fontWeight: 'bold', color: 'white', margin: 0 }}>Trang nhà xe</div>
                 </div>
                 <div style={{ flex: 1, marginLeft: '80px' }}>
-                    <Menu style={{ height: '8vh' }} theme="dark" mode="horizontal" selectedKeys={[selectedTab]} onClick={handleTabChange}>
+                    <Menu theme="dark" mode="horizontal" selectedKeys={[selectedTab]} onClick={handleTabChange}>
                         <Menu.Item key="home">Trang chủ</Menu.Item>
                         <Menu.Item key="schedule">Quản lý lịch trình</Menu.Item>
                         <Menu.Item key="route">Quản lý tuyến đường</Menu.Item>
